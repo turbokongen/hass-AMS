@@ -5,7 +5,7 @@ This module will decode the incoming message from Mbus serial.
 """
 
 import logging
-import json
+from datetime import datetime
 from crccheck.crc import CrcX25
 
 DATA_FLAG = [230, 231, 0, 15]
@@ -95,7 +95,7 @@ def parse_data(stored, data):
                                 chr(pkt[69]) +
                                 chr(pkt[70]) +
                                 chr(pkt[71]) +
-                                chr(pkt[72]))                                
+                                chr(pkt[72]))
     han_data["obis_m_t"] = (str(pkt[75]) +
                             '.' + str(pkt[76]) +
                             '.' + str(pkt[77]) +
@@ -148,7 +148,7 @@ def parse_data(stored, data):
             'icon': 'mdi:gauge'
             }
         }
-           
+
     han_data["obis_a_p_n"] = (str(pkt[116]) +
                               '.' + str(pkt[117]) +
                               '.' + str(pkt[118]) +
@@ -578,6 +578,7 @@ def parse_data(stored, data):
             }
     return sensor_data
 
+
 def test_valid_data(data):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
@@ -589,7 +590,7 @@ def test_valid_data(data):
 
     if not data[0] and data[-1] == FRAME_FLAG:
         _LOGGER.warning("%s Recieved %s bytes of %s data",
-                        datetime.datetime.now().isoformat(),
+                        datetime.now().isoformat(),
                         len(data), False)
         valid_data = False
         return valid_data

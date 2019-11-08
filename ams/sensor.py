@@ -1,20 +1,12 @@
 """Support for reading data from a serial port."""
-import asyncio
 import logging
-import threading
 import voluptuous as vol
-import serial
-import custom_components.ams as amshub
-from datetime import timedelta
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-
-from . import han_decode
-from time import sleep
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.util import Throttle
 from homeassistant.core import callback
+import custom_components.ams as amshub
 
 DOMAIN = 'ams'
 AMS_SENSORS = 'ams_sensors'
@@ -38,7 +30,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
+def setup_platform(hass, add_devices):
     """Set up the Serial sensor platform."""
     sensor_states = {}
     sensors = []
@@ -46,7 +38,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
     _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
 
-    
     for sensor_name in data:
         sensor_states = {
             'name': sensor_name,
@@ -58,7 +49,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         _LOGGER.debug('sensor_states: %s', sensor_states)
 
     add_devices(sensors)
-    
 
 
 class AmsSensor(Entity):
@@ -66,12 +56,12 @@ class AmsSensor(Entity):
 
     def __init__(self, hass, sensor_states):
         """Initialize the Serial sensor."""
-        self.ams_data = sensor_states
-        self._entity = Entity
         self.ams = hass.data[DOMAIN]
         self._hass = hass
         self._name = sensor_states.get('name')
-        self._unique_id = '{serial}-{name}'.format(serial=sensor_states['attributes'].get('meter_serial'), name=self._name)
+        self._unique_id = '{serial}-{name}'.format(
+            serial=sensor_states['attributes'].get('meter_serial'),
+            name=self._name)
         self._state = None
         self._attributes = None
         _LOGGER.debug('%s ', sensor_states)
@@ -79,7 +69,6 @@ class AmsSensor(Entity):
         _LOGGER.debug('%s ', sensor_states.get('attributes'))
         _LOGGER.debug('%s ', dir(Entity))
         self._update_properties()
-
 
     def _update_properties(self):
         """Update all portions of sensor."""
@@ -89,7 +78,7 @@ class AmsSensor(Entity):
             _LOGGER.debug('updating sensor %s', self._name)
         except KeyError:
             _LOGGER.debug('Sensor not in hass.data')
-        
+
     @property
     def unique_id(self):
         """Return the uniqe id of the sensor."""
