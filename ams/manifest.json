@@ -3,7 +3,9 @@
   "name": "AMS",
   "documentation": "https://www.home-assistant.io/integrations/ams",
   "requirements": [
-    "pyserial==3.4"
+    "pyserial==3.4",
+    "crccheck"
   ],
-  "dependencies": []
+  "dependencies": [],
+  "codeowners": ["@turbokongen"]
 }
