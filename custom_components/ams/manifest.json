@@ -1,0 +1,11 @@
+{
+  "domain": "ams",
+  "name": "AMS",
+  "documentation": "https://www.home-assistant.io/integrations/ams",
+  "requirements": [
+    "pyserial==3.4",
+    "crccheck"
+  ],
+  "dependencies": [],
+  "codeowners": ["@turbokongen"]
+}

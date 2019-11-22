@@ -1,0 +1,7 @@
+{
+  "name": "Norwegian HAN",
+  "country": "NO",
+  "domains": ["sensor"],
+  "render_readme": true,
+  "content_in_root": true
+}

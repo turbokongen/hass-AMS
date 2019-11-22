@@ -105,3 +105,4 @@ venv.bak/
 
 # Other custom_components
 /nordpool
+/home-assistant
