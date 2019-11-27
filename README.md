@@ -4,13 +4,12 @@ Custom component reading AMS through MBus adapter into HomeAssistant
 
 
 ## *Installation*
+Stop Home-Assistant
+Find your MBus adapter port
 copy *ams* folder into your *custom_components* folder
-add the following to your configuration.yaml:
-```yaml
-ams:
-  serial_port: [SERIAL_PORT TO YOUR MBus ADAPTER] *required*
-  parity: [PARITY FOR SERIAL READING, defaults to N.] *optional*
-```
+Start Home-Assistant
+Set up the integration in the *Integrations* config
+
 For parity options see https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79
 
 This will create sensors for each of the available usage data in the meter.

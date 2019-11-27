@@ -2,11 +2,10 @@
 import logging
 import threading
 import serial
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-from homeassistant.helpers.entity import Entity
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import (
-    EVENT_HOMEASSISTANT_STOP, EVENT_HOMEASSISTANT_START)
 import voluptuous as vol
 from . import han_decode
 
@@ -15,6 +14,7 @@ DOMAIN = 'ams'
 AMS_SENSORS = 'ams_sensors'
 AMS_DEVICES = []
 SIGNAL_UPDATE_AMS = 'update'
+SIGNAL_NEW_AMS_SENSOR = 'ams_new_sensor'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +23,7 @@ CONF_BAUDRATE = "baudrate"
 CONF_PARITY = "parity"
 
 DEFAULT_NAME = "AMS Sensor"
+DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_BAUDRATE = 2400
 DEFAULT_PARITY = serial.PARITY_NONE
 DEFAULT_TIMEOUT = 0
@@ -32,7 +33,8 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_SERIAL_PORT): cv.string,
+                vol.Required(CONF_SERIAL_PORT,
+                             default=DEFAULT_SERIAL_PORT): cv.string,
                 vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
             }
         )
@@ -41,50 +43,73 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 
-def setup(hass, config):
+async def async_setup(hass, config) -> bool:
     """AMS hub."""
-    conf_ams = config[DOMAIN]
-    port = conf_ams.get(CONF_SERIAL_PORT)
-    parity = conf_ams.get(CONF_PARITY)
-    ser = serial.Serial(
-        port=port,
-        baudrate=DEFAULT_BAUDRATE,
-        parity=parity,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=DEFAULT_TIMEOUT)
-    hub = AmsHub(hass, port, parity, ser)
+    if config.get(DOMAIN) is None:
+        _LOGGER.debug("No YAML config available, using config_entries")
+        return True
+
+    hub = AmsHub(hass, config)
     hass.data[DOMAIN] = hub
-    connection = threading.Thread(target=hub.connect)
 
-    hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_serial_read(ser))
-    hass.bus.listen_once(EVENT_HOMEASSISTANT_START, connection.start())
-
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN, context={"source":
+                             hass.config_entries.SOURCE_IMPORT}, data={}
+        )
+    )
     return True
 
 
-def stop_serial_read(ser):
-    """Close resources."""
-    ser.close()
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up AMS as config entry."""
+    hub = AmsHub(hass, entry)
+    hass.data[DOMAIN] = hub
+    hass.async_add_job(
+        hass.config_entries.async_forward_entry_setup(entry, 'sensor')
+    )
+    return True
 
 
-class AmsHub(Entity):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a config entry."""
+    hass.data[DOMAIN].stop_serial_read()
+    await hass.config_entries.async_forward_entry_unload(entry, 'sensor')
+    return True
+
+
+class AmsHub():
     """AmsHub wrapper for all sensors."""
 
-    def __init__(self, hass, port, parity, ser):
+    def __init__(self, hass, entry):
         """Initalize the AMS hub."""
         self._hass = hass
-        self._port = port
-        self._parity = parity
-        self._ser = ser
+        port = entry.data[CONF_SERIAL_PORT]
+        parity = entry.data[CONF_PARITY]
         self.sensor_data = {}
         self._hass.data[AMS_SENSORS] = self.data
+        self._running = True
+        self._ser = serial.Serial(
+            port=port,
+            baudrate=DEFAULT_BAUDRATE,
+            parity=parity,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=DEFAULT_TIMEOUT)
+        connection = threading.Thread(target=self.connect, daemon=True)
+        connection.start()
+        _LOGGER.debug('Finish init of AMS')
+
+    def stop_serial_read(self):
+        """Close resources."""
+        self._running = False
+        self._ser.close()
 
     def read_bytes(self):
         """Read the raw data from serial port."""
         byte_counter = 0
         bytelist = []
-        while True:
+        while self._running:
             data = self._ser.read()
             if data:
                 bytelist.extend(data)
@@ -96,8 +121,7 @@ class AmsHub(Entity):
 
     def connect(self):
         """Read the data from the port."""
-        self._ser.open()
-        while True:
+        while self._running:
             try:
                 data = self.read_bytes()
                 if han_decode.test_valid_data(data):
@@ -126,9 +150,8 @@ class AmsHub(Entity):
             new_devices = list(set(sensor_list) ^ set(AMS_DEVICES))
             for device in new_devices:
                 AMS_DEVICES.append(device)
+            async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
             _LOGGER.debug('new_devices= %s', new_devices)
-            self._hass.helpers.discovery.load_platform(
-                'sensor', DOMAIN, self._hass.data[AMS_SENSORS], self._ser)
         else:
             _LOGGER.debug('sensors are the same, updating states')
             _LOGGER.debug('hass.data[AMS_SENSORS] = %s',

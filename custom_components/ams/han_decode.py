@@ -141,6 +141,7 @@ def parse_data(stored, data):
         'state': han_data["active_power_p"],
         'attributes': {
             'timestamp': han_data["date_time"],
+            'meter_manufacturer': han_data["obis_list_version"].title(),
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_a_p_p"],
@@ -163,6 +164,7 @@ def parse_data(stored, data):
         'state': han_data["active_power_n"],
         'attributes': {
             'timestamp': han_data["date_time"],
+            'meter_manufacturer': han_data["obis_list_version"].title(),
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_a_p_n"],
@@ -184,6 +186,7 @@ def parse_data(stored, data):
         'state': han_data["reactive_power_p"],
         'attributes': {
             'timestamp': han_data["date_time"],
+            'meter_manufacturer': han_data["obis_list_version"].title(),
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_p"],
@@ -205,6 +208,7 @@ def parse_data(stored, data):
         'state': han_data["reactive_power_n"],
         'attributes': {
             'timestamp': han_data["date_time"],
+            'meter_manufacturer': han_data["obis_list_version"].title(),
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_n"],
@@ -226,16 +230,17 @@ def parse_data(stored, data):
         'state': han_data["current_l1"],
         'attributes': {
             'timestamp': han_data["date_time"],
+            'meter_manufacturer': han_data["obis_list_version"].title(),
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_c_l1"],
             'unit_of_measurement': 'A',
-            'icon': 'mdi:current_ac'
+            'icon': 'mdi:current-ac'
             }
         }
 
-    if (list_type == LIST_TYPE_SHORT_3PH or
-            list_type == LIST_TYPE_LONG_3PH):
+    if (list_type is LIST_TYPE_SHORT_3PH or
+            list_type is LIST_TYPE_LONG_3PH):
         han_data["obis_c_l2"] = (str(pkt[168]) +
                                  '.' + str(pkt[169]) +
                                  '.' + str(pkt[170]) +
@@ -250,11 +255,12 @@ def parse_data(stored, data):
             'state': han_data["current_l2"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_c_l2"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current_ac'
+                'icon': 'mdi:current-ac'
                 }
             }
         han_data["obis_c_l3"] = (str(pkt[181]) +
@@ -271,11 +277,12 @@ def parse_data(stored, data):
             'state': han_data["current_l3"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_c_l3"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current_ac'
+                'icon': 'mdi:current-ac'
                 }
             }
         han_data["obis_v_l1"] = (str(pkt[194]) +
@@ -290,6 +297,7 @@ def parse_data(stored, data):
             'state': han_data["voltage_l1"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l1"],
@@ -309,6 +317,7 @@ def parse_data(stored, data):
             'state': han_data["voltage_l2"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l2"],
@@ -328,6 +337,7 @@ def parse_data(stored, data):
             'state': han_data["voltage_l3"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l3"],
@@ -336,8 +346,8 @@ def parse_data(stored, data):
                 }
             }
 
-    if (list_type == LIST_TYPE_SHORT_1PH or
-            list_type == LIST_TYPE_LONG_1PH):
+    if (list_type is LIST_TYPE_SHORT_1PH or
+            list_type is LIST_TYPE_LONG_1PH):
 
         han_data["obis_v_l1"] = (str(pkt[168]) +
                                  '.' + str(pkt[169]) +
@@ -351,6 +361,7 @@ def parse_data(stored, data):
             'state': han_data["voltage_l1"],
             'attributes': {
                 'timestamp': han_data["date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l1"],
@@ -394,6 +405,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_a_e_p"],
@@ -416,6 +428,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_a_e_n"],
@@ -438,6 +451,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_r_e_p"],
@@ -460,6 +474,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_r_e_n"],
@@ -503,6 +518,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_a_e_p"],
@@ -525,6 +541,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_a_e_n"],
@@ -547,6 +564,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_r_e_p"],
@@ -569,6 +587,7 @@ def parse_data(stored, data):
             'attributes': {
                 'timestamp': han_data["date_time"],
                 'meter_timestamp': han_data["meter_date_time"],
+                'meter_manufacturer': han_data["obis_list_version"].title(),
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_r_e_n"],
@@ -582,6 +601,9 @@ def parse_data(stored, data):
 def test_valid_data(data):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
+    if data is None:
+        valid_data = False
+        return valid_data
     valid_data = True
     if len(data) > 302 or len(data) < 180:
         _LOGGER.warning('Invalid packet size %s', len(data))

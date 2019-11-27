@@ -30,8 +30,67 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config_entry,
+                               async_add_devices, discovery_info=None):
     """Set up the Serial sensor platform."""
+
+    @callback
+    def async_add_sensor():
+        """Add AMS Sensor."""
+        data = hass.data[amshub.AMS_SENSORS]
+        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
+        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+
+        for sensor_name in data:
+            sensor_states = {
+                'name': sensor_name,
+                'state': data[sensor_name].get('state'),
+                'attributes': data[sensor_name].get('attributes')
+                }
+            sensors.append(AmsSensor(hass, sensor_states))
+        _LOGGER.debug('async_add_sensor in async_setup_platform')
+        async_add_devices(sensors, True)
+
+    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
+    sensor_states = {}
+    sensors = []
+    data = hass.data[AMS_SENSORS]
+    _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
+    _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+
+    for sensor_name in data:
+        sensor_states = {
+            'name': sensor_name,
+            'state': data[sensor_name].get('state'),
+            'attributes': data[sensor_name].get('attributes')
+            }
+        sensors.append(AmsSensor(hass, sensor_states))
+    _LOGGER.debug('async_add_devices in end of async_setup_platform')
+    async_add_devices(sensors)
+    return True
+
+
+async def async_setup_entry(hass, config_entry, async_add_devices):
+    """Setup sensor platform for the ui"""
+
+    @callback
+    def async_add_sensor():
+        """Add AMS Sensor."""
+        data = hass.data[amshub.AMS_SENSORS]
+        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
+        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+
+        for sensor_name in data:
+            sensor_states = {
+                'name': sensor_name,
+                'state': data[sensor_name].get('state'),
+                'attributes': data[sensor_name].get('attributes')
+                }
+            sensors.append(AmsSensor(hass, sensor_states))
+        _LOGGER.debug('async_add_sensor in async_setup_entry')
+        async_add_devices(sensors, True)
+
+    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
     sensor_states = {}
     sensors = []
     data = hass.data[amshub.AMS_SENSORS]
@@ -45,10 +104,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             'attributes': data[sensor_name].get('attributes')
             }
         sensors.append(AmsSensor(hass, sensor_states))
-        _LOGGER.debug('sensors = %s', sensors)
-        _LOGGER.debug('sensor_states: %s', sensor_states)
+    _LOGGER.debug('async_add_devices in end of async_setup_entry')
+    async_add_devices(sensors)
+    return True
 
-    add_devices(sensors)
+
+async def async_remove_entry(hass, entry):
+    """Remove config entry from Homeassistant."""
+    _LOGGER.debug("async_remove_entry AMS")
+    try:
+        await hass.config_entries.async_forward_entry_unload(entry, "sensor")
+        _LOGGER.info(
+            "Successfully removed sensor from the Norwegian AMS integration")
+    except ValueError:
+        pass
 
 
 class AmsSensor(Entity):
@@ -59,9 +128,7 @@ class AmsSensor(Entity):
         self.ams = hass.data[DOMAIN]
         self._hass = hass
         self._name = sensor_states.get('name')
-        self._unique_id = '{serial}-{name}'.format(
-            serial=sensor_states['attributes'].get('meter_serial'),
-            name=self._name)
+        self._meter_id = None
         self._state = None
         self._attributes = None
         _LOGGER.debug('%s ', sensor_states)
@@ -75,22 +142,23 @@ class AmsSensor(Entity):
         try:
             self._state = self.ams.data[self._name].get('state')
             self._attributes = self.ams.data[self._name].get('attributes')
+            self._meter_id = self._attributes['meter_serial']
             _LOGGER.debug('updating sensor %s', self._name)
         except KeyError:
             _LOGGER.debug('Sensor not in hass.data')
 
     @property
-    def unique_id(self):
+    def unique_id(self) -> str:
         """Return the uniqe id of the sensor."""
-        return self._unique_id
+        return f"{self._name}_{self._meter_id}"
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the sensor."""
         return self._name
 
     @property
-    def should_poll(self):
+    def should_poll(self) -> bool:
         """No polling needed."""
         return False
 
@@ -103,6 +171,17 @@ class AmsSensor(Entity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
+
+    @property
+    def device_info(self) -> dict:
+        """Return the device info."""
+
+        return {
+            "name": self.name,
+            "identifiers": {(DOMAIN, self.unique_id)},
+            "manufacturer": self._attributes['meter_manufacturer'],
+            "model": self._attributes['meter_type'],
+        }
 
     async def async_added_to_hass(self):
         """Register callbacks."""
