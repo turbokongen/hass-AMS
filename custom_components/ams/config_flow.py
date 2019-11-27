@@ -22,8 +22,6 @@ class AmsFlowHandler(config_entries.ConfigFlow):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        if self._async_current_entries():
-            return self.async_abort(reason="one_instance_allowed")
 
         if user_input is not None:
             return self.async_create_entry(

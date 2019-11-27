@@ -155,7 +155,7 @@ class AmsSensor(Entity):
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return self._name
+        return self.unique_id
 
     @property
     def should_poll(self) -> bool:
