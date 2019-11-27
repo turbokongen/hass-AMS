@@ -1,0 +1,18 @@
+{
+    "config": {
+        "title": "Norwegian AMS",
+        "step": {
+            "user": {
+                "title": "Norwegian AMS",
+                "description": "Setup Norwegian AMS sensors",
+                "data": {
+                    "serial_port": "Serial Port",
+                    "parity": "Parity"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Name already exists"
+        }
+    }
+}
