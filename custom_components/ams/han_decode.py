@@ -44,7 +44,7 @@ def parse_data(stored, data):
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
-    date_time_year = pkt[17] << 8 | pkt[18]
+    date_time_year = byte_decode(fields=pkt[17:19], count=2)
     date_time_month = pkt[19]
     date_time_date = pkt[20]
     date_time_hour = str(pkt[22]).zfill(2)
@@ -68,10 +68,7 @@ def parse_data(stored, data):
     han_data["meter_type_str"] = METER_TYPE.get(
         field_type(fields=pkt[83:90], enc=chr, dec=int))
     han_data["obis_a_p_p"] = field_type(".", fields=pkt[103:109])
-    han_data["active_power_p"] = (pkt[110] << 24 |
-                                  pkt[111] << 16 |
-                                  pkt[112] << 8 |
-                                  pkt[113])
+    han_data["active_power_p"] = byte_decode(fields=pkt[110:114])
     sensor_data["ams_active_power_import"] = {
         'state': han_data["active_power_p"],
         'attributes': {
@@ -86,10 +83,7 @@ def parse_data(stored, data):
         }
 
     han_data["obis_a_p_n"] = field_type(".", fields=pkt[116:122])
-    han_data["active_power_n"] = (pkt[123] << 24 |
-                                  pkt[124] << 16 |
-                                  pkt[125] << 8 |
-                                  pkt[126])
+    han_data["active_power_n"] = byte_decode(fields=pkt[123:127])
     sensor_data["ams_active_power_export"] = {
         'state': han_data["active_power_n"],
         'attributes': {
@@ -103,10 +97,7 @@ def parse_data(stored, data):
             }
         }
     han_data["obis_r_p_p"] = field_type(".", fields=pkt[129:135])
-    han_data["reactive_power_p"] = (pkt[136] << 24 |
-                                    pkt[137] << 16 |
-                                    pkt[138] << 8 |
-                                    pkt[139])
+    han_data["reactive_power_p"] = byte_decode(fields=pkt[136:140])
     sensor_data["ams_reactive_power_import"] = {
         'state': han_data["reactive_power_p"],
         'attributes': {
@@ -120,10 +111,7 @@ def parse_data(stored, data):
             }
         }
     han_data["obis_r_p_n"] = field_type(".", fields=pkt[142:148])
-    han_data["reactive_power_n"] = (pkt[149] << 24 |
-                                    pkt[150] << 16 |
-                                    pkt[151] << 8 |
-                                    pkt[152])
+    han_data["reactive_power_n"] = byte_decode(fields=pkt[149:153])
     sensor_data["ams_reactive_power_export"] = {
         'state': han_data["reactive_power_n"],
         'attributes': {
@@ -137,10 +125,7 @@ def parse_data(stored, data):
             }
         }
     han_data["obis_c_l1"] = field_type(".", fields=pkt[155:161])
-    han_data["current_l1"] = (pkt[162] << 24 |
-                              pkt[163] << 16 |
-                              pkt[164] << 8 |
-                              pkt[165]) / 100
+    han_data["current_l1"] = byte_decode(fields=pkt[162:166]) / 100
     sensor_data["ams_current_l1"] = {
         'state': han_data["current_l1"],
         'attributes': {
@@ -157,10 +142,7 @@ def parse_data(stored, data):
     if (list_type is LIST_TYPE_SHORT_3PH or
             list_type is LIST_TYPE_LONG_3PH):
         han_data["obis_c_l2"] = field_type(".", fields=pkt[168:174])
-        han_data["current_l2"] = (pkt[175] << 24 |
-                                  pkt[176] << 16 |
-                                  pkt[177] << 8 |
-                                  pkt[178]) / 100
+        han_data["current_l2"] = byte_decode(fields=pkt[175:179]) / 100
         sensor_data["ams_current_l2"] = {
             'state': han_data["current_l2"],
             'attributes': {
@@ -174,10 +156,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_c_l3"] = field_type(".", fields=pkt[181:187])
-        han_data["current_l3"] = (pkt[188] << 24 |
-                                  pkt[189] << 16 |
-                                  pkt[190] << 8 |
-                                  pkt[191]) / 100
+        han_data["current_l3"] = byte_decode(fields=pkt[188:192]) / 100
         sensor_data["ams_current_l3"] = {
             'state': han_data["current_l3"],
             'attributes': {
@@ -191,8 +170,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_v_l1"] = field_type(".", fields=pkt[194:200])
-        han_data["voltage_l1"] = (pkt[201] << 8 |
-                                  pkt[202])
+        han_data["voltage_l1"] = byte_decode(fields=pkt[201:203], count=2)
         sensor_data["ams_voltage_l1"] = {
             'state': han_data["voltage_l1"],
             'attributes': {
@@ -206,8 +184,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_v_l2"] = field_type(".", fields=pkt[205:211])
-        han_data["voltage_l2"] = (pkt[212] << 8 |
-                                  pkt[213])
+        han_data["voltage_l2"] = byte_decode(fields=pkt[212:214], count=2)
         sensor_data["ams_voltage_l2"] = {
             'state': han_data["voltage_l2"],
             'attributes': {
@@ -221,8 +198,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_v_l3"] = field_type(".", fields=pkt[216:222])
-        han_data["voltage_l3"] = (pkt[223] << 8 |
-                                  pkt[224])
+        han_data["voltage_l3"] = byte_decode(fields=pkt[223:225], count=2)
         sensor_data["ams_voltage_l3"] = {
             'state': han_data["voltage_l3"],
             'attributes': {
@@ -240,8 +216,7 @@ def parse_data(stored, data):
             list_type is LIST_TYPE_LONG_1PH):
 
         han_data["obis_v_l1"] = field_type(".", fields=pkt[168:174])
-        han_data["voltage_l1"] = (pkt[175] << 8 |
-                                  pkt[176])
+        han_data["voltage_l1"] = byte_decode(fields=pkt[175:177], count=2)
         sensor_data["ams_voltage_l1"] = {
             'state': han_data["voltage_l1"],
             'attributes': {
@@ -257,7 +232,7 @@ def parse_data(stored, data):
 
     if list_type == LIST_TYPE_LONG_1PH:
         han_data["obis_meter_date_time"] = field_type(".", fields=pkt[179:185])
-        meter_date_time_year = pkt[187] << 8 | pkt[188]
+        meter_date_time_year = byte_decode(fields=pkt[187:189], count=2)
         meter_date_time_month = pkt[189]
         meter_date_time_date = pkt[190]
         han_data["meter_day_of_week"] = WEEKDAY_MAPPING.get(pkt[191])
@@ -271,10 +246,7 @@ def parse_data(stored, data):
                                        ':' + meter_date_time_minute +
                                        ':' + meter_date_time_seconds)
         han_data["obis_a_e_p"] = field_type(".", fields=pkt[201:207])
-        han_data["active_energy_p"] = (pkt[208] << 24 |
-                                       pkt[209] << 16 |
-                                       pkt[210] << 8 |
-                                       pkt[211]) / 100
+        han_data["active_energy_p"] = byte_decode(fields=pkt[208:212]) / 100
         sensor_data["ams_active_energy_import"] = {
             'state': han_data["active_energy_p"],
             'attributes': {
@@ -289,10 +261,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_a_e_n"] = field_type(".", fields=pkt[214:220])
-        han_data["active_energy_n"] = (pkt[221] << 24 |
-                                       pkt[222] << 16 |
-                                       pkt[223] << 8 |
-                                       pkt[224]) / 100
+        han_data["active_energy_n"] = byte_decode(fields=pkt[221:225]) / 100
         sensor_data["ams_active_energy_export"] = {
             'state': han_data["active_energy_n"],
             'attributes': {
@@ -307,10 +276,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_r_e_p"] = field_type(".", fields=pkt[227:233])
-        han_data["reactive_energy_p"] = (pkt[234] << 24 |
-                                         pkt[235] << 16 |
-                                         pkt[236] << 8 |
-                                         pkt[237]) / 100
+        han_data["reactive_energy_p"] = byte_decode(fields=pkt[234:238]) / 100
         sensor_data["ams_reactive_energy_import"] = {
             'state': han_data["reactive_energy_p"],
             'attributes': {
@@ -325,10 +291,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_r_e_n"] = field_type(".", fields=pkt[240:246])
-        han_data["reactive_energy_n"] = (pkt[247] << 24 |
-                                         pkt[248] << 16 |
-                                         pkt[249] << 8 |
-                                         pkt[250]) / 100
+        han_data["reactive_energy_n"] = byte_decode(fields=pkt[247:251]) / 100
         sensor_data["ams_reactive_energy_export"] = {
             'state': han_data["reactive_energy_n"],
             'attributes': {
@@ -345,7 +308,7 @@ def parse_data(stored, data):
 
     if list_type == LIST_TYPE_LONG_3PH:
         han_data["obis_meter_date_time"] = field_type(".", fields=pkt[227:233])
-        meter_date_time_year = pkt[235] << 8 | pkt[236]
+        meter_date_time_year = byte_decode(fields=pkt[235:237], count=2)
         meter_date_time_month = pkt[237]
         meter_date_time_date = pkt[238]
         han_data["meter_day_of_week"] = WEEKDAY_MAPPING.get(pkt[239])
@@ -359,10 +322,7 @@ def parse_data(stored, data):
                                        ':' + meter_date_time_minute +
                                        ':' + meter_date_time_seconds)
         han_data["obis_a_e_p"] = field_type(".", fields=pkt[249:255])
-        han_data["active_energy_p"] = (pkt[256] << 24 |
-                                       pkt[257] << 16 |
-                                       pkt[258] << 8 |
-                                       pkt[259]) / 100
+        han_data["active_energy_p"] = byte_decode(fields=pkt[256:260]) / 100
         sensor_data["ams_active_energy_import"] = {
             'state': han_data["active_energy_p"],
             'attributes': {
@@ -377,10 +337,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_a_e_n"] = field_type(".", fields=pkt[262:268])
-        han_data["active_energy_n"] = (pkt[269] << 24 |
-                                       pkt[270] << 16 |
-                                       pkt[271] << 8 |
-                                       pkt[272]) / 100
+        han_data["active_energy_n"] = byte_decode(fields=pkt[269:273]) / 100
         sensor_data["ams_active_energy_export"] = {
             'state': han_data["active_energy_n"],
             'attributes': {
@@ -395,10 +352,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_r_e_p"] = field_type(".", fields=pkt[275:281])
-        han_data["reactive_energy_p"] = (pkt[282] << 24 |
-                                         pkt[283] << 16 |
-                                         pkt[284] << 8 |
-                                         pkt[285]) / 100
+        han_data["reactive_energy_p"] = byte_decode(fields=pkt[282:256]) / 100
         sensor_data["ams_reactive_energy_import"] = {
             'state': han_data["reactive_energy_p"],
             'attributes': {
@@ -413,10 +367,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_r_e_n"] = field_type(".", fields=pkt[288:294])
-        han_data["reactive_energy_n"] = (pkt[295] << 24 |
-                                         pkt[296] << 16 |
-                                         pkt[297] << 8 |
-                                         pkt[298]) / 100
+        han_data["reactive_energy_n"] = byte_decode(fields=pkt[295:299]) / 100
         sensor_data["ams_reactive_energy_export"] = {
             'state': han_data["reactive_energy_n"],
             'attributes': {
@@ -434,10 +385,25 @@ def parse_data(stored, data):
 
 
 def field_type(default="", fields=None, enc=str, dec=None):
-    """Data field decoder/encoder."""
+    """Obis/data field decoder/encoder."""
     data = default.join(enc(i) for i in fields)
     if dec:
         return dec(data)
+    return data
+
+
+def byte_decode(fields=None, count=4):
+    """Data content decoder."""
+    _LOGGER.warning('fields= %s', fields)
+    if count == 2:
+        data = (fields[0] << 8 | fields[1])
+        return data
+
+    data = (fields[0] << 24 |
+            fields[1] << 16 |
+            fields[2] << 8 |
+            fields[3])
+
     return data
 
 
