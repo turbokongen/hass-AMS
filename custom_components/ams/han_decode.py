@@ -352,7 +352,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_r_e_p"] = field_type(".", fields=pkt[275:281])
-        han_data["reactive_energy_p"] = byte_decode(fields=pkt[282:256]) / 100
+        han_data["reactive_energy_p"] = byte_decode(fields=pkt[282:286]) / 100
         sensor_data["ams_reactive_energy_import"] = {
             'state': han_data["reactive_energy_p"],
             'attributes': {
