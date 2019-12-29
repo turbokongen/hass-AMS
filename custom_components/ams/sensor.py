@@ -1,33 +1,13 @@
 """Support for reading data from a serial port."""
 import logging
-import voluptuous as vol
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.core import callback
+from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN, AMS_SENSORS
 import custom_components.ams as amshub
 
-DOMAIN = 'ams'
-AMS_SENSORS = 'ams_sensors'
-SIGNAL_UPDATE_AMS = 'update'
-
 _LOGGER = logging.getLogger(__name__)
-
-CONF_PORT = "port"
-CONF_PARITY = "parity"
-
-BAUDRATE = 2400
-DEFAULT_PARITY = 'N'
-DEFAULT_PORT = '/dev/ttyUSB0'
-TIMEOUT = 0
-FRAME_FLAG = b'\x7e'
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_PORT, default=DEFAULT_PORT): cv.string,
-    vol.Optional(CONF_PARITY, default=DEFAULT_PARITY):
-        cv.string,
-})
 
 
 async def async_setup_platform(hass, config_entry,
@@ -38,10 +18,10 @@ async def async_setup_platform(hass, config_entry,
     def async_add_sensor():
         """Add AMS Sensor."""
         data = hass.data[amshub.AMS_SENSORS]
-        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+        _LOGGER.debug('HUB in async_setup_platform-async_add_sensor= %s', hass.data[DOMAIN].data)
+        _LOGGER.debug('AMS_SENSORS in async_setup_platform-async_add_sensor= %s', hass.data[AMS_SENSORS])
 
-        for sensor_name in data:
+        for sensor_name in list(data):
             sensor_states = {
                 'name': sensor_name,
                 'state': data[sensor_name].get('state'),
@@ -51,14 +31,14 @@ async def async_setup_platform(hass, config_entry,
         _LOGGER.debug('async_add_sensor in async_setup_platform')
         async_add_devices(sensors, True)
 
-    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
+    async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
     sensor_states = {}
     sensors = []
     data = hass.data[AMS_SENSORS]
-    _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-    _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+    _LOGGER.debug('HUB in async_setup_platform= %s', hass.data[DOMAIN].data)
+    _LOGGER.debug('AMS_SENSORS in async_setup_platform= %s', hass.data[AMS_SENSORS])
 
-    for sensor_name in data:
+    for sensor_name in list(data):
         sensor_states = {
             'name': sensor_name,
             'state': data[sensor_name].get('state'),
@@ -77,10 +57,10 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     def async_add_sensor():
         """Add AMS Sensor."""
         data = hass.data[amshub.AMS_SENSORS]
-        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+        _LOGGER.debug('HUB in async_setup_entry-async_add_sensor= %s', hass.data[DOMAIN].data)
+        _LOGGER.debug('AMS_SENSORS in async_setup_entry-async_add_sensor= %s', hass.data[AMS_SENSORS])
 
-        for sensor_name in data:
+        for sensor_name in list(data):
             sensor_states = {
                 'name': sensor_name,
                 'state': data[sensor_name].get('state'),
@@ -90,14 +70,14 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
         _LOGGER.debug('async_add_sensor in async_setup_entry')
         async_add_devices(sensors, True)
 
-    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
+    async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
     sensor_states = {}
     sensors = []
     data = hass.data[amshub.AMS_SENSORS]
-    _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-    _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+    _LOGGER.debug('HUB in async_stup_entry= %s', hass.data[DOMAIN].data)
+    _LOGGER.debug('AMS_SENSORS in async_setup_entry= %s', hass.data[AMS_SENSORS])
 
-    for sensor_name in data:
+    for sensor_name in list(data):
         sensor_states = {
             'name': sensor_name,
             'state': data[sensor_name].get('state'),
@@ -134,7 +114,6 @@ class AmsSensor(Entity):
         _LOGGER.debug('%s ', sensor_states)
         _LOGGER.debug('%s ', sensor_states.get('state'))
         _LOGGER.debug('%s ', sensor_states.get('attributes'))
-        _LOGGER.debug('%s ', dir(Entity))
         self._update_properties()
 
     def _update_properties(self):
@@ -142,10 +121,10 @@ class AmsSensor(Entity):
         try:
             self._state = self.ams.data[self._name].get('state')
             self._attributes = self.ams.data[self._name].get('attributes')
-            self._meter_id = self._attributes['meter_serial']
+            self._meter_id = self._attributes.get('meter_serial')
             _LOGGER.debug('updating sensor %s', self._name)
         except KeyError:
-            _LOGGER.debug('Sensor not in hass.data')
+            _LOGGER.warning('Sensor not in hass.data')
 
     @property
     def unique_id(self) -> str:
@@ -179,8 +158,8 @@ class AmsSensor(Entity):
         return {
             "name": self.name,
             "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": self._attributes['meter_manufacturer'],
-            "model": self._attributes['meter_type'],
+            "manufacturer": self._attributes.get('meter_manufacturer'),
+            "model": self._attributes.get('meter_type'),
         }
 
     async def async_added_to_hass(self):
