@@ -124,7 +124,7 @@ class AmsSensor(Entity):
             self._meter_id = self._attributes.get('meter_serial')
             _LOGGER.debug('updating sensor %s', self._name)
         except KeyError:
-            _LOGGER.warning('Sensor not in hass.data')
+            _LOGGER.debug('Sensor not in hass.data')
 
     @property
     def unique_id(self) -> str:
