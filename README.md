@@ -4,11 +4,11 @@ Custom component reading AMS through MBus adapter into HomeAssistant
 
 
 ## *Installation*
-Stop Home-Assistant
-Find your MBus adapter port
-copy *ams* folder into your *custom_components* folder
-Start Home-Assistant
-Set up the integration in the *Integrations* config
+Stop Home-Assistant, 
+Find your MBus adapter port, 
+copy *ams* folder into your *custom_components* folder, 
+Start Home-Assistant, 
+Set up the integration in the *Integrations* config, 
 
 For parity options see https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79
 
