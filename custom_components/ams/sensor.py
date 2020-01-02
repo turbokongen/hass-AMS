@@ -1,121 +1,75 @@
 """Support for reading data from a serial port."""
 import logging
-import voluptuous as vol
+
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.core import callback
-import custom_components.ams as amshub
 
-DOMAIN = 'ams'
-AMS_SENSORS = 'ams_sensors'
-SIGNAL_UPDATE_AMS = 'update'
+from .const import (
+    DOMAIN,
+    DOMAIN_DATA,
+    SIGNAL_UPDATE_AMS,
+    PLATTFORM_SCH,
+    SIGNAL_NEW_AMS_SENSOR,
+    AMS_DEVICES,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_PORT = "port"
-CONF_PARITY = "parity"
-
-BAUDRATE = 2400
-DEFAULT_PARITY = 'N'
-DEFAULT_PORT = '/dev/ttyUSB0'
-TIMEOUT = 0
-FRAME_FLAG = b'\x7e'
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_PORT, default=DEFAULT_PORT): cv.string,
-    vol.Optional(CONF_PARITY, default=DEFAULT_PARITY):
-        cv.string,
-})
+# Is this even used??
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(PLATTFORM_SCH)
 
 
-async def async_setup_platform(hass, config_entry,
-                               async_add_devices, discovery_info=None):
+async def async_setup_platform(
+    hass, config_entry, async_add_devices, discovery_info=None
+) -> True:
     """Set up the Serial sensor platform."""
 
     @callback
-    def async_add_sensor():
+    def async_add_sensor() -> bool:
         """Add AMS Sensor."""
-        data = hass.data[amshub.AMS_SENSORS]
-        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
-
+        sensors = []
+        _LOGGER.info("called async_add_sensor cb")
+        data = hass.data[DOMAIN_DATA]["client"].sensor_data
         for sensor_name in data:
-            sensor_states = {
-                'name': sensor_name,
-                'state': data[sensor_name].get('state'),
-                'attributes': data[sensor_name].get('attributes')
+            if sensor_name not in AMS_DEVICES:
+                AMS_DEVICES.add(sensor_name)
+                sensor_states = {
+                    "name": sensor_name,
+                    "state": data[sensor_name].get("state"),
+                    "attributes": data[sensor_name].get("attributes"),
                 }
-            sensors.append(AmsSensor(hass, sensor_states))
-        _LOGGER.debug('async_add_sensor in async_setup_platform')
-        async_add_devices(sensors, True)
+                sens = AmsSensor(hass, sensor_states)
+                sensors.append(sens)
 
-    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
-    sensor_states = {}
-    sensors = []
-    data = hass.data[AMS_SENSORS]
-    _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-    _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
+        if len(sensors):
+            async_add_devices(sensors, True)
+            _LOGGER.debug("Added %s sensors", len(sensors))
+            return True
+        else:
+            _LOGGER.debug("No sensorz added.")
+            return False
 
-    for sensor_name in data:
-        sensor_states = {
-            'name': sensor_name,
-            'state': data[sensor_name].get('state'),
-            'attributes': data[sensor_name].get('attributes')
-            }
-        sensors.append(AmsSensor(hass, sensor_states))
-    _LOGGER.debug('async_add_devices in end of async_setup_platform')
-    async_add_devices(sensors)
+    # Add the cb so the function async_add_sensor is run when SIGNAL_NEW_AMS_SENSOR
+    async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
+
     return True
 
 
-async def async_setup_entry(hass, config_entry, async_add_devices):
-    """Setup sensor platform for the ui"""
-
-    @callback
-    def async_add_sensor():
-        """Add AMS Sensor."""
-        data = hass.data[amshub.AMS_SENSORS]
-        _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-        _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
-
-        for sensor_name in data:
-            sensor_states = {
-                'name': sensor_name,
-                'state': data[sensor_name].get('state'),
-                'attributes': data[sensor_name].get('attributes')
-                }
-            sensors.append(AmsSensor(hass, sensor_states))
-        _LOGGER.debug('async_add_sensor in async_setup_entry')
-        async_add_devices(sensors, True)
-
-    async_dispatcher_connect(hass, "ams_new_sensor", async_add_sensor)
-    sensor_states = {}
-    sensors = []
-    data = hass.data[amshub.AMS_SENSORS]
-    _LOGGER.debug('HUB= %s', hass.data[DOMAIN].data)
-    _LOGGER.debug('AMS_SENSORS= %s', hass.data[AMS_SENSORS])
-
-    for sensor_name in data:
-        sensor_states = {
-            'name': sensor_name,
-            'state': data[sensor_name].get('state'),
-            'attributes': data[sensor_name].get('attributes')
-            }
-        sensors.append(AmsSensor(hass, sensor_states))
-    _LOGGER.debug('async_add_devices in end of async_setup_entry')
-    async_add_devices(sensors)
+async def async_setup_entry(hass, config_entry, async_add_devices) -> True:
+    """Set up the Serial from the webui."""
+    # reuse use the yaml method to keep things dry.
+    await async_setup_platform(hass, config_entry, async_add_devices, {})
     return True
 
 
-async def async_remove_entry(hass, entry):
+async def async_remove_entry(hass, entry) -> None:
     """Remove config entry from Homeassistant."""
     _LOGGER.debug("async_remove_entry AMS")
     try:
         await hass.config_entries.async_forward_entry_unload(entry, "sensor")
-        _LOGGER.info(
-            "Successfully removed sensor from the Norwegian AMS integration")
+        _LOGGER.debug("Successfully removed sensor from the Norwegian AMS integration")
     except ValueError:
         pass
 
@@ -123,29 +77,23 @@ async def async_remove_entry(hass, entry):
 class AmsSensor(Entity):
     """Representation of a Serial sensor."""
 
-    def __init__(self, hass, sensor_states):
+    def __init__(self, hass, sensor_states) -> None:
         """Initialize the Serial sensor."""
-        self.ams = hass.data[DOMAIN]
+        self.ams = hass.data[DOMAIN_DATA]["client"]
         self._hass = hass
-        self._name = sensor_states.get('name')
-        self._meter_id = None
+        self._name = sensor_states.get("name")
+        self._meter_id = self.ams.meter_serial
         self._state = None
-        self._attributes = None
-        _LOGGER.debug('%s ', sensor_states)
-        _LOGGER.debug('%s ', sensor_states.get('state'))
-        _LOGGER.debug('%s ', sensor_states.get('attributes'))
-        _LOGGER.debug('%s ', dir(Entity))
-        self._update_properties()
+        self._attributes = {}
 
-    def _update_properties(self):
+    def _update_properties(self) -> None:
         """Update all portions of sensor."""
         try:
-            self._state = self.ams.data[self._name].get('state')
-            self._attributes = self.ams.data[self._name].get('attributes')
-            self._meter_id = self._attributes['meter_serial']
-            _LOGGER.debug('updating sensor %s', self._name)
+            self._state = self.ams.data[self._name].get("state")
+            self._attributes = self.ams.data[self._name].get("attributes")
+            _LOGGER.debug("updating sensor %s, %s", self._name, self._meter_id)
         except KeyError:
-            _LOGGER.debug('Sensor not in hass.data')
+            pass
 
     @property
     def unique_id(self) -> str:
@@ -175,22 +123,20 @@ class AmsSensor(Entity):
     @property
     def device_info(self) -> dict:
         """Return the device info."""
-
         return {
             "name": self.name,
             "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": self._attributes['meter_manufacturer'],
-            "model": self._attributes['meter_type'],
+            "manufacturer": self.ams.meter_manufacturer,
+            "model": self.ams.meter_type,
         }
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
         """Register callbacks."""
-        async_dispatcher_connect(
-            self._hass, SIGNAL_UPDATE_AMS, self._update_callback
-        )
+        async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS, self._update_callback)
 
     @callback
-    def _update_callback(self):
+    def _update_callback(self) -> None:
         """Update the state."""
+        _LOGGER.debug("Called _update_callback")
         self._update_properties()
         self.async_schedule_update_ha_state(True)

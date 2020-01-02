@@ -6,8 +6,11 @@
                 "title": "Norwegian AMS",
                 "description": "Setup Norwegian AMS sensors",
                 "data": {
-                    "serial_port": "Serial Port",
-                    "parity": "Parity"
+                    "serial_port": "serial_port",
+                    "parity": "parity",
+                    "baudrate":"baudrate",
+                    "timeout": "timeout",
+                    "sleep": "sleep"
                 }
             }
         },
