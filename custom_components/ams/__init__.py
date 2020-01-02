@@ -34,7 +34,7 @@ from .const import (
     STARTUP,
 )
 
-from . import han_decode
+from .parsers import kamstrup
 
 _LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema(DOMAIN_SCH)}, extra=vol.ALLOW_EXTRA)
@@ -200,8 +200,8 @@ class AmsHub:
         while self._running:
             try:
                 data = self.read_bytes()
-                if han_decode.test_valid_data(data):
-                    self.sensor_data = han_decode.parse_data(self.sensor_data, data)
+                if kamstrup.test_valid_data(data):
+                    self.sensor_data = kamstrup.parse_data(self.sensor_data, data)
                     self._hass.data[DOMAIN_DATA]["data"] = self.sensor_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
             except serial.serialutil.SerialException:
@@ -324,8 +324,8 @@ class AmsHub:
                                 # the verifier expects a list..
                                 l_frame = list(frame)
                                 # We can make s simple version that just does the crc etc.
-                                if han_decode.test_valid_data(l_frame):
-                                    data = han_decode.parse_data(
+                                if kamstrup.test_valid_data(l_frame):
+                                    data = kamstrup.parse_data(
                                         self.sensor_data, frame
                                     )
                                     self._hass.data[DOMAIN_DATA]["data"] = data
@@ -412,8 +412,8 @@ class AmsHub:
                                 # the verifier expects a list..
                                 l_frame = list(frame)
                                 # We can make s simple version that just does the crc etc.
-                                if han_decode.test_valid_data(l_frame):
-                                    data = han_decode.parse_data(
+                                if kamstrup.test_valid_data(l_frame):
+                                    data = kamstrup.parse_data(
                                         self.sensor_data, frame
                                     )
                                     self._hass.data[DOMAIN_DATA][
