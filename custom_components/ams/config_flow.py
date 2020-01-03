@@ -22,7 +22,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        _LOGGER.info("async_step_user, %r", user_input)
+        _LOGGER.debug("async_step_user, %r", user_input)
 
         if user_input is not None:
             return self.async_create_entry(title="Norwegian AMS", data=user_input)

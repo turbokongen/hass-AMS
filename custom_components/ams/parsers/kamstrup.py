@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
 
-from .const import (
+from ..const import (
     DATA_FLAG_LIST,
     FRAME_FLAG,
     LIST_TYPE_SHORT_1PH,

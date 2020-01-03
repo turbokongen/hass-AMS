@@ -42,7 +42,6 @@ CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema(DOMAIN_SCH)}, extra=vol.ALLOW_EXT
 
 def _setup(hass, config):
     """Helper to keep things dry."""
-
     if DOMAIN_DATA not in hass.data:
         hub = AmsHub(hass, config)
         hass.data[DOMAIN_DATA] = {}
@@ -62,6 +61,7 @@ async def async_setup(hass, config) -> bool:
         return True
 
     _setup(hass, config[DOMAIN])
+    _LOGGER.info(STARTUP)
 
     # We just pass junk to this. the the entire point os to enable the callback.
     # TODO check if there is a better way to hanle this.
@@ -71,17 +71,16 @@ async def async_setup(hass, config) -> bool:
 
     # Dont really know what's the point of this. Check it.
     hass.async_create_task(
-         hass.config_entries.flow.async_init(
-             DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
-         )
+        hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
+        )
     )
-    _LOGGER.info("end of async_setup")
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up AMS as config entry."""
-    _LOGGER.info("Inside async_setup_entry")
+
     conf = hass.data.get(DOMAIN_DATA)
     # FIX this.
     # Stop the setup if the if we got the info som yaml.
@@ -102,17 +101,14 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     hass.async_add_job(
         hass.config_entries.async_forward_entry_setup(config_entry, "sensor")
     )
-    _LOGGER.info("End async_setup_entry")
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     # isnt this blocking?
-    _LOGGER.debug("called async_unload_entry")
-    hass.data[DOMAIN_DATA]["client"].stop_serial_read()
+    # hass.data[DOMAIN_DATA]["client"].stop_serial_read()
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
-    _LOGGER.debug("end async_unload_entry")
     return True
 
 
@@ -121,7 +117,6 @@ class AmsHub:
 
     def __init__(self, hass, entry):
         """Initalize the AMS hub."""
-        _LOGGER.info('conf %s', entry)
         self._hass = hass
         self._settings = entry
         self._running = True
@@ -196,7 +191,7 @@ class AmsHub:
 
     def connect(self):
         """Read the data from the port."""
-        _LOGGER.debug("Using connect")
+        _LOGGER.info("Using connect")
         while self._running:
             try:
                 data = self.read_bytes()

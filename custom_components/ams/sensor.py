@@ -30,7 +30,7 @@ async def async_setup_platform(
     def async_add_sensor() -> bool:
         """Add AMS Sensor."""
         sensors = []
-        _LOGGER.info("called async_add_sensor cb")
+        _LOGGER.debug("called async_add_sensor cb")
         data = hass.data[DOMAIN_DATA]["client"].sensor_data
         for sensor_name in data:
             if sensor_name not in AMS_DEVICES:
@@ -139,4 +139,4 @@ class AmsSensor(Entity):
         """Update the state."""
         _LOGGER.debug("Called _update_callback")
         self._update_properties()
-        self.async_schedule_update_ha_state(True)
+        self.async_schedule_update_ha_state()
