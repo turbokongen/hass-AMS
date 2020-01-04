@@ -419,8 +419,8 @@ def test_valid_data(data):
 
     if not data[0] and data[-1] == FRAME_FLAG:
         _LOGGER.debug("%s Recieved %s bytes of %s data",
-                        datetime.now().isoformat(),
-                        len(data), False)
+                      datetime.now().isoformat(),
+                      len(data), False)
         return False
 
     header_checksum = CrcX25.calc(bytes(data[1:6]))
@@ -439,7 +439,7 @@ def test_valid_data(data):
 
     if data[8:12] != DATA_FLAG:
         _LOGGER.debug('Data does not start with %s: %s',
-                        DATA_FLAG, data[8:12])
+                      DATA_FLAG, data[8:12])
         return False
 
     packet_size = len(data)

@@ -3,10 +3,8 @@ import logging
 import threading
 import serial
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
 from . import han_decode
 
 
@@ -22,42 +20,16 @@ CONF_SERIAL_PORT = "serial_port"
 CONF_BAUDRATE = "baudrate"
 CONF_PARITY = "parity"
 
-DEFAULT_NAME = "AMS Sensor"
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_BAUDRATE = 2400
 DEFAULT_PARITY = serial.PARITY_NONE
 DEFAULT_TIMEOUT = 0
 FRAME_FLAG = b'\x7e'
 
-CONFIG_SCHEMA = vol.Schema(
-    {
-        DOMAIN: vol.Schema(
-            {
-                vol.Required(CONF_SERIAL_PORT,
-                             default=DEFAULT_SERIAL_PORT): cv.string,
-                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
-            }
-        )
-    },
-    extra=vol.ALLOW_EXTRA,
-)
 
-
-async def async_setup(hass, config) -> bool:
-    """AMS hub."""
-    if config.get(DOMAIN) is None:
-        _LOGGER.debug("No YAML config available, using config_entries")
-        return True
-
-    hub = AmsHub(hass, config)
-    hass.data[DOMAIN] = hub
-
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN, context={"source":
-                             hass.config_entries.SOURCE_IMPORT}, data={}
-        )
-    )
+async def async_setup(hass: HomeAssistant, config: Config) -> bool:
+    """AMS hub YAML setup."""
+    hass.data[DOMAIN] = {}
     return True
 
 
