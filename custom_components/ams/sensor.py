@@ -4,6 +4,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN, AMS_SENSORS
+import custom_components.ams as amshub
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,11 +15,11 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     @callback
     def async_add_sensor():
         """Add AMS Sensor."""
-        data = hass.data[AMS_SENSORS]
+        data = hass.data[amshub.AMS_SENSORS]
         _LOGGER.debug('HUB in async_setup_entry-async_add_sensor= %s',
                       hass.data[DOMAIN].data)
         _LOGGER.debug('AMS_SENSORS in async_setup_entry-async_add_sensor= %s',
-                      hass.data[AMS_SENSORS])
+                      hass.data[amshub.AMS_SENSORS])
 
         for sensor_name in list(data):
             sensor_states = {
@@ -33,10 +34,10 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
     sensor_states = {}
     sensors = []
-    data = hass.data[AMS_SENSORS]
+    data = hass.data[amshub.AMS_SENSORS]
     _LOGGER.debug('HUB in async_stup_entry= %s', hass.data[DOMAIN].data)
     _LOGGER.debug('AMS_SENSORS in async_setup_entry= %s',
-                  hass.data[AMS_SENSORS])
+                  hass.data[amshub.AMS_SENSORS])
 
     for sensor_name in list(data):
         sensor_states = {
