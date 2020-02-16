@@ -3,8 +3,8 @@ import logging
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
-from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN, AMS_SENSORS
 import custom_components.ams as amshub
+from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
