@@ -62,7 +62,7 @@ def parse_data(stored, data):
     list_type = pkt[32]
     han_data["list_type"] = list_type
     if list_type is LIST_TYPE_MINI:
-        han_data["active_power_p"] = byte_decode(fields=pkt[35:39])
+        han_data["active_power_p"] = byte_decode(fields=pkt[35:39]) / 100
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
@@ -78,7 +78,7 @@ def parse_data(stored, data):
     han_data["meter_type"] = field_type(fields=pkt[62:70], enc=chr)
     han_data["meter_type_str"] = METER_TYPE.get(
         field_type(fields=pkt[62:70], enc=chr))
-    han_data["active_power_p"] = byte_decode(fields=pkt[71:75])
+    han_data["active_power_p"] = byte_decode(fields=pkt[71:75]) / 100
     sensor_data["ams_active_power_import"] = {
         'state': han_data["active_power_p"],
         'attributes': {
@@ -91,7 +91,7 @@ def parse_data(stored, data):
             }
         }
 
-    han_data["active_power_n"] = byte_decode(fields=pkt[76:80])
+    han_data["active_power_n"] = byte_decode(fields=pkt[76:80]) / 100
     sensor_data["ams_active_power_export"] = {
         'state': han_data["active_power_n"],
         'attributes': {
@@ -103,7 +103,7 @@ def parse_data(stored, data):
             'icon': 'mdi:gauge'
             }
         }
-    han_data["reactive_power_p"] = byte_decode(fields=pkt[81:85])
+    han_data["reactive_power_p"] = byte_decode(fields=pkt[81:85]) / 100
     sensor_data["ams_reactive_power_import"] = {
         'state': han_data["reactive_power_p"],
         'attributes': {
@@ -115,7 +115,7 @@ def parse_data(stored, data):
             'icon': 'mdi:gauge'
             }
         }
-    han_data["reactive_power_n"] = byte_decode(fields=pkt[86:90])
+    han_data["reactive_power_n"] = byte_decode(fields=pkt[86:90]) / 100
     sensor_data["ams_reactive_power_export"] = {
         'state': han_data["reactive_power_n"],
         'attributes': {
@@ -127,7 +127,7 @@ def parse_data(stored, data):
             'icon': 'mdi:gauge'
             }
         }
-    han_data["current_l1"] = byte_decode(fields=pkt[91:95]) / 100
+    han_data["current_l1"] = byte_decode(fields=pkt[91:95]) / 1000
     sensor_data["ams_current_l1"] = {
         'state': han_data["current_l1"],
         'attributes': {
@@ -142,7 +142,7 @@ def parse_data(stored, data):
 
     if (list_type is LIST_TYPE_SHORT_3PH or
             list_type is LIST_TYPE_LONG_3PH):
-        han_data["current_l2"] = byte_decode(fields=pkt[96:100]) / 100
+        han_data["current_l2"] = byte_decode(fields=pkt[96:100]) / 1000
         sensor_data["ams_current_l2"] = {
             'state': han_data["current_l2"],
             'attributes': {
@@ -154,7 +154,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:current-ac'
                 }
             }
-        han_data["current_l3"] = byte_decode(fields=pkt[101:105]) / 100
+        han_data["current_l3"] = byte_decode(fields=pkt[101:105]) / 1000
         sensor_data["ams_current_l3"] = {
             'state': han_data["current_l3"],
             'attributes': {
