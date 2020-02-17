@@ -89,14 +89,9 @@ class AmsSensor(Entity):
             _LOGGER.debug('Sensor not in hass.data')
 
     @property
-    def unique_id(self) -> str:
-        """Return the uniqe id of the sensor."""
-        return f"{self._name}_{self._meter_id}"
-
-    @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return self.unique_id
+        return self._name
 
     @property
     def should_poll(self) -> bool:
