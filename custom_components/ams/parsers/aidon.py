@@ -1,5 +1,5 @@
 """
-Decode for han_kaifa.
+Decode for han_kamstrup.
 
 This module will decode the incoming message from Mbus serial.
 """
@@ -394,8 +394,8 @@ def test_valid_data(data):
                       len(data), False)
         return False
 
-    header_checksum = CrcX25.calc(bytes(data[1:7]))
-    read_header_checksum = (data[8] << 8 | data[7])
+    header_checksum = CrcX25.calc(bytes(data[1:6]))
+    read_header_checksum = (data[7] << 8 | data[6])
 
     if header_checksum != read_header_checksum:
         _LOGGER.debug('Invalid header CRC check')
@@ -408,9 +408,9 @@ def test_valid_data(data):
         _LOGGER.debug('Invalid frame CRC check')
         return False
 
-    if data[9:13] != DATA_FLAG:
+    if data[8:12] != DATA_FLAG:
         _LOGGER.debug('Data does not start with %s: %s',
-                      DATA_FLAG, data[9:13])
+                      DATA_FLAG, data[8:12])
         return False
 
     packet_size = len(data)
