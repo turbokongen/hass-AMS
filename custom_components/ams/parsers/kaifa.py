@@ -46,7 +46,7 @@ def parse_data(stored, data):
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
     date_time_year = byte_decode(fields=pkt[19:21], count=2)
-    date_time_month = pkt[20]
+    date_time_month = pkt[21]
     date_time_date = pkt[22]
     han_data["day_of_week"] = WEEKDAY_MAPPING.get(pkt[23])
     date_time_hour = str(pkt[24]).zfill(2)
@@ -61,8 +61,8 @@ def parse_data(stored, data):
     han_data["date_time"] = date_time_str
     list_type = pkt[32]
     han_data["list_type"] = list_type
-    if list_type == LIST_TYPE_MINI:
-        han_data["active_power_n"] = byte_decode(fields=pkt[123:127])
+    if list_type is LIST_TYPE_MINI:
+        han_data["active_power_n"] = byte_decode(fields=pkt[35:39])
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
