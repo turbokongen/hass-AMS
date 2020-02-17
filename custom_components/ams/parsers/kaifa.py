@@ -233,7 +233,7 @@ def parse_data(stored, data):
                                        ' ' + meter_date_time_hour +
                                        ':' + meter_date_time_minute +
                                        ':' + meter_date_time_seconds)
-        han_data["active_energy_p"] = byte_decode(fields=pkt[115:120]) / 100
+        han_data["active_energy_p"] = byte_decode(fields=pkt[115:120]) / 10000
         sensor_data["ams_active_energy_import"] = {
             'state': han_data["active_energy_p"],
             'attributes': {
@@ -246,7 +246,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["active_energy_n"] = byte_decode(fields=pkt[121:125]) / 100
+        han_data["active_energy_n"] = byte_decode(fields=pkt[121:125]) / 10000
         sensor_data["ams_active_energy_export"] = {
             'state': han_data["active_energy_n"],
             'attributes': {
@@ -259,7 +259,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["reactive_energy_p"] = byte_decode(fields=pkt[126:130]) / 100
+        han_data["reactive_energy_p"] = byte_decode(fields=pkt[126:130]) / 10000
         sensor_data["ams_reactive_energy_import"] = {
             'state': han_data["reactive_energy_p"],
             'attributes': {
@@ -272,7 +272,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["reactive_energy_n"] = byte_decode(fields=pkt[131:135]) / 100
+        han_data["reactive_energy_n"] = byte_decode(fields=pkt[131:135]) / 10000
         sensor_data["ams_reactive_energy_export"] = {
             'state': han_data["reactive_energy_n"],
             'attributes': {
@@ -300,7 +300,7 @@ def parse_data(stored, data):
                                        ' ' + meter_date_time_hour +
                                        ':' + meter_date_time_minute +
                                        ':' + meter_date_time_seconds)
-        han_data["active_energy_p"] = byte_decode(fields=pkt[134:139]) / 100
+        han_data["active_energy_p"] = byte_decode(fields=pkt[134:139]) / 10000
         sensor_data["ams_active_energy_import"] = {
             'state': han_data["active_energy_p"],
             'attributes': {
@@ -313,7 +313,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["active_energy_n"] = byte_decode(fields=pkt[140:144]) / 100
+        han_data["active_energy_n"] = byte_decode(fields=pkt[140:144]) / 10000
         sensor_data["ams_active_energy_export"] = {
             'state': han_data["active_energy_n"],
             'attributes': {
@@ -326,7 +326,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["reactive_energy_p"] = byte_decode(fields=pkt[145:149]) / 100
+        han_data["reactive_energy_p"] = byte_decode(fields=pkt[145:149]) / 10000
         sensor_data["ams_reactive_energy_import"] = {
             'state': han_data["reactive_energy_p"],
             'attributes': {
@@ -339,7 +339,7 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
                 }
             }
-        han_data["reactive_energy_n"] = byte_decode(fields=pkt[150:154]) / 100
+        han_data["reactive_energy_n"] = byte_decode(fields=pkt[150:154]) / 10000
         sensor_data["ams_reactive_energy_export"] = {
             'state': han_data["reactive_energy_n"],
             'attributes': {
