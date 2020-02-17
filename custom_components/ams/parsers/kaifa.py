@@ -62,7 +62,7 @@ def parse_data(stored, data):
     list_type = pkt[32]
     han_data["list_type"] = list_type
     if list_type is LIST_TYPE_MINI:
-        han_data["active_power_n"] = byte_decode(fields=pkt[35:39])
+        han_data["active_power_p"] = byte_decode(fields=pkt[35:39])
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
