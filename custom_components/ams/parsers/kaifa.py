@@ -78,19 +78,6 @@ def parse_data(stored, data):
     han_data["meter_type"] = field_type(fields=pkt[62:70], enc=chr)
     han_data["meter_type_str"] = METER_TYPE.get(
         field_type(fields=pkt[62:70], enc=chr))
-    han_data["active_power_p"] = byte_decode(fields=pkt[71:75]) / 100
-    sensor_data["ams_active_power_import"] = {
-        'state': han_data["active_power_p"],
-        'attributes': {
-            'timestamp': han_data["date_time"],
-            'meter_manufacturer': han_data["obis_list_version"].title(),
-            'meter_type': han_data["meter_type_str"],
-            'meter_serial': han_data["meter_serial"],
-            'unit_of_measurement': 'W',
-            'icon': 'mdi:gauge'
-            }
-        }
-
     han_data["active_power_n"] = byte_decode(fields=pkt[76:80]) / 100
     sensor_data["ams_active_power_export"] = {
         'state': han_data["active_power_n"],

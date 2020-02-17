@@ -6,6 +6,7 @@ from homeassistant.core import callback
 import custom_components.ams as amshub
 from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN
 
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -89,9 +90,14 @@ class AmsSensor(Entity):
             _LOGGER.debug('Sensor not in hass.data')
 
     @property
+    def unique_id(self) -> str:
+        """Return the uniqe id of the sensor."""
+        return f"{self._name}_{self._meter_id}"
+
+    @property
     def name(self) -> str:
         """Return the name of the sensor."""
-        return self._name
+        return self.unique_id
 
     @property
     def should_poll(self) -> bool:
