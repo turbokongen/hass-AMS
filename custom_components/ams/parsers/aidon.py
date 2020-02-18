@@ -1,5 +1,5 @@
 """
-Decode for han_kamstrup.
+Decode for han aidon.
 
 This module will decode the incoming message from Mbus serial.
 """
@@ -27,11 +27,11 @@ WEEKDAY_MAPPING = {
 }
 
 METER_TYPE = {
-    "MA105H2E": 'Domestic 1 Phase 230V/400V meter',
-    "MA304H3E": 'Domestic/Industrial 3 Phase 230V 3-Wire meter',
-    "MA304H4": 'Domestic/Industrial 3 Phase 400V 4-Wire meter',
-    "MA304T4": 'Industrial 3 Phase 230V 3-Wire meter',
-    "MA304T3": 'Industrial 3 Phase 400V 4-Wire meter'
+    6515: '6515 1-phase Meter with CB on both lines and Earth Fault Current Measuremen',
+    6525: '6525 3-phase Meter with CB and Earth Fault Measurement',
+    6534: '6534 3-phase Meter with CB and Neutral Current Measurement',
+    6540: '6540 3-phase CT Meter',
+    6550: '6550 3-phase CT Meter'
 }
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,45 +45,32 @@ def parse_data(stored, data):
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
-    date_time_year = byte_decode(fields=pkt[19:21], count=2)
-    date_time_month = pkt[20]
-    date_time_date = pkt[22]
-    han_data["day_of_week"] = WEEKDAY_MAPPING.get(pkt[23])
-    date_time_hour = str(pkt[24]).zfill(2)
-    date_time_minute = str(pkt[25]).zfill(2)
-    date_time_seconds = str(pkt[26]).zfill(2)
-    date_time_str = (str(date_time_year) +
-                     '-' + str(date_time_month) +
-                     '-' + str(date_time_date) +
-                     ' ' + date_time_hour +
-                     ':' + date_time_minute +
-                     ':' + date_time_seconds)
-    han_data["date_time"] = date_time_str
-    list_type = pkt[32]
+    list_type = pkt[19]
     han_data["list_type"] = list_type
     if list_type == LIST_TYPE_MINI:
-        han_data["active_power_n"] = byte_decode(fields=pkt[123:127])
+        han_data["obis_a_p_p"] = field_type(".", fields=pkt[24:30])
+        han_data["active_power_p"] = byte_decode(fields=pkt[31:35])
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
-                'timestamp': han_data["date_time"],
+                'obis_code': han_data["obis_a_p_p"],
                 'unit_of_measurement': 'W',
                 'icon': 'mdi:gauge'
             }
         }
         return sensor_data
-
-    han_data["obis_list_version"] = field_type(fields=pkt[35:42], enc=chr)
-    han_data["meter_serial"] = field_type(fields=pkt[44:60], enc=chr)
-    han_data["meter_type"] = field_type(fields=pkt[62:70], enc=chr)
+    han_data["obis_list_version"] = field_type(fields=pkt[31:42], enc=chr)
+    han_data["meter_serial"] = field_type(fields=pkt[55:71], enc=chr)
+    han_data["meter_type"] = field_type(fields=pkt[83:87], enc=chr)
     han_data["meter_type_str"] = METER_TYPE.get(
-        field_type(fields=pkt[62:70], enc=chr))
-    han_data["active_power_p"] = byte_decode(fields=pkt[71:75])
+        field_type(fields=pkt[83:87], enc=chr, dec=int))
+    han_data["obis_a_p_p"] = field_type(".", fields=pkt[91:97])
+    han_data["active_power_p"] = byte_decode(fields=pkt[98:102])
     sensor_data["ams_active_power_import"] = {
         'state': han_data["active_power_p"],
         'attributes': {
-            'timestamp': han_data["date_time"],
             'meter_manufacturer': han_data["obis_list_version"].title(),
+            'obis_code': han_data["obis_a_p_p"],
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'W',
@@ -384,7 +371,7 @@ def test_valid_data(data):
     if data is None:
         return False
 
-    if len(data) > 157 or len(data) < 41:
+    if len(data) > 377 or len(data) < 44:
         _LOGGER.debug('Invalid packet size %s', len(data))
         return False
 
@@ -394,8 +381,8 @@ def test_valid_data(data):
                       len(data), False)
         return False
 
-    header_checksum = CrcX25.calc(bytes(data[1:6]))
-    read_header_checksum = (data[7] << 8 | data[6])
+    header_checksum = CrcX25.calc(bytes(data[1:7]))
+    read_header_checksum = (data[8] << 8 | data[7])
 
     if header_checksum != read_header_checksum:
         _LOGGER.debug('Invalid header CRC check')
