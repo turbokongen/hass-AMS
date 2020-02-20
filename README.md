@@ -18,7 +18,14 @@ Kamstrup:
   - MA304T4
   - MA304T3
 
-
+Aidon:
+Aidon meters are not tested yet. (Please report errors or if it's working)
+ - 6515
+ - 6525
+ - 6534
+ - 6540
+ - 6550
+ 
 ## *Installation*
 Stop Home-Assistant, 
 Find your MBus adapter port, 
@@ -30,6 +37,7 @@ For parity options see https://github.com/pyserial/pyserial/blob/master/serial/s
 
 Meter manufacturer field options are:
 
+*aidon*
 *kamstrup*
 *kaifa*
 
@@ -43,7 +51,6 @@ https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3
 ## * Known NOT working modules*
 https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=600
 
-I do not have decoder for Aidon meters. Feel free to open PR or supply data so it can be added.
 Imporvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
 Enjoy
