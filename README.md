@@ -1,5 +1,6 @@
 # hass-AMS
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
 Custom component reading AMS through MBus adapter into HomeAssistant
 Works with the following meters:
 Kamstrup:
