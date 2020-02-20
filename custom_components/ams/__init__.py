@@ -7,6 +7,7 @@ from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
+from .parsers import aidon as Aidon
 
 
 DOMAIN = 'ams'
@@ -100,7 +101,7 @@ class AmsHub():
         if self.meter_manufacturer == "kaifa":
             parser = Kaifa
         elif self.meter_manufacturer == "aidon":
-            parser = "aidon"
+            parser = Aidon
         else:
             parser = Kamstrup
         while self._running:
