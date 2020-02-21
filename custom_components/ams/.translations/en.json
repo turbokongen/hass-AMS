@@ -7,7 +7,8 @@
                 "description": "Setup Norwegian AMS sensors",
                 "data": {
                     "serial_port": "Serial Port",
-                    "parity": "Parity"
+                    "parity": "Parity",
+                    "meter_manufacturer": "Meter manufacturer"
                 }
             }
         },

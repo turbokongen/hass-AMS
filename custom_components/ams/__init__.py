@@ -5,7 +5,9 @@ import serial
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-from . import han_decode
+from .parsers import kaifa as Kaifa
+from .parsers import kamstrup as Kamstrup
+from .parsers import aidon as Aidon
 
 
 DOMAIN = 'ams'
@@ -19,9 +21,11 @@ _LOGGER = logging.getLogger(__name__)
 CONF_SERIAL_PORT = "serial_port"
 CONF_BAUDRATE = "baudrate"
 CONF_PARITY = "parity"
+CONF_METER_MANUFACTURER = "meter_manufacturer"
 
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_BAUDRATE = 2400
+DEFAULT_METER_MANUFACTURER = "kamstrup"
 DEFAULT_PARITY = serial.PARITY_NONE
 DEFAULT_TIMEOUT = 0
 FRAME_FLAG = b'\x7e'
@@ -58,6 +62,7 @@ class AmsHub():
         self._hass = hass
         port = entry.data[CONF_SERIAL_PORT]
         parity = entry.data[CONF_PARITY]
+        self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
         self._hass.data[AMS_SENSORS] = self.data
         self._running = True
@@ -93,14 +98,24 @@ class AmsHub():
 
     def connect(self):
         """Read the data from the port."""
+        if self.meter_manufacturer == "kaifa":
+            parser = Kaifa
+        elif self.meter_manufacturer == "aidon":
+            parser = Aidon
+        else:
+            parser = Kamstrup
         while self._running:
             try:
                 data = self.read_bytes()
-                if han_decode.test_valid_data(data):
-                    self.sensor_data = han_decode.parse_data(
+                if parser.test_valid_data(data):
+                    _LOGGER.debug(data)
+                    self.sensor_data = parser.parse_data(
                         self.sensor_data, data)
                     self._hass.data[AMS_SENSORS] = self.sensor_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
+                else:
+                    _LOGGER.debug("failed package: %s", data)
+
             except serial.serialutil.SerialException:
                 pass
 
