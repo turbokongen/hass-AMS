@@ -122,7 +122,7 @@ def parse_data(stored, data):
             }
         }
     han_data["obis_c_l1"] = field_type(".", fields=pkt[175:181])
-    han_data["current_l1"] = byte_decode(fields=pkt[182:184]) / 100
+    han_data["current_l1"] = byte_decode(fields=pkt[182:184]) / 10
     sensor_data["ams_current_l1"] = {
         'state': han_data["current_l1"],
         'attributes': {
@@ -140,7 +140,7 @@ def parse_data(stored, data):
             LIST_TYPE_LONG_3PH_3W):
 
         han_data["obis_c_l3"] = field_type(".", fields=pkt[194:200])
-        han_data["current_l3"] = byte_decode(fields=pkt[201:203]) / 100
+        han_data["current_l3"] = byte_decode(fields=pkt[201:203]) / 10
         sensor_data["ams_current_l3"] = {
             'state': han_data["current_l3"],
             'attributes': {
@@ -154,7 +154,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_v_l1"] = field_type(".", fields=pkt[213:219])
-        han_data["voltage_l1"] = byte_decode(fields=pkt[220:222]) / 100
+        han_data["voltage_l1"] = byte_decode(fields=pkt[220:222]) / 10
         sensor_data["ams_voltage_l1"] = {
             'state': han_data["voltage_l1"],
             'attributes': {
@@ -249,7 +249,7 @@ def parse_data(stored, data):
                     'meter_manufacturer': han_data["obis_list_version"].title(),
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
@@ -264,7 +264,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
@@ -273,7 +273,7 @@ def parse_data(stored, data):
             list_type is LIST_TYPE_LONG_3PH):
 
         han_data["obis_c_l2"] = field_type(".", fields=pkt[194:200])
-        han_data["current_l2"] = byte_decode(fields=pkt[202:204]) / 100
+        han_data["current_l2"] = byte_decode(fields=pkt[202:204]) / 10
         sensor_data["ams_current_l2"] = {
             'state': han_data["current_l2"],
             'attributes': {
@@ -287,7 +287,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_c_l3"] = field_type(".", fields=pkt[213:219])
-        han_data["current_l3"] = byte_decode(fields=pkt[220:222]) / 100
+        han_data["current_l3"] = byte_decode(fields=pkt[220:222]) / 10
         sensor_data["ams_current_l3"] = {
             'state': han_data["current_l3"],
             'attributes': {
@@ -301,7 +301,7 @@ def parse_data(stored, data):
                 }
             }
         han_data["obis_v_l1"] = field_type(".", fields=pkt[232:238])
-        han_data["voltage_l1"] = byte_decode(fields=pkt[239:241]) / 100
+        han_data["voltage_l1"] = byte_decode(fields=pkt[239:241]) / 10
         sensor_data["ams_voltage_l1"] = {
             'state': han_data["voltage_l1"],
             'attributes': {
@@ -396,7 +396,7 @@ def parse_data(stored, data):
                     'meter_manufacturer': han_data["obis_list_version"].title(),
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
@@ -411,7 +411,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
