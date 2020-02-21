@@ -4,8 +4,8 @@
 Custom component reading AMS through MBus adapter into HomeAssistant
 Works with the following meters:
 Kamstrup:
-  - 6861111
-  - 6841121
+  - 6861111 tested by janna at homeassistant community forum
+  - 6841121 tested by me
   - 6841131
   - 6851121
   - 6851131
@@ -20,7 +20,7 @@ Kamstrup:
   - MA304T3
 
 Aidon:
-Aidon meters are not tested yet. (Please report errors or if it's working)
+Aidon meters are not tested yet. Just programmed from available documentation.(Please report errors or if it's working)
  - 6515
  - 6525
  - 6534
