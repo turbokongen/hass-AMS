@@ -203,7 +203,7 @@ def parse_data(stored, data):
                                            ' ' + meter_date_time_hour +
                                            ':' + meter_date_time_minute +
                                            ':' + meter_date_time_seconds)
-            han_data["active_energy_p"] = byte_decode(fields=pkt[134:139]) / 10000
+            han_data["active_energy_p"] = byte_decode(fields=pkt[135:139]) / 10000
             sensor_data["ams_active_energy_import"] = {
                 'state': han_data["active_energy_p"],
                 'attributes': {
