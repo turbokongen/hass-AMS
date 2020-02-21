@@ -106,7 +106,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_p"],
-            'unit_of_measurement': 'VAr',
+            'unit_of_measurement': 'kVAr',
             'icon': 'mdi:gauge'
             }
         }
@@ -120,7 +120,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_n"],
-            'unit_of_measurement': 'VAr',
+            'unit_of_measurement': 'kVAr',
             'icon': 'mdi:gauge'
             }
         }
@@ -267,7 +267,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_p"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
@@ -282,7 +282,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                 }
             }
@@ -361,7 +361,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_p"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                     }
                 }
@@ -376,7 +376,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
-                    'unit_of_measurement': 'kVAh',
+                    'unit_of_measurement': 'kVArh',
                     'icon': 'mdi:gauge'
                     }
                 }
