@@ -1,30 +1,23 @@
 """
-Decode for han_kaifa.
+Decode for HAN Kaifa.
 
 This module will decode the incoming message from Mbus serial.
 """
 
-import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
+from ..const import (
+    _LOGGER,
+    DATA_FLAG,
+    FRAME_FLAG,
+    LIST_TYPE_MINI,
+    LIST_TYPE_SHORT_1PH,
+    LIST_TYPE_LONG_1PH,
+    LIST_TYPE_SHORT_3PH,
+    LIST_TYPE_LONG_3PH,
+    WEEKDAY_MAPPING
+)
 
-DATA_FLAG = [230, 231, 0, 15]
-FRAME_FLAG = b'\x7e'
-LIST_TYPE_MINI = 1
-LIST_TYPE_SHORT_1PH = 9
-LIST_TYPE_LONG_1PH = 14
-LIST_TYPE_SHORT_3PH = 13
-LIST_TYPE_LONG_3PH = 18
-
-WEEKDAY_MAPPING = {
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday',
-    7: 'Sunday'
-}
 
 METER_TYPE = {
     "MA105H2E": 'Domestic 1 Phase 230V/400V meter',
@@ -33,9 +26,6 @@ METER_TYPE = {
     "MA304T4": 'Industrial 3 Phase 230V 3-Wire meter',
     "MA304T3": 'Industrial 3 Phase 400V 4-Wire meter'
 }
-
-_LOGGER = logging.getLogger(__name__)
-# pylint: disable=too-many-locals, too-many-statements
 
 
 def parse_data(stored, data):

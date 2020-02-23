@@ -1,29 +1,23 @@
 """
-Decode for han_kamstrup.
+Decode for HAN Kamstrup.
 
 This module will decode the incoming message from Mbus serial.
 """
 
-import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
+from ..const import (
+    _LOGGER,
+    DATA_FLAG,
+    FRAME_FLAG,
+    WEEKDAY_MAPPING
+)
 
-DATA_FLAG = [230, 231, 0, 15]
-FRAME_FLAG = b'\x7e'
 LIST_TYPE_SHORT_1PH = 17
 LIST_TYPE_LONG_1PH = 27
 LIST_TYPE_SHORT_3PH = 25
 LIST_TYPE_LONG_3PH = 35
 
-WEEKDAY_MAPPING = {
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday',
-    7: 'Sunday'
-}
 
 METER_TYPE = {
     6861111: 'Omnipower 1 Phase Direct meter',
@@ -32,9 +26,6 @@ METER_TYPE = {
     6851121: 'Omnipower 3 Phase CT 3-Wire Direct meter',
     6851131: 'Omnipower 3 Phase CT 4-Wire Direct meter'
 }
-
-_LOGGER = logging.getLogger(__name__)
-# pylint: disable=too-many-locals, too-many-statements
 
 
 def parse_data(stored, data):

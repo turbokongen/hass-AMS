@@ -1,13 +1,10 @@
 """Support for reading data from a serial port."""
-import logging
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 import custom_components.ams as amshub
-from . import SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS, DOMAIN
+from .const import _LOGGER, DOMAIN, SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS
 
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
@@ -36,7 +33,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     sensor_states = {}
     sensors = []
     data = hass.data[amshub.AMS_SENSORS]
-    _LOGGER.debug('HUB in async_stup_entry= %s', hass.data[DOMAIN].data)
+    _LOGGER.debug('HUB in async_setup_entry= %s', hass.data[DOMAIN].data)
     _LOGGER.debug('AMS_SENSORS in async_setup_entry= %s',
                   hass.data[amshub.AMS_SENSORS])
 
@@ -91,7 +88,7 @@ class AmsSensor(Entity):
 
     @property
     def unique_id(self) -> str:
-        """Return the uniqe id of the sensor."""
+        """Return the unique id of the sensor."""
         return f"{self._name}_{self._meter_id}"
 
     @property
