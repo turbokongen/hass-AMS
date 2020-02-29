@@ -48,7 +48,6 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     async_add_devices(sensors)
     return True
 
-
 async def async_remove_entry(hass, entry):
     """Remove config entry from Homeassistant."""
     _LOGGER.debug("async_remove_entry AMS")
