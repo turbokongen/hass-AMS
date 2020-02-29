@@ -1,13 +1,17 @@
 """Adds config flow for hass-HAN."""
-import logging
 
 import voluptuous as vol
 from homeassistant import config_entries
 
-from . import (DOMAIN, CONF_SERIAL_PORT, CONF_METER_MANUFACTURER,
-               CONF_PARITY, DEFAULT_SERIAL_PORT, DEFAULT_METER_MANUFACTURER,
-               DEFAULT_PARITY)
-_LOGGER = logging.getLogger(__name__)
+from .const import (
+    DOMAIN,
+    CONF_SERIAL_PORT,
+    CONF_METER_MANUFACTURER,
+    CONF_PARITY,
+    DEFAULT_SERIAL_PORT,
+    DEFAULT_METER_MANUFACTURER,
+    DEFAULT_PARITY
+)
 
 
 @config_entries.HANDLERS.register(DOMAIN)

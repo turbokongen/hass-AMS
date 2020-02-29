@@ -1,5 +1,5 @@
 """AMS hub platform."""
-import logging
+
 import threading
 import serial
 from homeassistant.config_entries import ConfigEntry
@@ -8,27 +8,20 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
 from .parsers import aidon as Aidon
-
-
-DOMAIN = 'ams'
-AMS_SENSORS = 'ams_sensors'
-AMS_DEVICES = []
-SIGNAL_UPDATE_AMS = 'update'
-SIGNAL_NEW_AMS_SENSOR = 'ams_new_sensor'
-
-_LOGGER = logging.getLogger(__name__)
-
-CONF_SERIAL_PORT = "serial_port"
-CONF_BAUDRATE = "baudrate"
-CONF_PARITY = "parity"
-CONF_METER_MANUFACTURER = "meter_manufacturer"
-
-DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
-DEFAULT_BAUDRATE = 2400
-DEFAULT_METER_MANUFACTURER = "kamstrup"
-DEFAULT_PARITY = serial.PARITY_NONE
-DEFAULT_TIMEOUT = 0
-FRAME_FLAG = b'\x7e'
+from .const import (
+    _LOGGER,
+    AMS_DEVICES,
+    AMS_SENSORS,
+    CONF_SERIAL_PORT,
+    CONF_PARITY,
+    CONF_METER_MANUFACTURER,
+    DEFAULT_BAUDRATE,
+    DEFAULT_TIMEOUT,
+    DOMAIN,
+    FRAME_FLAG,
+    SIGNAL_NEW_AMS_SENSOR,
+    SIGNAL_UPDATE_AMS
+)
 
 
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
@@ -54,11 +47,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-class AmsHub():
+class AmsHub:
     """AmsHub wrapper for all sensors."""
 
     def __init__(self, hass, entry):
-        """Initalize the AMS hub."""
+        """Initialize the AMS hub."""
         self._hass = hass
         port = entry.data[CONF_SERIAL_PORT]
         parity = entry.data[CONF_PARITY]
