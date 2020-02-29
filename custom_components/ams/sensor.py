@@ -6,7 +6,6 @@ import custom_components.ams as amshub
 from .const import _LOGGER, DOMAIN, SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS
 
 
-
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Setup sensor platform for the ui"""
 
@@ -47,6 +46,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     _LOGGER.debug('async_add_devices in end of async_setup_entry')
     async_add_devices(sensors)
     return True
+
 
 async def async_remove_entry(hass, entry):
     """Remove config entry from Homeassistant."""
