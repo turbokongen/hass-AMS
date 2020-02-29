@@ -114,7 +114,10 @@ class AmsHub:
                         self.sensor_data, data)
                     self._hass.data[AMS_SENSORS] = self.sensor_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
+                    _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                 else:
+                    self._ser.flush()
+                    _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     _LOGGER.debug("failed package: %s", data)
             except serial.serialutil.SerialException:
                 pass
