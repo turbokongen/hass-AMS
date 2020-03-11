@@ -42,8 +42,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    hass.data[DOMAIN].stop_serial_read()
     await hass.config_entries.async_forward_entry_unload(entry, 'sensor')
+    return True
+
+
+async def async_remove_entry(hass, entry) -> None:
+    """Handle removal of an entry."""
+    result = await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
     return True
 
 
@@ -66,14 +71,16 @@ class AmsHub:
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
             timeout=DEFAULT_TIMEOUT)
-        connection = threading.Thread(target=self.connect, daemon=True)
-        connection.start()
+        self.connection = threading.Thread(target=self.connect, daemon=True)
+        self.connection.start()
         _LOGGER.debug('Finish init of AMS')
 
     def stop_serial_read(self):
         """Close resources."""
+        _LOGGER.debug("stop_serial_read")
         self._running = False
         self._ser.close()
+        self.connection.join()
 
     def read_bytes(self):
         """Read the raw data from serial port."""
@@ -84,7 +91,7 @@ class AmsHub:
             if data:
                 bytelist.extend(data)
                 if data == FRAME_FLAG and byte_counter > 1:
-                    self._ser.flush()
+                    self._ser.flushInput()
                     return bytelist
                 byte_counter = byte_counter + 1
             else:
@@ -109,7 +116,7 @@ class AmsHub:
                     self._check_for_new_sensors_and_update(self.sensor_data)
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                 else:
-                    self._ser.flush()
+                    self._ser.flushInput()
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     _LOGGER.debug("failed package: %s", data)
 

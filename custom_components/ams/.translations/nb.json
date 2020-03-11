@@ -1,0 +1,19 @@
+{
+    "config": {
+        "title": "Norsk AMS",
+        "step": {
+            "user": {
+                "title": "Norsk AMS",
+                "description": "Installer Norsk AMS sensorer",
+                "data": {
+                    "serial_port": "Serie Port",
+                    "parity": "Paritet",
+                    "meter_manufacturer": "Måler produsent"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Navn eksisterer"
+        }
+    }
+}
