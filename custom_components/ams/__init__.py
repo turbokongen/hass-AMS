@@ -82,6 +82,7 @@ class AmsHub:
         self._running = False
         self.connection.join()
         self._ser.close()
+        self.connection.join()
 
     def read_bytes(self):
         """Read the raw data from serial port."""
@@ -116,7 +117,7 @@ class AmsHub:
                     self._check_for_new_sensors_and_update(self.sensor_data)
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                 else:
-                    self._ser.flush()
+                    self._ser.flushInput()
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     _LOGGER.debug("failed package: %s", data)
             except serial.serialutil.SerialException:
