@@ -578,9 +578,9 @@ def test_valid_data(data):
         _LOGGER.debug('Invalid frame CRC check')
         return False
 
-    if data[8:12] != DATA_FLAG:
+    if data[9:13] != DATA_FLAG:
         _LOGGER.debug('Data does not start with %s: %s',
-                      DATA_FLAG, data[8:12])
+                      DATA_FLAG, data[9:13])
         return False
 
     packet_size = len(data)
