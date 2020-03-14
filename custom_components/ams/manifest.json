@@ -4,6 +4,6 @@
     "documentation": "https://github.com/turbokongen/hass-AMS",
     "dependencies": [],
     "codeowners": ["@turbokongen"],
-    "requirements": ["pyserial==3.4", "crccheck"],
+    "requirements": ["pyserial==3.4", "crccheck", "memory_profiler"],
     "config_flow": true
 }
