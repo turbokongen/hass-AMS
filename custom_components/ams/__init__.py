@@ -90,16 +90,20 @@ class AmsHub:
         """Read the raw data from serial port."""
         byte_counter = 0
         bytelist = []
+        buffer = bytes()
         while self._running:
-            data = self._ser.read()
-            if data:
-                bytelist.extend(data)
-                if data == FRAME_FLAG and byte_counter > 1:
+            buffer = self._ser.read()
+            if buffer:
+                bytelist.extend(buffer)
+                if buffer == FRAME_FLAG and byte_counter > 1:
                     self._ser.flushInput()
+                    buffer = bytes()
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     return bytelist
+                buffer = bytes()
                 byte_counter = byte_counter + 1
             else:
+                buffer = bytes()
                 continue
 
     @profile(precision=6)
