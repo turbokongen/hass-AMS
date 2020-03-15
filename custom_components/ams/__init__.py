@@ -91,12 +91,13 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         while self._running:
-            bytes_to_read = self._ser.inWaiting()
-            data = self._ser.read(bytes_to_read)
+            buffer =  self._ser.inWaiting()
+            data = self._ser.read(buffer)
             if data:
                 bytelist.extend(data)
                 if data == FRAME_FLAG and byte_counter > 1:
                     self._ser.flushInput()
+                    data = None
                     _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     return bytelist
                 byte_counter = byte_counter + 1
@@ -114,7 +115,6 @@ class AmsHub:
             parser = Kamstrup
         while self._running:
             try:
-                data = self.read_bytes()
                 _LOGGER.debug('reading data = %s', data)
                 if parser.test_valid_data(data):
                     _LOGGER.debug(data)
