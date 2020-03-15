@@ -91,8 +91,7 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         while self._running:
-            buffer =  self._ser.inWaiting()
-            data = self._ser.read(buffer)
+            data = self._ser.read()
             if data:
                 bytelist.extend(data)
                 if data == FRAME_FLAG and byte_counter > 1:
