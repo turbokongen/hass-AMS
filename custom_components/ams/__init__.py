@@ -115,6 +115,7 @@ class AmsHub:
             parser = Kamstrup
         while self._running:
             try:
+                data = self.read_bytes()
                 _LOGGER.debug('reading data = %s', data)
                 if parser.test_valid_data(data):
                     _LOGGER.debug(data)
