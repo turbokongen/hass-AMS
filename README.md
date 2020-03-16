@@ -48,6 +48,7 @@ The accumulative sensors will only be available after first read, and is transmi
 ## *Known working modules*
 https://www.aliexpress.com/item/32719562958.html?spm=a2g0s.9042311.0.0.c8314c4dpbv1pv
 https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3189f8fCOsSM
+https://www.aliexpress.com/item/32834331647.html?spm=a2g0o.detail.1000060.1.74cfdcd4qts4jp
 
 ## * Known NOT working modules*
 https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=600

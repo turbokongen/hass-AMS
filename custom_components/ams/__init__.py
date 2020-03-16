@@ -5,7 +5,6 @@ import serial
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-from memory_profiler import profile
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
 from .parsers import aidon as Aidon
@@ -49,14 +48,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_remove_entry(hass, entry) -> None:
     """Handle removal of an entry."""
-    result = await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
+    result = await hass.async_add_executor_job(
+        hass.data[DOMAIN].stop_serial_read)
     return True
 
 
 class AmsHub:
     """AmsHub wrapper for all sensors."""
 
-    @profile(precision=6)
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
@@ -77,7 +76,6 @@ class AmsHub:
         self.connection.start()
         _LOGGER.debug('Finish init of AMS')
 
-    @profile(precision=6)
     def stop_serial_read(self):
         """Close resources."""
         _LOGGER.debug("stop_serial_read")
@@ -85,28 +83,20 @@ class AmsHub:
         self._ser.close()
         self.connection.join()
 
-    @profile(precision=6)
     def read_bytes(self):
         """Read the raw data from serial port."""
         byte_counter = 0
         bytelist = []
-        buffer = bytes()
         while self._running:
             buffer = self._ser.read()
             if buffer:
                 bytelist.extend(buffer)
                 if buffer == FRAME_FLAG and byte_counter > 1:
-                    self._ser.flushInput()
-                    buffer = bytes()
-                    _LOGGER.debug('buffer: %s', self._ser.inWaiting())
                     return bytelist
-                buffer = bytes()
                 byte_counter = byte_counter + 1
             else:
-                buffer = bytes()
                 continue
 
-    @profile(precision=6)
     def connect(self):
         """Read the data from the port."""
         if self.meter_manufacturer == "kaifa":
@@ -118,17 +108,14 @@ class AmsHub:
         while self._running:
             try:
                 data = self.read_bytes()
-                _LOGGER.debug('reading data = %s', data)
                 if parser.test_valid_data(data):
-                    _LOGGER.debug(data)
+                    _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data = parser.parse_data(
                         self.sensor_data, data)
                     self._hass.data[AMS_SENSORS] = self.sensor_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
-                    self._ser.flushInput()
                     _LOGGER.debug("failed package: %s", data)
-
             except serial.serialutil.SerialException:
                 pass
 
@@ -138,7 +125,6 @@ class AmsHub:
         _LOGGER.debug('sending sensor data')
         return self.sensor_data
 
-    @profile(precision=6)
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
         sensor_list = []
