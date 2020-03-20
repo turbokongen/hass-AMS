@@ -42,8 +42,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    hass.data[DOMAIN].stop_serial_read()
     await hass.config_entries.async_forward_entry_unload(entry, 'sensor')
+    return True
+
+
+async def async_remove_entry(hass, entry) -> None:
+    """Handle removal of an entry."""
+    result = await hass.async_add_executor_job(
+        hass.data[DOMAIN].stop_serial_read)
     return True
 
 
@@ -66,13 +72,15 @@ class AmsHub:
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
             timeout=DEFAULT_TIMEOUT)
-        connection = threading.Thread(target=self.connect, daemon=True)
-        connection.start()
+        self.connection = threading.Thread(target=self.connect, daemon=True)
+        self.connection.start()
         _LOGGER.debug('Finish init of AMS')
 
     def stop_serial_read(self):
         """Close resources."""
+        _LOGGER.debug("stop_serial_read")
         self._running = False
+        self.connection.join()
         self._ser.close()
 
     def read_bytes(self):
@@ -80,10 +88,10 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         while self._running:
-            data = self._ser.read()
-            if data:
-                bytelist.extend(data)
-                if data == FRAME_FLAG and byte_counter > 1:
+            buffer = self._ser.read()
+            if buffer:
+                bytelist.extend(buffer)
+                if buffer == FRAME_FLAG and byte_counter > 1:
                     return bytelist
                 byte_counter = byte_counter + 1
             else:
@@ -101,14 +109,13 @@ class AmsHub:
             try:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
-                    _LOGGER.debug(data)
+                    _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data = parser.parse_data(
                         self.sensor_data, data)
                     self._hass.data[AMS_SENSORS] = self.sensor_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
-
             except serial.serialutil.SerialException:
                 pass
 
