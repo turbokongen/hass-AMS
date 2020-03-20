@@ -80,8 +80,8 @@ class AmsHub:
         """Close resources."""
         _LOGGER.debug("stop_serial_read")
         self._running = False
-        self._ser.close()
         self.connection.join()
+        self._ser.close()
 
     def read_bytes(self):
         """Read the raw data from serial port."""
