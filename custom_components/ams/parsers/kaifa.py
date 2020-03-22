@@ -61,11 +61,11 @@ def parse_data(stored, data):
             'state': han_data["active_power_p"],
             'attributes': {
                 'meter_manufacturer': (stored["ams_active_power_import"]
-                                       ["attributes"]["meter_manufacturer"])
+                                       ["attributes"]["meter_manufacturer"]),
                 'meter_type': (stored["ams_active_power_import"]
-                               ["attributes"]["meter_type"])
+                               ["attributes"]["meter_type"]),
                 'meter_serial': (stored["ams_active_power_import"]
-                                 ["attributes"]["meter_serial"])
+                                 ["attributes"]["meter_serial"]),
                 'timestamp': han_data["date_time"],
                 'unit_of_measurement': 'W',
                 'icon': 'mdi:gauge',
