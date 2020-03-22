@@ -20,17 +20,16 @@ Kamstrup:
   - MA304T3
 
 Aidon:
-Aidon meters are not tested yet. Just programmed from available documentation.(Please report errors or if it's working)
+ - 6525 Thanks to @razzymoose for testing and providing patch :+1:
+
+ Not tested with, but should work:
  - 6515
- - 6525
  - 6534
  - 6540
  - 6550
  
-## *Installation*
-Stop Home-Assistant, 
-Find your MBus adapter port, 
-copy *ams* folder into your *custom_components* folder, 
+## *Installation
+Copy *ams* folder into your *custom_components* folder, 
 Start Home-Assistant, 
 Set up the integration in the *Integrations* config, 
 
@@ -56,3 +55,5 @@ https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=6
 Imporvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
 Enjoy
+
+Latest information about OBIS for all the meters: https://www.nek.no/info-ams-han-utviklere/
