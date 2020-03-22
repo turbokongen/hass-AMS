@@ -83,7 +83,6 @@ class AmsHub:
         self._running = False
         self.connection.join()
         self._ser.close()
-        self.connection.join()
 
     def read_bytes(self):
         """Read the raw data from serial port."""
