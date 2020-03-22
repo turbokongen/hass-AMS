@@ -50,12 +50,20 @@ def parse_data(stored, data):
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
-                'meter_manufacturer': stored["ams_active_power_import"]["attributes"]["meter_manufacturer"],
+                'meter_manufacturer': (stored["ams_active_power_import"]
+                                       ["attributes"]
+                                       ["meter_manufacturer"]),
                 'obis_code': han_data["obis_a_p_p"],
-                'meter_type': stored["ams_active_power_import"]["attributes"]["meter_type"],
-                'meter_serial': stored["ams_active_power_import"]["attributes"]["meter_serial"],
+                'meter_type': (stored["ams_active_power_import"]
+                               ["attributes"]
+                               ["meter_type"]),
+                'meter_serial': stored["ams_active_power_import"]
+                                      ["attributes"]
+                                      ["meter_serial"],
                 'unit_of_measurement': 'W',
-                'icon': 'mdi:gauge'
+                'icon': 'mdi:gauge',
+                'unique_id': f'ams_active_power_import-'
+                             '{han_data["meter_serial"]}'
             }
         }
         return sensor_data
@@ -74,7 +82,9 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'W',
-            'icon': 'mdi:gauge'
+            'icon': 'mdi:gauge',
+            'unique_id': f'ams_active_power_import-'
+                         '{han_data["meter_serial"]}'
             }
         }
     han_data["obis_a_p_n"] = field_type(".", fields=pkt[112:118])
@@ -87,7 +97,8 @@ def parse_data(stored, data):
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_a_p_n"],
             'unit_of_measurement': 'W',
-            'icon': 'mdi:gauge'
+            'icon': 'mdi:gauge',
+            'unique_id': f'ams_active_power_export-{han_data["meter_serial"]}'
             }
         }
     han_data["obis_r_p_p"] = field_type(".", fields=pkt[133:139])
@@ -100,7 +111,9 @@ def parse_data(stored, data):
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_p"],
             'unit_of_measurement': 'VAr',
-            'icon': 'mdi:gauge'
+            'icon': 'mdi:gauge',
+            'unique_id': f'ams_reactive_power_import-'
+                         '{han_data["meter_serial"]}'
             }
         }
     han_data["obis_r_p_n"] = field_type(".", fields=pkt[154:160])
@@ -113,7 +126,9 @@ def parse_data(stored, data):
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_r_p_n"],
             'unit_of_measurement': 'VAr',
-            'icon': 'mdi:gauge'
+            'icon': 'mdi:gauge',
+            'unique_id': f'ams_reactive_power_export-'
+                         '{han_data["meter_serial"]}'
             }
         }
     han_data["obis_c_l1"] = field_type(".", fields=pkt[175:181])
@@ -126,7 +141,8 @@ def parse_data(stored, data):
             'meter_serial': han_data["meter_serial"],
             'obis_code': han_data["obis_c_l1"],
             'unit_of_measurement': 'A',
-            'icon': 'mdi:current-ac'
+            'icon': 'mdi:current-ac',
+            'unique_id': f'ams_current_l1-{han_data["meter_serial"]}'
             }
         }
 
@@ -143,7 +159,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_c_l3"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current-ac'
+                'icon': 'mdi:current-ac',
+                'unique_id': f'ams_current_l3-{han_data["meter_serial"]}'
                 }
             }
         han_data["obis_v_l1"] = field_type(".", fields=pkt[213:219])
@@ -156,7 +173,9 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l1"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash'
+                'icon': 'mdi:flash',
+                'unique_id': f'ams_voltage_l1-{han_data["meter_serial"]}'
+
                 }
             }
         han_data["obis_v_l2"] = field_type(".", fields=pkt[232:238])
@@ -169,7 +188,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l2"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash'
+                'icon': 'mdi:flash',
+                'unique_id': f'ams_voltage_l2-{han_data["meter_serial"]}'
                 }
             }
         han_data["obis_v_l3"] = field_type(".", fields=pkt[251:257])
@@ -182,7 +202,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l3"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash'
+                'icon': 'mdi:flash',
+                'unique_id': f'ams_voltage_l3-{han_data["meter_serial"]}'
                 }
             }
         if list_type is LIST_TYPE_LONG_3PH_3W:
@@ -212,7 +233,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_p"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_import-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_a_e_n"] = field_type(".", fields=pkt[315:321])
@@ -228,7 +251,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_n"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_export-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_r_e_p"] = field_type(".", fields=pkt[336:342])
@@ -243,7 +268,9 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_import-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_r_e_n"] = field_type(".", fields=pkt[357:363])
@@ -259,7 +286,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_export-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
 
@@ -276,7 +305,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_c_l2"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current-ac'
+                'icon': 'mdi:current-ac',
+                'unique_id': f'ams_current_l2-{han_data["meter_serial"]}'
                 }
             }
         han_data["obis_c_l3"] = field_type(".", fields=pkt[213:219])
@@ -289,7 +319,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_c_l3"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current-ac'
+                'icon': 'mdi:current-ac',
+                'unique_id': f'ams_current_l3-{han_data["meter_serial"]}'
                 }
             }
         han_data["obis_v_l1"] = field_type(".", fields=pkt[232:238])
@@ -328,7 +359,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l3"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash'
+                'icon': 'mdi:flash',
+                'unique_id': f'ams_voltage_l3-{han_data["meter_serial"]}'
                 }
             }
         if list_type is LIST_TYPE_LONG_3PH_3W:
@@ -358,7 +390,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_p"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_import-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_a_e_n"] = field_type(".", fields=pkt[334:340])
@@ -374,7 +408,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_n"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_export-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_r_e_p"] = field_type(".", fields=pkt[355:361])
@@ -389,7 +425,9 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_import-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
             han_data["obis_r_e_n"] = field_type(".", fields=pkt[376:3382])
@@ -405,7 +443,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_export-'
+                                 '{han_data["meter_serial"]}'
                 }
             }
 
@@ -421,7 +461,8 @@ def parse_data(stored, data):
                 'meter_serial': han_data["meter_serial"],
                 'obis_code': han_data["obis_v_l1"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash'
+                'icon': 'mdi:flash',
+                'unique_id': f'ams_voltage_l1-{han_data["meter_serial"]}'
                 }
             }
 
@@ -452,7 +493,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_p"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_import-'
+                                 '{han_data["meter_serial"]}'
                     }
                 }
             han_data["obis_a_e_n"] = field_type(".", fields=pkt[258:264])
@@ -468,7 +511,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_a_e_n"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_active_energy_export-'
+                                 '{han_data["meter_serial"]}'
                     }
                 }
             han_data["obis_r_e_p"] = field_type(".", fields=pkt[279:285])
@@ -484,7 +529,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_p"],
                     'unit_of_measurement': 'kVAh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_import-'
+                                 '{han_data["meter_serial"]}'
                     }
                 }
             han_data["obis_r_e_n"] = field_type(".", fields=pkt[300:306])
@@ -500,7 +547,9 @@ def parse_data(stored, data):
                     'meter_serial': han_data["meter_serial"],
                     'obis_code': han_data["obis_r_e_n"],
                     'unit_of_measurement': 'kVAh',
-                    'icon': 'mdi:gauge'
+                    'icon': 'mdi:gauge',
+                    'unique_id': f'ams_reactive_energy_export-'
+                                 '{han_data["meter_serial"]}'
                     }
                 }
 
