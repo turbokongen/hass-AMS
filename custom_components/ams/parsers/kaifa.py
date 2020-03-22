@@ -31,7 +31,7 @@ METER_TYPE = {
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
     sensor_data = {}
-    han_data = stored
+    han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
@@ -52,10 +52,20 @@ def parse_data(stored, data):
     list_type = pkt[32]
     han_data["list_type"] = list_type
     if list_type is LIST_TYPE_MINI:
+        if "ams_active_power_import" not in stored:
+            # Wait for long message to get full attribute set before
+            # publishing mini list data
+            return stored
         han_data["active_power_p"] = byte_decode(fields=pkt[34:38])
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
+                'meter_manufacturer': (stored["ams_active_power_import"]
+                                       ["attributes"]["meter_manufacturer"])
+                'meter_type': (stored["ams_active_power_import"]
+                               ["attributes"]["meter_type"])
+                'meter_serial': (stored["ams_active_power_import"]
+                                 ["attributes"]["meter_serial"])
                 'timestamp': han_data["date_time"],
                 'unit_of_measurement': 'W',
                 'icon': 'mdi:gauge',
