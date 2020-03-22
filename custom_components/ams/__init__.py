@@ -59,7 +59,8 @@ class AmsHub:
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = entry.data[CONF_SERIAL_PORT]
+        port = (entry.data[CONF_SERIAL_PORT].split(':'))[0]
+        _LOGGER.debug(port)
         parity = entry.data[CONF_PARITY]
         self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
