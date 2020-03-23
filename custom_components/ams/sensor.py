@@ -88,7 +88,7 @@ class AmsSensor(Entity):
     @property
     def unique_id(self) -> str:
         """Return the unique id of the sensor."""
-        return self._attributes["unique_id"]
+        return self._attributes.get('unique_id')
 
     @property
     def name(self) -> str:
