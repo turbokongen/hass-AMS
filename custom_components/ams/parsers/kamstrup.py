@@ -101,7 +101,8 @@ def parse_data(stored, data):
             'obis_code': han_data["obis_r_p_p"],
             'unit_of_measurement': 'kVAr',
             'icon': 'mdi:gauge',
-            'unique_id': f'ams_reactive_power_import_{han_data["meter_serial"]}'
+            'unique_id': f'ams_reactive_power_import_'
+                         '{han_data["meter_serial"]}'
             }
         }
     han_data["obis_r_p_n"] = field_type(".", fields=pkt[142:148])
@@ -116,7 +117,8 @@ def parse_data(stored, data):
             'obis_code': han_data["obis_r_p_n"],
             'unit_of_measurement': 'kVAr',
             'icon': 'mdi:gauge',
-            'unique_id': f'ams_reactive_power_export_{han_data["meter_serial"]}'
+            'unique_id': f'ams_reactive_power_export_'
+                         '{han_data["meter_serial"]}'
             }
         }
     han_data["obis_c_l1"] = field_type(".", fields=pkt[155:161])
