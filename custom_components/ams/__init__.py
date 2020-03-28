@@ -11,6 +11,7 @@ from .parsers import aidon as Aidon
 from .const import (
     _LOGGER,
     AMS_DEVICES,
+    AMS_NEW_SENSORS,
     AMS_SENSORS,
     CONF_SERIAL_PORT,
     CONF_PARITY,
@@ -136,6 +137,7 @@ class AmsHub:
         _LOGGER.debug('AMS_DEVICES= %s', AMS_DEVICES)
         if len(AMS_DEVICES) < len(sensor_list):
             new_devices = list(set(sensor_list) ^ set(AMS_DEVICES))
+            self._hass.data[AMS_NEW_SENSORS] = new_devices
             for device in new_devices:
                 AMS_DEVICES.append(device)
             async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)

@@ -4,6 +4,7 @@ import serial
 
 _LOGGER = logging.getLogger(__name__)
 
+AMS_NEW_SENSORS = 'ams_new_sensors'
 AMS_SENSORS = 'ams_sensors'
 AMS_DEVICES = []
 
