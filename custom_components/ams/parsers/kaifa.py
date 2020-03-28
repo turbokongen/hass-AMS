@@ -68,9 +68,7 @@ def parse_data(stored, data):
                                  ["attributes"]["meter_serial"]),
                 'timestamp': han_data["date_time"],
                 'unit_of_measurement': 'W',
-                'icon': 'mdi:gauge',
-                'unique_id': (f'ams_active_power_import_'
-                              f'{han_data["meter_serial"]}')
+                'icon': 'mdi:gauge'
             }
         }
         return sensor_data
@@ -89,8 +87,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'W',
-            'icon': 'mdi:gauge',
-            'unique_id': f'ams_active_power_export_{han_data["meter_serial"]}'
+            'icon': 'mdi:gauge'
             }
         }
     han_data["reactive_power_p"] = byte_decode(fields=pkt[81:85])
@@ -102,9 +99,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'VAr',
-            'icon': 'mdi:gauge',
-            'unique_id': (f'ams_reactive_power_import-'
-                          f'{han_data["meter_serial"]}')
+            'icon': 'mdi:gauge'
             }
         }
     han_data["reactive_power_n"] = byte_decode(fields=pkt[86:90])
@@ -116,9 +111,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'VAr',
-            'icon': 'mdi:gauge',
-            'unique_id': (f'ams_reactive_power_export_'
-                          f'{han_data["meter_serial"]}')
+            'icon': 'mdi:gauge'
             }
         }
     han_data["current_l1"] = byte_decode(fields=pkt[91:95]) / 1000
@@ -130,8 +123,7 @@ def parse_data(stored, data):
             'meter_type': han_data["meter_type_str"],
             'meter_serial': han_data["meter_serial"],
             'unit_of_measurement': 'A',
-            'icon': 'mdi:current-ac',
-            'unique_id': f'ams_current_l1_{han_data["meter_serial"]}'
+            'icon': 'mdi:current-ac'
             }
         }
 
@@ -146,8 +138,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current-ac',
-                'unique_id': f'ams_current_l2_{han_data["meter_serial"]}'
+                'icon': 'mdi:current-ac'
                 }
             }
         han_data["current_l3"] = byte_decode(fields=pkt[101:105]) / 1000
@@ -159,8 +150,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'A',
-                'icon': 'mdi:current-ac',
-                'unique_id': f'ams_current_l3_{han_data["meter_serial"]}'
+                'icon': 'mdi:current-ac'
                 }
             }
         han_data["voltage_l1"] = byte_decode(fields=pkt[106:110]) / 10
@@ -172,8 +162,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash',
-                'unique_id': f'ams_voltage_l1_{han_data["meter_serial"]}'
+                'icon': 'mdi:flash'
                 }
             }
         han_data["voltage_l2"] = byte_decode(fields=pkt[111:115]) / 10
@@ -185,8 +174,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash',
-                'unique_id': f'ams_voltage_l2_{han_data["meter_serial"]}'
+                'icon': 'mdi:flash'
                 }
             }
         han_data["voltage_l3"] = byte_decode(fields=pkt[116:120]) / 10
@@ -198,8 +186,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash',
-                'unique_id': f'ams_voltage_l3_{han_data["meter_serial"]}'
+                'icon': 'mdi:flash'
                 }
             }
         if list_type == LIST_TYPE_LONG_3PH:
@@ -228,9 +215,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_active_energy_import_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                 }
             }
             han_data["active_energy_n"] = byte_decode(
@@ -245,9 +230,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_active_energy_export_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                 }
             }
             han_data["reactive_energy_p"] = byte_decode(
@@ -262,9 +245,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_reactive_energy_import_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                 }
             }
             han_data["reactive_energy_n"] = byte_decode(
@@ -279,9 +260,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_reactive_energy_export_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                 }
             }
 
@@ -297,8 +276,7 @@ def parse_data(stored, data):
                 'meter_type': han_data["meter_type_str"],
                 'meter_serial': han_data["meter_serial"],
                 'unit_of_measurement': 'V',
-                'icon': 'mdi:flash',
-                'unique_id': f'ams_voltage_l1_{han_data["meter_serial"]}'
+                'icon': 'mdi:flash'
                 }
             }
 
@@ -328,9 +306,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_active_energy_import_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                     }
                 }
             han_data["active_energy_n"] = byte_decode(
@@ -345,9 +321,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kWh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_active_energy_export_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                     }
                 }
             han_data["reactive_energy_p"] = byte_decode(
@@ -362,9 +336,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_reactive_energy_import_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                     }
                 }
             han_data["reactive_energy_n"] = byte_decode(
@@ -379,9 +351,7 @@ def parse_data(stored, data):
                     'meter_type': han_data["meter_type_str"],
                     'meter_serial': han_data["meter_serial"],
                     'unit_of_measurement': 'kVArh',
-                    'icon': 'mdi:gauge',
-                    'unique_id': (f'ams_reactive_energy_export_'
-                                  f'{han_data["meter_serial"]}')
+                    'icon': 'mdi:gauge'
                     }
                 }
     return sensor_data

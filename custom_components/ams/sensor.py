@@ -3,7 +3,12 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 import custom_components.ams as amshub
-from .const import _LOGGER, AMS_NEW_SENSORS, DOMAIN, SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS
+from .const import (
+    _LOGGER,
+    AMS_NEW_SENSORS,
+    DOMAIN,
+    SIGNAL_NEW_AMS_SENSOR,
+    SIGNAL_UPDATE_AMS)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
@@ -73,7 +78,7 @@ class AmsSensor(Entity):
     @property
     def unique_id(self) -> str:
         """Return the unique id of the sensor."""
-        return self._attributes.get('unique_id')
+        return f'{self._name}_{self._meter_id}'
 
     @property
     def name(self) -> str:
