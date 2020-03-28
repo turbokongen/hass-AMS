@@ -3,7 +3,12 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 import custom_components.ams as amshub
-from .const import _LOGGER, DOMAIN, SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS
+from .const import (
+    _LOGGER,
+    AMS_NEW_SENSORS,
+    DOMAIN,
+    SIGNAL_NEW_AMS_SENSOR,
+    SIGNAL_UPDATE_AMS)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
@@ -12,13 +17,16 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     @callback
     def async_add_sensor():
         """Add AMS Sensor."""
+        sensors = []
+        sensor_states = {}
         data = hass.data[amshub.AMS_SENSORS]
+        sensors_to_add = hass.data[AMS_NEW_SENSORS]
         _LOGGER.debug('HUB in async_setup_entry-async_add_sensor= %s',
                       hass.data[DOMAIN].data)
         _LOGGER.debug('AMS_SENSORS in async_setup_entry-async_add_sensor= %s',
                       hass.data[amshub.AMS_SENSORS])
 
-        for sensor_name in list(data):
+        for sensor_name in list(sensors_to_add):
             sensor_states = {
                 'name': sensor_name,
                 'state': data[sensor_name].get('state'),
@@ -27,25 +35,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             sensors.append(AmsSensor(hass, sensor_states))
         _LOGGER.debug('async_add_sensor in async_setup_entry')
         async_add_devices(sensors, True)
-
     async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
-    sensor_states = {}
-    sensors = []
-    data = hass.data[amshub.AMS_SENSORS]
-    _LOGGER.debug('HUB in async_setup_entry= %s', hass.data[DOMAIN].data)
-    _LOGGER.debug('AMS_SENSORS in async_setup_entry= %s',
-                  hass.data[amshub.AMS_SENSORS])
-
-    for sensor_name in list(data):
-        sensor_states = {
-            'name': sensor_name,
-            'state': data[sensor_name].get('state'),
-            'attributes': data[sensor_name].get('attributes')
-            }
-        sensors.append(AmsSensor(hass, sensor_states))
-    _LOGGER.debug('async_add_devices in end of async_setup_entry')
-    async_add_devices(sensors)
-    return True
 
 
 async def async_remove_entry(hass, entry):
@@ -88,7 +78,7 @@ class AmsSensor(Entity):
     @property
     def unique_id(self) -> str:
         """Return the unique id of the sensor."""
-        return f"{self._name}_{self._meter_id}"
+        return f'{self._name}_{self._meter_id}'
 
     @property
     def name(self) -> str:

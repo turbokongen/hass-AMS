@@ -50,10 +50,16 @@ def parse_data(stored, data):
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
-                'meter_manufacturer': stored["ams_active_power_import"]["attributes"]["meter_manufacturer"],
+                'meter_manufacturer': (stored["ams_active_power_import"]
+                                       ["attributes"]
+                                       ["meter_manufacturer"]),
                 'obis_code': han_data["obis_a_p_p"],
-                'meter_type': stored["ams_active_power_import"]["attributes"]["meter_type"],
-                'meter_serial': stored["ams_active_power_import"]["attributes"]["meter_serial"],
+                'meter_type': (stored["ams_active_power_import"]
+                               ["attributes"]
+                               ["meter_type"]),
+                'meter_serial': stored["ams_active_power_import"]
+                                      ["attributes"]
+                                      ["meter_serial"],
                 'unit_of_measurement': 'W',
                 'icon': 'mdi:gauge'
             }
