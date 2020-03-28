@@ -49,10 +49,10 @@ https://www.aliexpress.com/item/32719562958.html?spm=a2g0s.9042311.0.0.c8314c4dp
 https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3189f8fCOsSM
 https://www.aliexpress.com/item/32834331647.html?spm=a2g0o.detail.1000060.1.74cfdcd4qts4jp
 
-## * Known NOT working modules*
+## *Known NOT working modules*
 https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=600
 
-Imporvements and suggestions are also welcome.
+Improvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
 Enjoy
 
