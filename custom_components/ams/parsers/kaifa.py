@@ -52,7 +52,7 @@ def parse_data(stored, data):
     list_type = pkt[32]
     han_data["list_type"] = list_type
     if list_type is LIST_TYPE_MINI:
-        if "ams_active_power_import" not in stored:
+        if "ams_active_power_export" not in stored:
             # Wait for long message to get full attribute set before
             # publishing mini list data
             return stored
@@ -60,11 +60,11 @@ def parse_data(stored, data):
         sensor_data["ams_active_power_import"] = {
             'state': han_data["active_power_p"],
             'attributes': {
-                'meter_manufacturer': (stored["ams_active_power_import"]
+                'meter_manufacturer': (stored["ams_active_power_export"]
                                        ["attributes"]["meter_manufacturer"]),
-                'meter_type': (stored["ams_active_power_import"]
+                'meter_type': (stored["ams_active_power_export"]
                                ["attributes"]["meter_type"]),
-                'meter_serial': (stored["ams_active_power_import"]
+                'meter_serial': (stored["ams_active_power_export"]
                                  ["attributes"]["meter_serial"]),
                 'timestamp': han_data["date_time"],
                 'unit_of_measurement': 'W',
