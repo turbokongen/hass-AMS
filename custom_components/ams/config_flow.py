@@ -28,19 +28,17 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         ports = [(comport.device + ": " + comport.description) for comport in portdata]
 
         if user_input is not None:
-            return self.async_create_entry(title="Norwegian AMS", data=user_input)
-
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_SERIAL_PORT, default=None): vol.In(ports),
-                    vol.Required(
-                        CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
-                    ): vol.In(MANUFACTURER_OPTIONS),
-                    vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): vol.All(str),
-                }
-            ),
+            return self.async_create_entry(
+                title="Norwegian AMS", data=user_input)
+        _LOGGER.debug(ports)
+        return self.async_show_form(step_id="user", data_schema=vol.Schema({
+            vol.Required(CONF_SERIAL_PORT,
+                         default=None): vol.In(ports),
+            vol.Required(CONF_METER_MANUFACTURER,
+                         default=DEFAULT_METER_MANUFACTURER):
+                         vol.In(MANUFACTURER_OPTIONS),
+            vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): vol.All(str)
+        }),
             description_placeholders={
                 CONF_SERIAL_PORT: ports,
                 CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS,
