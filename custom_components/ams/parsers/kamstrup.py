@@ -3,15 +3,14 @@ Decode for HAN Kamstrup.
 
 This module will decode the incoming message from Mbus serial.
 """
-
+import logging
 from datetime import datetime
+
 from crccheck.crc import CrcX25
-from ..const import (
-    _LOGGER,
-    DATA_FLAG,
-    FRAME_FLAG,
-    WEEKDAY_MAPPING
-)
+
+from ..const import DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
+
+_LOGGER = logging.getLogger(__name__)
 
 LIST_TYPE_SHORT_1PH = 17
 LIST_TYPE_LONG_1PH = 27
