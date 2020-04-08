@@ -4,7 +4,7 @@ import logging
 import custom_components.ams as amshub
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (AMS_DEVICES, DOMAIN, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
@@ -53,7 +53,7 @@ async def async_remove_entry(hass, entry):
         pass
 
 
-class AmsSensor(Entity):
+class AmsSensor(RestoreEntity):
     """Representation of a Serial sensor."""
 
     def __init__(self, hass, sensor_states):
@@ -120,8 +120,12 @@ class AmsSensor(Entity):
 
     async def async_added_to_hass(self):
         """Register callbacks."""
+        await super().async_added_to_hass()
         async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS, self._update_callback)
-
+        state = await self.async_get_last_state()
+        if state is not None:  
+            self._state = state.state
+        
     @callback
     def _update_callback(self):
         """Update the state."""
