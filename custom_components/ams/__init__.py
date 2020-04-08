@@ -3,33 +3,74 @@ import logging
 import threading
 from copy import deepcopy
 
+import homeassistant.helpers.config_validation as cv
 import serial
-from homeassistant.config_entries import ConfigEntry
+import voluptuous as vol
+from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-
-from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_METER_MANUFACTURER,
-                    CONF_PARITY, CONF_SERIAL_PORT, DEFAULT_BAUDRATE,
-                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
-                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
-                    SIGNAL_UPDATE_AMS)
+from .const import (
+    AIDON_METER_SEQ,
+    AMS_DEVICES,
+    CONF_METER_MANUFACTURER,
+    CONF_PARITY,
+    CONF_SERIAL_PORT,
+    DEFAULT_BAUDRATE,
+    DEFAULT_METER_MANUFACTURER,
+    DEFAULT_PARITY,
+    DEFAULT_SERIAL_PORT,
+    DEFAULT_TIMEOUT,
+    DOMAIN,
+    FRAME_FLAG,
+    KAIFA_METER_SEQ,
+    KAMSTRUP_METER_SEQ,
+    SIGNAL_NEW_AMS_SENSOR,
+    SIGNAL_UPDATE_AMS,
+)
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
 
 _LOGGER = logging.getLogger(__name__)
 
+{
+    DOMAIN: vol.Schema(
+        {
+            vol.Required(CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT): cv.string,
+            vol.Required(
+                CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
+            ): cv.string,
+            vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
+        }
+    )
+}
+
+
+def _setup(hass, config):
+    """Setup helper for the component."""
+    if DOMAIN not in hass.data:
+        hub = AmsHub(hass, config)
+        hass.data[DOMAIN] = hub
+
 
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     """AMS hub YAML setup."""
-    hass.data[DOMAIN] = {}
+    if config.get(DOMAIN) is None:
+        _LOGGER.info("No YAML config available, using config_entries")
+        return True
+    _setup(hass, config[DOMAIN])
+    if not hass.config_entries.async_entries(DOMAIN):
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN, context={"source": SOURCE_IMPORT}, data=config[DOMAIN]
+            )
+        )
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up AMS as config entry."""
-    hub = AmsHub(hass, entry)
-    hass.data[DOMAIN] = hub
+    _setup(hass, entry.data)
     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, "sensor"))
     return True
 
@@ -54,8 +95,8 @@ class AmsHub:
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
         _LOGGER.debug("Connecting to HAN using port %s", port)
+        parity = entry.data.get(CONF_PARITY)
         self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
-        parity = entry.data[CONF_PARITY]
         self.sensor_data = {}
         self._attrs = {}
         self._running = True

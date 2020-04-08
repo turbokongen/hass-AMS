@@ -1,5 +1,8 @@
 {
     "config": {
+        "abort": {
+           "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
+        },
         "title": "AMS Norge",
         "step": {
             "user": {
