@@ -1,28 +1,21 @@
 """AMS hub platform."""
-
+import logging
 import threading
+
 import serial
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+
+from .const import (AMS_DEVICES, CONF_METER_MANUFACTURER, CONF_PARITY,
+                    CONF_SERIAL_PORT, DEFAULT_BAUDRATE, DEFAULT_TIMEOUT,
+                    DOMAIN, FRAME_FLAG, SIGNAL_NEW_AMS_SENSOR,
+                    SIGNAL_UPDATE_AMS)
+from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
-from .parsers import aidon as Aidon
-from .const import (
-    _LOGGER,
-    AMS_DEVICES,
-    AMS_NEW_SENSORS,
-    AMS_SENSORS,
-    CONF_SERIAL_PORT,
-    CONF_PARITY,
-    CONF_METER_MANUFACTURER,
-    DEFAULT_BAUDRATE,
-    DEFAULT_TIMEOUT,
-    DOMAIN,
-    FRAME_FLAG,
-    SIGNAL_NEW_AMS_SENSOR,
-    SIGNAL_UPDATE_AMS
-)
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
@@ -35,22 +28,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up AMS as config entry."""
     hub = AmsHub(hass, entry)
     hass.data[DOMAIN] = hub
-    hass.async_add_job(
-        hass.config_entries.async_forward_entry_setup(entry, 'sensor')
-    )
+    hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, "sensor"))
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    await hass.config_entries.async_forward_entry_unload(entry, 'sensor')
+    await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     return True
 
 
 async def async_remove_entry(hass, entry) -> None:
     """Handle removal of an entry."""
-    result = await hass.async_add_executor_job(
-        hass.data[DOMAIN].stop_serial_read)
+    await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
     return True
 
 
@@ -60,12 +50,11 @@ class AmsHub:
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = (entry.data[CONF_SERIAL_PORT].split(':'))[0]
-        _LOGGER.debug(port)
+        port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
+        _LOGGER.debug("Using port %s", port)
         parity = entry.data[CONF_PARITY]
         self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
-        self._hass.data[AMS_SENSORS] = self.data
         self._running = True
         self._ser = serial.Serial(
             port=port,
@@ -73,10 +62,11 @@ class AmsHub:
             parity=parity,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=DEFAULT_TIMEOUT)
+            timeout=DEFAULT_TIMEOUT,
+        )
         self.connection = threading.Thread(target=self.connect, daemon=True)
         self.connection.start()
-        _LOGGER.debug('Finish init of AMS')
+        _LOGGER.debug("Finish init of AMS")
 
     def stop_serial_read(self):
         """Close resources."""
@@ -112,9 +102,7 @@ class AmsHub:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data = parser.parse_data(
-                        self.sensor_data, data)
-                    self._hass.data[AMS_SENSORS] = self.sensor_data
+                    self.sensor_data = parser.parse_data(self.sensor_data, data)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -124,26 +112,16 @@ class AmsHub:
     @property
     def data(self):
         """Return sensor data."""
-        _LOGGER.debug('sending sensor data')
         return self.sensor_data
 
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
-        sensor_list = []
         new_devices = []
-        for sensor_name in sensor_data.keys():
-            sensor_list.append(sensor_name)
-        _LOGGER.debug('sensor_list= %s', sensor_list)
-        _LOGGER.debug('AMS_DEVICES= %s', AMS_DEVICES)
-        if len(AMS_DEVICES) < len(sensor_list):
-            new_devices = list(set(sensor_list) ^ set(AMS_DEVICES))
-            self._hass.data[AMS_NEW_SENSORS] = new_devices
-            for device in new_devices:
-                AMS_DEVICES.append(device)
+        sensors_in_data = set(sensor_data.keys())
+        new_devices = sensors_in_data.difference(AMS_DEVICES)
+        if len(new_devices):
+            _LOGGER.debug("Got %s new devices %r", len(new_devices), new_devices)
             async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
-            _LOGGER.debug('new_devices= %s', new_devices)
         else:
-            _LOGGER.debug('sensors are the same, updating states')
-            _LOGGER.debug('hass.data[AMS_SENSORS] = %s',
-                          self._hass.data[AMS_SENSORS])
+            _LOGGER.debug("sensors are the same, updating states")
             async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)
