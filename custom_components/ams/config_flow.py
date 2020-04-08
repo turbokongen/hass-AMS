@@ -49,10 +49,8 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         }),
             description_placeholders={
                 CONF_SERIAL_PORT: ports,
-                CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS,
-            },
-            errors=self._errors,
-        )
+                CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS
+            }, errors=self._errors)
 
     async def async_step_import(self, user_input=None):
         """Import a config flow from configuration."""
