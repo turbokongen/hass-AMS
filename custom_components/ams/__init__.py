@@ -7,9 +7,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import (AMS_DEVICES, CONF_METER_MANUFACTURER, CONF_PARITY,
+from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_PARITY,
                     CONF_SERIAL_PORT, DEFAULT_BAUDRATE, DEFAULT_TIMEOUT,
-                    DOMAIN, FRAME_FLAG, SIGNAL_NEW_AMS_SENSOR,
+                    DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
+                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
@@ -53,7 +54,6 @@ class AmsHub:
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
         _LOGGER.debug("Using port %s", port)
         parity = entry.data[CONF_PARITY]
-        self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
         self._running = True
         self._ser = serial.Serial(
@@ -91,12 +91,12 @@ class AmsHub:
 
     def connect(self):
         """Read the data from the port."""
-        if self.meter_manufacturer == "kaifa":
-            parser = Kaifa
-        elif self.meter_manufacturer == "aidon":
-            parser = Aidon
-        else:
-            parser = Kamstrup
+        parser = None
+        while parser is None:
+            pkg = self.read_bytes()
+            parser = self._find_parser(pkg)
+            _LOGGER.debug("Parser = %s", parser)
+
         while self._running:
             try:
                 data = self.read_bytes()
@@ -108,6 +108,28 @@ class AmsHub:
                     _LOGGER.debug("failed package: %s", data)
             except serial.serialutil.SerialException:
                 pass
+
+    def _find_parser(self, pkg):
+        """Helper to detect meter manufacturer."""
+
+        def _test_meter(pkg, meter):
+            """Meter tester."""
+            match = []
+            _LOGGER.debug("Testing for %s", meter)
+            for i in range(len(pkg)):
+                if pkg[i] == meter[0] and pkg[i:i+len(meter)] == meter:
+                    match.append(meter)
+            return meter in match
+        if _test_meter(pkg, AIDON_METER_SEQ):
+            _LOGGER.info("Detected Adion meter")
+            return Aidon
+        elif _test_meter(pkg, KAIFA_METER_SEQ):
+            _LOGGER.info("Detected Kaifa meter")
+            return Kaifa
+        elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
+            _LOGGER.info("Detected Kamstrup meter")
+            return Kamstrup
+        _LOGGER.warning("No parser detected")
 
     @property
     def data(self):
