@@ -7,15 +7,17 @@ AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
 AMS_DEVICES = set()
 
-CONF_SERIAL_PORT = "serial_port"
 CONF_BAUDRATE = "baudrate"
+CONF_METER_MANUFACTURER = "meter_manufacturer"
 CONF_PARITY = "parity"
+CONF_SERIAL_PORT = "serial_port"
 
 DATA_FLAG = [230, 231, 0, 15]
 DOMAIN = "ams"
 
 DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
 DEFAULT_BAUDRATE = 2400
+DEFAULT_METER_MANUFACTURER = "auto"
 DEFAULT_PARITY = serial.PARITY_NONE
 DEFAULT_TIMEOUT = 0.1
 
@@ -28,6 +30,8 @@ LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
 LIST_TYPE_SHORT_3PH = 13
 LIST_TYPE_LONG_3PH = 18
+
+MANUFACTURER_OPTIONS = ["auto", "aidon", "kaifa", "kamstrup"]
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"

@@ -5,8 +5,9 @@ import serial.tools.list_ports as devices
 import voluptuous as vol
 from homeassistant import config_entries
 
-from .const import (CONF_PARITY, CONF_SERIAL_PORT,
-                    DEFAULT_PARITY, DOMAIN)
+from .const import (CONF_PARITY, CONF_METER_MANUFACTURER, CONF_SERIAL_PORT,
+                    DEFAULT_METER_MANUFACTURER, DEFAULT_PARITY, DOMAIN,
+                    MANUFACTURER_OPTIONS)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,10 +35,14 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(step_id="user", data_schema=vol.Schema({
             vol.Required(CONF_SERIAL_PORT,
                          default=None): vol.In(ports),
+            vol.Required(CONF_METER_MANUFACTURER,
+                         default=DEFAULT_METER_MANUFACTURER):
+                         vol.In(MANUFACTURER_OPTIONS),
             vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): vol.All(str)
         }),
             description_placeholders={
                 CONF_SERIAL_PORT: ports,
+                CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS
         }, errors=self._errors)
 
     async def async_step_import(self, user_input=None):

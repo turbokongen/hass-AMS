@@ -8,8 +8,9 @@ from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_PARITY,
-                    CONF_SERIAL_PORT, DEFAULT_BAUDRATE, DEFAULT_TIMEOUT,
-                    DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
+                    CONF_SERIAL_PORT, CONF_METER_MANUFACTURER,
+                    DEFAULT_BAUDRATE, DEFAULT_TIMEOUT, DOMAIN,
+                    FRAME_FLAG, KAIFA_METER_SEQ,
                     KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
@@ -53,6 +54,7 @@ class AmsHub:
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
         _LOGGER.debug("Using port %s", port)
+        self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
         parity = entry.data[CONF_PARITY]
         self.sensor_data = {}
         self._running = True
@@ -92,10 +94,20 @@ class AmsHub:
     def connect(self):
         """Read the data from the port."""
         parser = None
-        while parser is None:
-            pkg = self.read_bytes()
-            parser = self._find_parser(pkg)
-            _LOGGER.debug("Parser = %s", parser)
+
+        if self.meter_manufacturer == "auto":
+            while parser is None:
+                _LOGGER.info("Autodetecting meter manufacturer")
+                pkg = self.read_bytes()
+                self.meter_manufacturer = self._find_parser(pkg)
+                parser = self.meter_manufacturer
+
+        if self.meter_manufacturer == "aidon":
+            parser = Aidon
+        elif self.meter_manufacturer == "kaifa":
+            parser = Kaifa
+        elif self.meter_manufacturer == "kamstrup":
+            parser = Kamstrup
 
         while self._running:
             try:
@@ -122,13 +134,13 @@ class AmsHub:
             return meter in match
         if _test_meter(pkg, AIDON_METER_SEQ):
             _LOGGER.info("Detected Adion meter")
-            return Aidon
+            return "aidon"
         elif _test_meter(pkg, KAIFA_METER_SEQ):
             _LOGGER.info("Detected Kaifa meter")
-            return Kaifa
+            return "kaifa"
         elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
-            return Kamstrup
+            return "kamstrup"
         _LOGGER.warning("No parser detected")
 
     @property
