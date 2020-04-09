@@ -4,6 +4,7 @@ import serial
 
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
+# Devices that we have read from the serial connection.
 AMS_DEVICES = set()
 AMS_SENSOR_CREATED_BUT_NOT_READ = set()
 
@@ -35,6 +36,20 @@ HOURLY_SENSORS = [
     "ams_reactive_energy_import",
     "ams_reactive_energy_export",
 ]
+
+
+ALL_SENSORS = [
+    "ams_reactive_power_export",
+    "ams_voltage_l3",
+    "ams_active_power_export",
+    "ams_voltage_l2",
+    "ams_reactive_power_import",
+    "ams_current_l1",
+    "ams_voltage_l1",
+    "ams_current_l2",
+    "ams_active_power_import",
+    "ams_current_l3",
+] + HOURLY_SENSORS
 
 
 SIGNAL_UPDATE_AMS = "ams_update"

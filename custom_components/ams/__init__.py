@@ -52,7 +52,7 @@ class AmsHub:
         """Initialize the AMS hub."""
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
-        _LOGGER.debug("Using port %s", port)
+        _LOGGER.debug("Connecting to to HAN using port %s", port)
         parity = entry.data[CONF_PARITY]
         self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
@@ -82,10 +82,10 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         while self._running:
-            buffer = self._ser.read()
-            if buffer:
-                bytelist.extend(buffer)
-                if buffer == FRAME_FLAG and byte_counter > 1:
+            buf = self._ser.read()
+            if buf:
+                bytelist.extend(buf)
+                if buf == FRAME_FLAG and byte_counter > 1:
                     return bytelist
                 byte_counter = byte_counter + 1
             else:
@@ -94,10 +94,6 @@ class AmsHub:
     @property
     def meter_serial(self):
         return self._attrs["meter_serial"]
-
-    # @property
-    # def meter_manufacturer(self):
-    #    return self._attrs["meter_manufacturer"]
 
     @property
     def meter_type(self):
@@ -116,7 +112,8 @@ class AmsHub:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
                     # _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data = parser.parse_data(self.sensor_data, data)
+                    new_data = parser.parse_data(self.sensor_data, data)
+                    self.sensor_data = new_data
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -128,6 +125,29 @@ class AmsHub:
         """Return sensor data."""
         return self.sensor_data
 
+    def missing_attrs(self, data=None):
+        """Check if we have any missing attrs that we need and set them."""
+        if data is None:
+            data = self.data
+
+        attrs_to_check = ["meter_serial", "meter_manufacturer", "meter_type"]
+        miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
+        if miss_attrs:
+            cp_sensors_data = deepcopy(data)
+            for check in miss_attrs:
+                for value in cp_sensors_data.values():
+                    v = value.get("attributes", {}).get(check)
+                    if v:
+                        self._attrs[check] = v
+                        #break
+            del cp_sensors_data
+            if len([i for i in attrs_to_check if i not in self._attrs]):
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
         new_devices = []
@@ -135,31 +155,18 @@ class AmsHub:
         new_devices = sensors_in_data.difference(AMS_DEVICES)
 
         if len(new_devices):
+            #_LOGGER.debug("sensor data %s", sensor_data)
             # Check that we have all the info we need before the sensors are
             # created, the most importent one is the meter_serial as this is
             # use to create the unique_id
-            attrs_to_check = ["meter_serial", "meter_manufacturer", "meter_type"]
-            missing = [i for i in attrs_to_check if i not in self._attrs]
-            if missing:
-                cp_sensors_data = deepcopy(sensor_data)
-                for check in missing:
-                    for value in cp_sensors_data.values():
-                        v = value.get("attributes", {}).get(check)
-                        if v:
-                            self._attrs[check] = v
-                            break
-                del cp_sensors_data
-                _LOGGER.debug(
-                    "Missed %s we we didnt add any new devices, waiting until we got all %r",
-                    missing,
-                    self._attrs,
-                )
+            if self.missing_attrs(sensor_data) is True:
+                _LOGGER.debug("Missing some attributes waiting for new read from the serial")
             else:
                 _LOGGER.debug(
-                    "Got %s new devices from the serial %r",
-                    len(new_devices),
-                    new_devices,
+                    "Got %s new devices from the serial",
+                    len(new_devices)
                 )
+                _LOGGER.debug("DUMP %s", sensor_data)
                 async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:
             # _LOGGER.debug("sensors are the same, updating states")

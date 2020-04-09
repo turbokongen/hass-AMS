@@ -2,6 +2,7 @@
 import logging
 from datetime import timedelta
 
+from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -26,7 +27,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
         for sensor_name in data:
             # Check that we dont add a new sensor that already exists.
+            # We only try to update the state for sensors in AMS_DEVICES
             if sensor_name not in AMS_DEVICES:
+                _LOGGER.debug("Added %s to %s", sensor_name, AMS_DEVICES)
                 AMS_DEVICES.add(sensor_name)
                 if sensor_name in AMS_SENSOR_CREATED_BUT_NOT_READ:
                     # The hourly sensors is added manually at the start.
@@ -39,12 +42,12 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                 }
                 sensors.append(AmsSensor(hass, sensor_states))
 
-        # Check if we should create the hourly sensors
+        # Handle the hourly sensors.
         for hourly in HOURLY_SENSORS:
             if hourly not in data and hourly not in AMS_SENSOR_CREATED_BUT_NOT_READ:
                 AMS_SENSOR_CREATED_BUT_NOT_READ.add(hourly)
                 _LOGGER.debug(
-                    "Hourly sensor %s so we can attempt to restore_state", hourly
+                    "Hourly sensor %s added so we can attempt to restore_state", hourly
                 )
                 sensor_states = {
                     "name": hourly,
@@ -88,20 +91,17 @@ class AmsSensor(RestoreEntity):
         # _LOGGER.debug("%s ", sensor_states.get("state"))
         # _LOGGER.debug("%s ", sensor_states.get("attributes"))
         # Force update of atts so the meter_id exist or the enity
-        # will not have serial number. (get another unique_id, then the user expects.)
         self._update_properties()
 
     def _update_properties(self):
         """Update all portions of sensor."""
         try:
-            self._state = self.ams.data[self._name].get("state")
-            self._attributes = self.ams.data[self._name].get("attributes")
+            self._state = self.ams.sensor_data[self._name].get("state")
+            self._attributes = self.ams.sensor_data[self._name].get("attributes")
             self._meter_id = self.ams.meter_serial
             _LOGGER.debug("updating sensor %s", self._name)
-        except KeyError as e:
-            # Stil will always fail on the hourly sensors until they are read.
+        except KeyError:
             pass
-            # _LOGGER.debug("Sensor not in hass.data, %s", e)
 
     @property
     def unique_id(self) -> str:
@@ -131,7 +131,6 @@ class AmsSensor(RestoreEntity):
     @property
     def device_info(self) -> dict:
         """Return the device info."""
-
         return {
             "name": self.name,
             "identifiers": {(DOMAIN, self.unique_id)},
@@ -147,16 +146,26 @@ class AmsSensor(RestoreEntity):
         old_state = await self.async_get_last_state()
 
         if old_state is not None and self._name and self._name in HOURLY_SENSORS:
-            _LOGGER.debug("state is %s, %s", old_state.state, old_state.entity_id)
             if dt_utils.utcnow() - old_state.last_changed < timedelta(minutes=60):
-                _LOGGER.debug(
-                    "The state for %s was set less then a hour ago, so its still correct, restoring state to %s",
-                    self._name,
-                    old_state.state,
-                )
-                self._state = old_state.state
-                self._attributes = old_state.attributes
-                self.async_write_ha_state()
+                if old_state.state == STATE_UNKNOWN:
+                    _LOGGER.debug(
+                        "%s state is unknown, this typically happens if "
+                        "ha never never got the real state of %s and the "
+                        "users restart ha",
+                        self._name,
+                        self._name,
+                    )
+                else:
+                    _LOGGER.debug(
+                        "The state for %s was set less then a hour ago,"
+                        " so its still correct, restoring state to %s with attrs %s",
+                        self._name,
+                        old_state.state,
+                        old_state.attributes
+                    )
+                    self._state = old_state.state
+                    self._attributes = old_state.attributes
+                    self.async_write_ha_state()
             else:
                 # I'll rather have unknown then wrong values.
                 _LOGGER.debug(

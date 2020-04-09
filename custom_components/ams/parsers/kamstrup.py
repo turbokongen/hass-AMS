@@ -8,7 +8,7 @@ from datetime import datetime
 
 from crccheck.crc import CrcX25
 
-from ..const import DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
+from ..const import ALL_SENSORS, DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -388,7 +388,15 @@ def parse_data(stored, data):
                     'icon': 'mdi:gauge'
                     }
                 }
-    return sensor_data
+
+    # The parser should be change, lets do a quick fix for now.
+    res = {}
+    for key, value in dict(stored).items():
+        if key in ALL_SENSORS:
+            res[key] = value
+
+    res.update(sensor_data)
+    return res
 
 
 def field_type(default="", fields=None, enc=str, dec=None):
@@ -421,41 +429,41 @@ def test_valid_data(data):
         return False
 
     if len(data) > 302 or len(data) < 180:
-        #_LOGGER.debug('Invalid packet size %s', len(data))
+        _LOGGER.debug('Invalid packet size %s', len(data))
         return False
 
     if not data[0] and data[-1] == FRAME_FLAG:
-        ##_LOGGER.debug("%s Recieved %s bytes of %s data",
-        #              datetime.now().isoformat(),
-        #              len(data), False)
+        _LOGGER.debug("%s Recieved %s bytes of %s data",
+                      datetime.now().isoformat(),
+                      len(data), False)
         return False
 
     header_checksum = CrcX25.calc(bytes(data[1:6]))
     read_header_checksum = (data[7] << 8 | data[6])
 
     if header_checksum != read_header_checksum:
-        #_LOGGER.debug('Invalid header CRC check')
+        _LOGGER.debug('Invalid header CRC check')
         return False
 
     frame_checksum = CrcX25.calc(bytes(data[1:-3]))
     read_frame_checksum = (data[-2] << 8 | data[-3])
 
     if frame_checksum != read_frame_checksum:
-        #_LOGGER.debug('Invalid frame CRC check')
+        _LOGGER.debug('Invalid frame CRC check')
         return False
 
     if data[8:12] != DATA_FLAG:
-        #_LOGGER.debug('Data does not start with %s: %s',
-        #              DATA_FLAG, data[8:12])
+        _LOGGER.debug('Data does not start with %s: %s',
+                      DATA_FLAG, data[8:12])
         return False
 
     packet_size = len(data)
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
 
     if packet_size != read_packet_size:
-        #_LOGGER.debug(
-        #    'Packet size does not match read packet size: %s : %s',
-        #    packet_size, read_packet_size)
+        _LOGGER.debug(
+            'Packet size does not match read packet size: %s : %s',
+            packet_size, read_packet_size)
         return False
 
     return True
