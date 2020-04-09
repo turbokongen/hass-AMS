@@ -34,7 +34,9 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="single_instance_allowed")
 
         portdata = await self.hass.async_add_executor_job(devices.comports)
-        ports = [(comport.device + ": " + comport.description) for comport in portdata]
+        ports = [
+            (comport.device + ": " + comport.description)
+            for comport in portdata]
 
         if user_input is not None:
             return self.async_create_entry(title="Norwegian AMS", data=user_input)
