@@ -5,6 +5,7 @@ import serial
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
 AMS_DEVICES = set()
+AMS_SENSOR_CREATED_BUT_NOT_READ = set()
 
 CONF_SERIAL_PORT = "serial_port"
 CONF_BAUDRATE = "baudrate"
@@ -27,6 +28,14 @@ LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
 LIST_TYPE_SHORT_3PH = 13
 LIST_TYPE_LONG_3PH = 18
+
+HOURLY_SENSORS = [
+    "ams_active_energy_import",
+    "ams_active_energy_export",
+    "ams_reactive_energy_import",
+    "ams_reactive_energy_export",
+]
+
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"

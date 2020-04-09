@@ -1,13 +1,14 @@
 """Support for reading data from a serial port."""
 import logging
+from datetime import timedelta
 
-import custom_components.ams as amshub
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.util import dt as dt_utils
 
-from .const import (AMS_DEVICES, DOMAIN, SIGNAL_NEW_AMS_SENSOR,
-                    SIGNAL_UPDATE_AMS)
+from .const import (AMS_DEVICES, AMS_SENSOR_CREATED_BUT_NOT_READ, DOMAIN,
+                    HOURLY_SENSORS, SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,16 +28,34 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             # Check that we dont add a new sensor that already exists.
             if sensor_name not in AMS_DEVICES:
                 AMS_DEVICES.add(sensor_name)
+                if sensor_name in AMS_SENSOR_CREATED_BUT_NOT_READ:
+                    # The hourly sensors is added manually at the start.
+                    continue
+
                 sensor_states = {
                     "name": sensor_name,
-                    "state": data[sensor_name].get("state"),
-                    "attributes": data[sensor_name].get("attributes"),
+                    "state": data.get(sensor_name, {}).get("state"),
+                    "attributes": data.get(sensor_name, {}).get("attributes"),
+                }
+                sensors.append(AmsSensor(hass, sensor_states))
+
+        # Check if we should create the hourly sensors
+        for hourly in HOURLY_SENSORS:
+            if hourly not in data and hourly not in AMS_SENSOR_CREATED_BUT_NOT_READ:
+                AMS_SENSOR_CREATED_BUT_NOT_READ.add(hourly)
+                _LOGGER.debug(
+                    "Hourly sensor %s so we can attempt to restore_state", hourly
+                )
+                sensor_states = {
+                    "name": hourly,
+                    "state": data.get(hourly, {}).get("state"),
+                    "attributes": data.get(hourly, {}).get("attributes"),
                 }
                 sensors.append(AmsSensor(hass, sensor_states))
 
         if len(sensors):
             _LOGGER.debug("Trying to add %s sensors", len(sensors))
-            async_add_devices(sensors, True)
+            async_add_devices(sensors)
 
     async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)
 
@@ -61,13 +80,13 @@ class AmsSensor(RestoreEntity):
         self.ams = hass.data[DOMAIN]
         self._hass = hass
         self._name = sensor_states.get("name")
-        self._meter_id = None
+        self._meter_id = self.ams.meter_serial
         self._state = None
         self._attributes = {}
         _LOGGER.debug("Initialize %s", self._name)
-        _LOGGER.debug("%s ", sensor_states)
-        _LOGGER.debug("%s ", sensor_states.get("state"))
-        _LOGGER.debug("%s ", sensor_states.get("attributes"))
+        # _LOGGER.debug("%s ", sensor_states)
+        # _LOGGER.debug("%s ", sensor_states.get("state"))
+        # _LOGGER.debug("%s ", sensor_states.get("attributes"))
         # Force update of atts so the meter_id exist or the enity
         # will not have serial number. (get another unique_id, then the user expects.)
         self._update_properties()
@@ -77,10 +96,12 @@ class AmsSensor(RestoreEntity):
         try:
             self._state = self.ams.data[self._name].get("state")
             self._attributes = self.ams.data[self._name].get("attributes")
-            self._meter_id = self._attributes.get("meter_serial")
+            self._meter_id = self.ams.meter_serial
             _LOGGER.debug("updating sensor %s", self._name)
         except KeyError as e:
-            _LOGGER.debug("Sensor not in hass.data, %s", e)
+            # Stil will always fail on the hourly sensors until they are read.
+            pass
+            # _LOGGER.debug("Sensor not in hass.data, %s", e)
 
     @property
     def unique_id(self) -> str:
@@ -114,20 +135,41 @@ class AmsSensor(RestoreEntity):
         return {
             "name": self.name,
             "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": self._attributes.get("meter_manufacturer"),
-            "model": self._attributes.get("meter_type"),
+            "manufacturer": self.ams.meter_manufacturer,
+            "model": self.ams.meter_type,
         }
 
     async def async_added_to_hass(self):
-        """Register callbacks."""
+        """Register callbacks and restoring states to hourly sensors."""
         await super().async_added_to_hass()
         async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS, self._update_callback)
-        state = await self.async_get_last_state()
-        if state is not None:  
-            self._state = state.state
-        
+        _LOGGER.debug("inside async_added_to_hass")
+        old_state = await self.async_get_last_state()
+
+        if old_state is not None and self._name and self._name in HOURLY_SENSORS:
+            _LOGGER.debug("state is %s, %s", old_state.state, old_state.entity_id)
+            if dt_utils.utcnow() - old_state.last_changed < timedelta(minutes=60):
+                _LOGGER.debug(
+                    "The state for %s was set less then a hour ago, so its still correct, restoring state to %s",
+                    self._name,
+                    old_state.state,
+                )
+                self._state = old_state.state
+                self._attributes = old_state.attributes
+                self.async_write_ha_state()
+            else:
+                # I'll rather have unknown then wrong values.
+                _LOGGER.debug(
+                    "old state %s was set more then 60 minutes ago %s, ignoring it.",
+                    old_state.state,
+                    old_state.last_changed,
+                )
+        else:
+            _LOGGER.debug("Skipping restore state for %s", self._name)
+
     @callback
     def _update_callback(self):
         """Update the state."""
-        self._update_properties()
-        self.async_schedule_update_ha_state()
+        if self._name in AMS_DEVICES:
+            self._update_properties()
+            self.async_schedule_update_ha_state()
