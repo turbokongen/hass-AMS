@@ -26,7 +26,7 @@ METER_TYPE = {
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
     sensor_data = {}
-    han_data = stored
+    han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
@@ -56,7 +56,8 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
             }
         }
-        return sensor_data
+        stored.update(sensor_data)
+        return stored, han_data
 
     han_data["obis_list_version"] = field_type(fields=pkt[35:42], enc=chr)
     han_data["meter_serial"] = field_type(fields=pkt[44:60], enc=chr)
@@ -339,7 +340,8 @@ def parse_data(stored, data):
                     'icon': 'mdi:gauge'
                     }
                 }
-    return sensor_data
+    stored.update(sensor_data)
+    return stored, han_data
 
 
 def field_type(default="", fields=None, enc=str, dec=None):

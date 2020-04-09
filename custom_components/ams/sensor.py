@@ -21,7 +21,6 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     @callback
     def async_add_sensor():
         """Add AMS Sensor."""
-        _LOGGER.debug("async_add_sensor callback in async_setup_entry")
         sensors = []
         data = hass.data[DOMAIN].sensor_data
 
@@ -29,7 +28,6 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             # Check that we dont add a new sensor that already exists.
             # We only try to update the state for sensors in AMS_DEVICES
             if sensor_name not in AMS_DEVICES:
-                _LOGGER.debug("Added %s to %s", sensor_name, AMS_DEVICES)
                 AMS_DEVICES.add(sensor_name)
                 if sensor_name in AMS_SENSOR_CREATED_BUT_NOT_READ:
                     # The hourly sensors is added manually at the start.
@@ -87,9 +85,8 @@ class AmsSensor(RestoreEntity):
         self._state = None
         self._attributes = {}
         _LOGGER.debug("Initialize %s", self._name)
-        # _LOGGER.debug("%s ", sensor_states)
-        # _LOGGER.debug("%s ", sensor_states.get("state"))
-        # _LOGGER.debug("%s ", sensor_states.get("attributes"))
+        _LOGGER.debug("DUMP sensor_states %s", sensor_states)
+
         # Force update of atts so the meter_id exist or the enity
         self._update_properties()
 
@@ -142,7 +139,6 @@ class AmsSensor(RestoreEntity):
         """Register callbacks and restoring states to hourly sensors."""
         await super().async_added_to_hass()
         async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS, self._update_callback)
-        _LOGGER.debug("inside async_added_to_hass")
         old_state = await self.async_get_last_state()
 
         if old_state is not None and self._name and self._name in HOURLY_SENSORS:

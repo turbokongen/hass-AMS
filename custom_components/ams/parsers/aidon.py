@@ -40,7 +40,7 @@ def parse_data(stored, data):
         if "ams_active_power_import" not in stored:
             # Wait for long message to get full attribute set before
             # publishing mini list data
-            return stored
+            return stored, han_data
         han_data["obis_a_p_p"] = field_type(".", fields=pkt[24:30])
         han_data["active_power_p"] = byte_decode(fields=pkt[31:35])
         sensor_data["ams_active_power_import"] = {
@@ -60,7 +60,9 @@ def parse_data(stored, data):
                 'icon': 'mdi:gauge'
             }
         }
-        return sensor_data
+        stored.update(sensor_data)
+        return stored, han_data
+
     han_data["obis_list_version"] = field_type(fields=pkt[32:43], enc=chr)
     han_data["meter_serial"] = field_type(fields=pkt[55:71], enc=chr)
     han_data["meter_type"] = field_type(fields=pkt[83:87], enc=chr, dec=int)
@@ -506,7 +508,8 @@ def parse_data(stored, data):
                     }
                 }
 
-    return sensor_data
+    stored.update(sensor_data)
+    return stored, han_data
 
 
 def field_type(default="", fields=None, enc=str, dec=None):

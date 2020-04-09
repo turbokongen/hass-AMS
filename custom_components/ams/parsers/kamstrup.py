@@ -30,7 +30,7 @@ METER_TYPE = {
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
     sensor_data = {}
-    han_data = stored
+    han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
@@ -390,13 +390,14 @@ def parse_data(stored, data):
                 }
 
     # The parser should be change, lets do a quick fix for now.
-    res = {}
-    for key, value in dict(stored).items():
-        if key in ALL_SENSORS:
-            res[key] = value
+    #res = {}
+    #for key, value in dict(stored).items():
+    #    if key in ALL_SENSORS:
+    #        res[key] = value
 
-    res.update(sensor_data)
-    return res
+    #res.update(sensor_data)
+    stored.update(sensor_data)
+    return stored, han_data
 
 
 def field_type(default="", fields=None, enc=str, dec=None):

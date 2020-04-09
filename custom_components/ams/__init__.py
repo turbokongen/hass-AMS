@@ -112,8 +112,7 @@ class AmsHub:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
                     # _LOGGER.debug("data read from port=%s", data)
-                    new_data = parser.parse_data(self.sensor_data, data)
-                    self.sensor_data = new_data
+                    self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -155,7 +154,6 @@ class AmsHub:
         new_devices = sensors_in_data.difference(AMS_DEVICES)
 
         if len(new_devices):
-            #_LOGGER.debug("sensor data %s", sensor_data)
             # Check that we have all the info we need before the sensors are
             # created, the most importent one is the meter_serial as this is
             # use to create the unique_id
