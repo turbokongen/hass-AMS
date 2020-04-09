@@ -8,7 +8,7 @@ from datetime import datetime
 
 from crccheck.crc import CrcX25
 
-from ..const import ALL_SENSORS, DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
+from ..const import DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -389,13 +389,6 @@ def parse_data(stored, data):
                     }
                 }
 
-    # The parser should be change, lets do a quick fix for now.
-    #res = {}
-    #for key, value in dict(stored).items():
-    #    if key in ALL_SENSORS:
-    #        res[key] = value
-
-    #res.update(sensor_data)
     stored.update(sensor_data)
     return stored, han_data
 
@@ -410,7 +403,7 @@ def field_type(default="", fields=None, enc=str, dec=None):
 
 def byte_decode(fields=None, count=4):
     """Data content decoder."""
-    ##_LOGGER.debug('fields= %s', fields)
+    _LOGGER.debug('fields= %s', fields)
     if count == 2:
         data = (fields[0] << 8 | fields[1])
         return data

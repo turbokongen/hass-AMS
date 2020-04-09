@@ -111,7 +111,7 @@ class AmsHub:
             try:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
-                    # _LOGGER.debug("data read from port=%s", data)
+                    _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
@@ -138,7 +138,7 @@ class AmsHub:
                     v = value.get("attributes", {}).get(check)
                     if v:
                         self._attrs[check] = v
-                        #break
+                        break
             del cp_sensors_data
             if len([i for i in attrs_to_check if i not in self._attrs]):
                 return True
