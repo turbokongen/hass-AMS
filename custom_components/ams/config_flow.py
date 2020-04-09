@@ -46,7 +46,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                          default=None): vol.In(ports),
             vol.Required(CONF_METER_MANUFACTURER,
                          default=DEFAULT_METER_MANUFACTURER):
-                         vol.In(MANUFACTURER_OPTIONS),
+                             vol.In(MANUFACTURER_OPTIONS),
             vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): vol.All(str)
         }),
             description_placeholders={
@@ -54,10 +54,10 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS
             }, errors=self._errors)
 
-    async def async_step_import(self, user_input=None):
+    async def async_step_import(self, import_config):
         """Import a config flow from configuration."""
         if self._async_current_entries():
             _LOGGER.warning("Only one configuration of hass-AMS is allowed.")
             return self.async_abort(reason="singel_instance_allowed")
 
-        return await self.async_step_user(import_config)
+        return self.async_create_entry(title="configuration.yaml", data=import_config)

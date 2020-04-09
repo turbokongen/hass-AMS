@@ -33,17 +33,20 @@ from .parsers import kamstrup as Kamstrup
 
 _LOGGER = logging.getLogger(__name__)
 
-{
-    DOMAIN: vol.Schema(
-        {
-            vol.Required(CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT): cv.string,
-            vol.Required(
-                CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
-            ): cv.string,
-            vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
-        }
-    )
-}
+CONFIG_SCHEMA = vol.Schema(
+    {
+        DOMAIN: vol.Schema(
+            {
+                vol.Required(CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT): cv.string,
+                vol.Required(
+                    CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
+                ): cv.string,
+                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string
+            }
+        )
+    },
+    extra=vol.ALLOW_EXTRA,
+)
 
 
 def _setup(hass, config):
@@ -93,10 +96,10 @@ class AmsHub:
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
+        port = (entry[CONF_SERIAL_PORT].split(":"))[0]
         _LOGGER.debug("Connecting to HAN using port %s", port)
-        parity = entry.data.get(CONF_PARITY)
-        self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
+        parity = entry.get(CONF_PARITY)
+        self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
