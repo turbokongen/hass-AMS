@@ -8,11 +8,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_PARITY,
-                    CONF_SERIAL_PORT, CONF_METER_MANUFACTURER,
-                    DEFAULT_BAUDRATE, DEFAULT_TIMEOUT, DOMAIN,
-                    FRAME_FLAG, HOURLY_SENSORS, KAIFA_METER_SEQ,
-                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
+from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_METER_MANUFACTURER,
+                    CONF_PARITY, CONF_SERIAL_PORT, DEFAULT_BAUDRATE,
+                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, HOURLY_SENSORS,
+                    KAIFA_METER_SEQ, KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
@@ -54,7 +53,7 @@ class AmsHub:
         """Initialize the AMS hub."""
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
-        _LOGGER.debug("Connecting to to HAN using port %s", port)
+        _LOGGER.debug("Connecting to HAN using port %s", port)
         self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
         parity = entry.data[CONF_PARITY]
         self.sensor_data = {}
