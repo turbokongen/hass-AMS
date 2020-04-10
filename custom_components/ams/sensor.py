@@ -16,7 +16,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Setup sensor platform for the ui"""
-    _LOGGER.debug("called async_setup_entry to enable async_add_sensor callback")
 
     @callback
     def async_add_sensor():
@@ -84,11 +83,8 @@ class AmsSensor(RestoreEntity):
         self._meter_id = self.ams.meter_serial
         self._state = None
         self._attributes = {}
-        _LOGGER.debug("Initialize %s", self._name)
-        _LOGGER.debug("DUMP sensor_states %s", sensor_states)
-
-        # Force update of atts so the meter_id exist or the enity
         self._update_properties()
+        _LOGGER.debug("Init %s DUMP sensor_states %s", self._name, sensor_states)
 
     def _update_properties(self):
         """Update all portions of sensor."""
@@ -96,7 +92,7 @@ class AmsSensor(RestoreEntity):
             self._state = self.ams.sensor_data[self._name].get("state")
             self._attributes = self.ams.sensor_data[self._name].get("attributes")
             self._meter_id = self.ams.meter_serial
-            _LOGGER.debug("updating sensor %s", self._name)
+            _LOGGER.debug("Updating sensor %s", self._name)
         except KeyError:
             pass
 
@@ -154,10 +150,10 @@ class AmsSensor(RestoreEntity):
                 else:
                     _LOGGER.debug(
                         "The state for %s was set less then a hour ago,"
-                        " so its still correct, restoring state to %s with attrs %s",
+                        " so its still correct. Restoring state to %s with attrs %s",
                         self._name,
                         old_state.state,
-                        old_state.attributes
+                        old_state.attributes,
                     )
                     self._state = old_state.state
                     self._attributes = old_state.attributes
@@ -165,7 +161,7 @@ class AmsSensor(RestoreEntity):
             else:
                 # I'll rather have unknown then wrong values.
                 _LOGGER.debug(
-                    "old state %s was set more then 60 minutes ago %s, ignoring it.",
+                    "The old state %s was set more then 60 minutes ago %s, ignoring it.",
                     old_state.state,
                     old_state.last_changed,
                 )
