@@ -177,4 +177,4 @@ class AmsSensor(RestoreEntity):
         """Update the state."""
         if self._name in AMS_DEVICES:
             self._update_properties()
-            self.async_schedule_update_ha_state()
+            self.async_write_ha_state()
