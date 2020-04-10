@@ -8,9 +8,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import (AMS_DEVICES, CONF_METER_MANUFACTURER, CONF_PARITY,
-                    CONF_SERIAL_PORT, DEFAULT_BAUDRATE, DEFAULT_TIMEOUT,
-                    DOMAIN, FRAME_FLAG, HOURLY_SENSORS, SIGNAL_NEW_AMS_SENSOR,
+from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_PARITY,
+                    CONF_SERIAL_PORT, CONF_METER_MANUFACTURER,
+                    DEFAULT_BAUDRATE, DEFAULT_TIMEOUT, DOMAIN,
+                    FRAME_FLAG, HOURLY_SENSORS, KAIFA_METER_SEQ,
+                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
@@ -53,8 +55,8 @@ class AmsHub:
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
         _LOGGER.debug("Connecting to to HAN using port %s", port)
+        self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
         parity = entry.data[CONF_PARITY]
-        self.meter_manufacturer = entry.data[CONF_METER_MANUFACTURER]
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
@@ -101,12 +103,22 @@ class AmsHub:
 
     def connect(self):
         """Read the data from the port."""
-        if self.meter_manufacturer == "kaifa":
-            parser = Kaifa
-        elif self.meter_manufacturer == "aidon":
+        parser = None
+
+        if self.meter_manufacturer == "auto":
+            while parser is None:
+                _LOGGER.info("Autodetecting meter manufacturer")
+                pkg = self.read_bytes()
+                self.meter_manufacturer = self._find_parser(pkg)
+                parser = self.meter_manufacturer
+
+        if self.meter_manufacturer == "aidon":
             parser = Aidon
-        else:
+        elif self.meter_manufacturer == "kaifa":
+            parser = Kaifa
+        elif self.meter_manufacturer == "kamstrup":
             parser = Kamstrup
+
         while self._running:
             try:
                 data = self.read_bytes()
@@ -118,6 +130,28 @@ class AmsHub:
                     _LOGGER.debug("failed package: %s", data)
             except serial.serialutil.SerialException:
                 pass
+
+    def _find_parser(self, pkg):
+        """Helper to detect meter manufacturer."""
+
+        def _test_meter(pkg, meter):
+            """Meter tester."""
+            match = []
+            _LOGGER.debug("Testing for %s", meter)
+            for i in range(len(pkg)):
+                if pkg[i] == meter[0] and pkg[i:i+len(meter)] == meter:
+                    match.append(meter)
+            return meter in match
+        if _test_meter(pkg, AIDON_METER_SEQ):
+            _LOGGER.info("Detected Adion meter")
+            return "aidon"
+        elif _test_meter(pkg, KAIFA_METER_SEQ):
+            _LOGGER.info("Detected Kaifa meter")
+            return "kaifa"
+        elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
+            _LOGGER.info("Detected Kamstrup meter")
+            return "kamstrup"
+        _LOGGER.warning("No parser detected")
 
     @property
     def data(self):
