@@ -44,7 +44,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             if hourly not in data and hourly not in AMS_SENSOR_CREATED_BUT_NOT_READ:
                 AMS_SENSOR_CREATED_BUT_NOT_READ.add(hourly)
                 _LOGGER.debug(
-                    "Hourly sensor %s added so we can attempt to restore_state", hourly
+                    "Hourly sensor %s added so we can attempt to restore state", hourly
                 )
                 sensor_states = {
                     "name": hourly,
@@ -73,7 +73,7 @@ async def async_remove_entry(hass, entry):
 
 
 class AmsSensor(RestoreEntity):
-    """Representation of a Serial sensor."""
+    """Representation of a AMS sensor."""
 
     def __init__(self, hass, sensor_states):
         """Initialize the Serial sensor."""
