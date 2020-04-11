@@ -10,8 +10,8 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_METER_MANUFACTURER,
                     CONF_PARITY, CONF_SERIAL_PORT, DEFAULT_BAUDRATE,
-                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, HOURLY_SENSORS,
-                    KAIFA_METER_SEQ, KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
+                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
+                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
