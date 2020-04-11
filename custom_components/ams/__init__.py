@@ -1,16 +1,16 @@
 """AMS hub platform."""
 import logging
 import threading
+from copy import deepcopy
 
 import serial
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_PARITY,
-                    CONF_SERIAL_PORT, CONF_METER_MANUFACTURER,
-                    DEFAULT_BAUDRATE, DEFAULT_TIMEOUT, DOMAIN,
-                    FRAME_FLAG, KAIFA_METER_SEQ,
+from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_METER_MANUFACTURER,
+                    CONF_PARITY, CONF_SERIAL_PORT, DEFAULT_BAUDRATE,
+                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
                     KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
                     SIGNAL_UPDATE_AMS)
 from .parsers import aidon as Aidon
@@ -53,10 +53,11 @@ class AmsHub:
         """Initialize the AMS hub."""
         self._hass = hass
         port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
-        _LOGGER.debug("Using port %s", port)
+        _LOGGER.debug("Connecting to HAN using port %s", port)
         self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
         parity = entry.data[CONF_PARITY]
         self.sensor_data = {}
+        self._attrs = {}
         self._running = True
         self._ser = serial.Serial(
             port=port,
@@ -82,14 +83,22 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         while self._running:
-            buffer = self._ser.read()
-            if buffer:
-                bytelist.extend(buffer)
-                if buffer == FRAME_FLAG and byte_counter > 1:
+            buf = self._ser.read()
+            if buf:
+                bytelist.extend(buf)
+                if buf == FRAME_FLAG and byte_counter > 1:
                     return bytelist
                 byte_counter = byte_counter + 1
             else:
                 continue
+
+    @property
+    def meter_serial(self):
+        return self._attrs["meter_serial"]
+
+    @property
+    def meter_type(self):
+        return self._attrs["meter_type"]
 
     def connect(self):
         """Read the data from the port."""
@@ -114,7 +123,7 @@ class AmsHub:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data = parser.parse_data(self.sensor_data, data)
+                    self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -148,14 +157,48 @@ class AmsHub:
         """Return sensor data."""
         return self.sensor_data
 
+    def missing_attrs(self, data=None):
+        """Check if we have any missing attrs that we need and set them."""
+        if data is None:
+            data = self.data
+
+        attrs_to_check = ["meter_serial", "meter_manufacturer", "meter_type"]
+        miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
+        if miss_attrs:
+            cp_sensors_data = deepcopy(data)
+            for check in miss_attrs:
+                for value in cp_sensors_data.values():
+                    v = value.get("attributes", {}).get(check)
+                    if v:
+                        self._attrs[check] = v
+                        break
+            del cp_sensors_data
+            if len([i for i in attrs_to_check if i not in self._attrs]):
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
         new_devices = []
         sensors_in_data = set(sensor_data.keys())
         new_devices = sensors_in_data.difference(AMS_DEVICES)
+
         if len(new_devices):
-            _LOGGER.debug("Got %s new devices %r", len(new_devices), new_devices)
-            async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
+            # Check that we have all the info we need before the sensors are
+            # created, the most importent one is the meter_serial as this is
+            # use to create the unique_id
+            if self.missing_attrs(sensor_data) is True:
+                _LOGGER.debug("Missing some attributes waiting for new read from the serial")
+            else:
+                _LOGGER.debug(
+                    "Got %s new devices from the serial",
+                    len(new_devices)
+                )
+                _LOGGER.debug("DUMP %s", sensor_data)
+                async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:
-            _LOGGER.debug("sensors are the same, updating states")
+            # _LOGGER.debug("sensors are the same, updating states")
             async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)

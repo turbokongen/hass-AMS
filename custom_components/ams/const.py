@@ -5,7 +5,9 @@ import serial
 AIDON_METER_SEQ = [65, 105, 100, 111, 110, 95]
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
+# Devices that we have read from the serial connection.
 AMS_DEVICES = set()
+AMS_SENSOR_CREATED_BUT_NOT_READ = set()
 
 CONF_BAUDRATE = "baudrate"
 CONF_METER_MANUFACTURER = "meter_manufacturer"
@@ -30,6 +32,26 @@ LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
 LIST_TYPE_SHORT_3PH = 13
 LIST_TYPE_LONG_3PH = 18
+
+HOURLY_SENSORS = [
+    "ams_active_energy_import",
+    "ams_active_energy_export",
+    "ams_reactive_energy_import",
+    "ams_reactive_energy_export",
+]
+
+ALL_SENSORS = [
+    "ams_reactive_power_export",
+    "ams_voltage_l3",
+    "ams_active_power_export",
+    "ams_voltage_l2",
+    "ams_reactive_power_import",
+    "ams_current_l1",
+    "ams_voltage_l1",
+    "ams_current_l2",
+    "ams_active_power_import",
+    "ams_current_l3",
+] + HOURLY_SENSORS
 
 MANUFACTURER_OPTIONS = ["auto", "aidon", "kaifa", "kamstrup"]
 

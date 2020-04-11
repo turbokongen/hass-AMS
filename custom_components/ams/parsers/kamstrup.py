@@ -9,6 +9,7 @@ from datetime import datetime
 from crccheck.crc import CrcX25
 
 from ..const import DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
+from . import byte_decode, field_type
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ METER_TYPE = {
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
     sensor_data = {}
-    han_data = stored
+    han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
@@ -388,30 +389,9 @@ def parse_data(stored, data):
                     'icon': 'mdi:gauge'
                     }
                 }
-    return sensor_data
 
-
-def field_type(default="", fields=None, enc=str, dec=None):
-    """Obis/data field decoder/encoder."""
-    data = default.join(enc(i) for i in fields)
-    if dec:
-        return dec(data)
-    return data
-
-
-def byte_decode(fields=None, count=4):
-    """Data content decoder."""
-    _LOGGER.debug('fields= %s', fields)
-    if count == 2:
-        data = (fields[0] << 8 | fields[1])
-        return data
-
-    data = (fields[0] << 24 |
-            fields[1] << 16 |
-            fields[2] << 8 |
-            fields[3])
-
-    return data
+    stored.update(sensor_data)
+    return stored, han_data
 
 
 def test_valid_data(data):
