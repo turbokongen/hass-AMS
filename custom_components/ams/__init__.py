@@ -1,21 +1,18 @@
 """AMS hub platform."""
+import asyncio
 import logging
-import threading
 from copy import deepcopy
 
-import serial
+import serial_asyncio
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import (AIDON_METER_SEQ, AMS_DEVICES, CONF_METER_MANUFACTURER,
-                    CONF_PARITY, CONF_SERIAL_PORT, DEFAULT_BAUDRATE,
-                    DEFAULT_TIMEOUT, DOMAIN, FRAME_FLAG, KAIFA_METER_SEQ,
-                    KAMSTRUP_METER_SEQ, SIGNAL_NEW_AMS_SENSOR,
-                    SIGNAL_UPDATE_AMS)
-from .parsers import aidon as Aidon
-from .parsers import kaifa as Kaifa
-from .parsers import kamstrup as Kamstrup
+from .const import (AMS_DEVICES, CONF_METER_MANUFACTURER, CONF_SERIAL_PORT,
+                    DEFAULT_BAUDRATE, DOMAIN, FRAME_FLAG,
+                    SIGNAL_NEW_AMS_SENSOR, SIGNAL_UPDATE_AMS)
+from .parsers import auto_detect_parser
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     """AMS hub YAML setup."""
     hass.data[DOMAIN] = {}
+
     return True
 
 
@@ -30,6 +28,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up AMS as config entry."""
     hub = AmsHub(hass, entry)
     hass.data[DOMAIN] = hub
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, hub.stop_serial_read())
     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, "sensor"))
     return True
 
@@ -40,57 +39,68 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_remove_entry(hass, entry) -> None:
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle removal of an entry."""
-    await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
     return True
 
 
 class AmsHub:
     """AmsHub wrapper for all sensors."""
 
-    def __init__(self, hass, entry):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
-        _LOGGER.debug("Connecting to HAN using port %s", port)
         self.meter_manufacturer = entry.data.get(CONF_METER_MANUFACTURER)
-        parity = entry.data[CONF_PARITY]
+        self.port = (entry.data[CONF_SERIAL_PORT].split(":"))[0]
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
-        self._ser = serial.Serial(
-            port=port,
-            baudrate=DEFAULT_BAUDRATE,
-            parity=parity,
-            stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS,
-            timeout=DEFAULT_TIMEOUT,
-        )
-        self.connection = threading.Thread(target=self.connect, daemon=True)
-        self.connection.start()
+        self._ser = None
+        self._runner = hass.loop.create_task(self.aio_run())
+        _LOGGER.debug("Connecting to HAN using port %s", self.port)
+        _LOGGER.debug("DUMP entry %s", entry.data)
         _LOGGER.debug("Finish init of AMS")
 
-    def stop_serial_read(self):
-        """Close resources."""
-        _LOGGER.debug("stop_serial_read")
-        self._running = False
-        self.connection.join()
-        self._ser.close()
+    async def create_aio_serial(self):
+        """Create the streamreader."""
+        _LOGGER.debug("Setting up serial.")
+        if self._ser is None:
+            self._ser, _ = await serial_asyncio.open_serial_connection(
+                url=self.port,
+                baudrate=DEFAULT_BAUDRATE,
+            )
+            return self._ser
 
-    def read_bytes(self):
-        """Read the raw data from serial port."""
-        byte_counter = 0
-        bytelist = []
-        while self._running:
-            buf = self._ser.read()
-            if buf:
-                bytelist.extend(buf)
-                if buf == FRAME_FLAG and byte_counter > 1:
-                    return bytelist
-                byte_counter = byte_counter + 1
-            else:
-                continue
+    async def aio_run(self):
+        """Start the serial connection to the han port and start reading data."""
+        while self._ser is None:
+            await self.create_aio_serial()
+            await asyncio.sleep(1)
+
+        # Setup the parser
+        if self.meter_manufacturer == "auto":
+            _LOGGER.debug("Detecting parser")
+            while self.meter_manufacturer == "auto":
+                pkg = await self.read_bytes()
+                parser = auto_detect_parser(pkg)
+                if parser is not None:
+                    self.meter_manufacturer = parser.meter_manufacturer
+        else:
+            parser = auto_detect_parser(self.meter_manufacturer)
+
+        _LOGGER.debug("Using parser %s", self.meter_manufacturer)
+
+        try:
+            while self._running:
+                data = await self.read_bytes()
+                if parser.test_valid_data(data):
+                    _LOGGER.debug("data read from port=%s", data)
+                    self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
+                    self._check_for_new_sensors_and_update(self.sensor_data)
+                else:
+                    _LOGGER.debug("failed package: %s", data)
+        except Exception as e:
+            _LOGGER.exception("Some crap happend %s", e)
 
     @property
     def meter_serial(self):
@@ -100,57 +110,32 @@ class AmsHub:
     def meter_type(self):
         return self._attrs["meter_type"]
 
-    def connect(self):
-        """Read the data from the port."""
-        parser = None
+    async def stop_serial_read(self):
+        """Stop the task that reads the serial."""
+        self._running = False
+        self._runner.cancel()
+        self._ser.close()
+        self._ser = None
+        self._runner = None
 
-        if self.meter_manufacturer == "auto":
-            while parser is None:
-                _LOGGER.info("Autodetecting meter manufacturer")
-                pkg = self.read_bytes()
-                self.meter_manufacturer = self._find_parser(pkg)
-                parser = self.meter_manufacturer
-
-        if self.meter_manufacturer == "aidon":
-            parser = Aidon
-        elif self.meter_manufacturer == "kaifa":
-            parser = Kaifa
-        elif self.meter_manufacturer == "kamstrup":
-            parser = Kamstrup
-
+    async def read_bytes(self):
+        """Read the raw data from serial port."""
+        byte_counter = 0
+        bytelist = []
         while self._running:
-            try:
-                data = self.read_bytes()
-                if parser.test_valid_data(data):
-                    _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
-                    self._check_for_new_sensors_and_update(self.sensor_data)
-                else:
-                    _LOGGER.debug("failed package: %s", data)
-            except serial.serialutil.SerialException:
-                pass
-
-    def _find_parser(self, pkg):
-        """Helper to detect meter manufacturer."""
-
-        def _test_meter(pkg, meter):
-            """Meter tester."""
-            match = []
-            _LOGGER.debug("Testing for %s", meter)
-            for i in range(len(pkg)):
-                if pkg[i] == meter[0] and pkg[i:i+len(meter)] == meter:
-                    match.append(meter)
-            return meter in match
-        if _test_meter(pkg, AIDON_METER_SEQ):
-            _LOGGER.info("Detected Adion meter")
-            return "aidon"
-        elif _test_meter(pkg, KAIFA_METER_SEQ):
-            _LOGGER.info("Detected Kaifa meter")
-            return "kaifa"
-        elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
-            _LOGGER.info("Detected Kamstrup meter")
-            return "kamstrup"
-        _LOGGER.warning("No parser detected")
+            # is one the correct alternativ here?
+            # the parser excepts one char at the time
+            # but it might be less cpu usage to read more at the same time.
+            buf = await self._ser.read(1)
+            # Force yield to the event loop.
+            await asyncio.sleep(0)
+            if buf:
+                bytelist.extend(buf)
+                if buf == FRAME_FLAG and byte_counter > 1:
+                    return bytelist
+                byte_counter = byte_counter + 1
+            else:
+                continue
 
     @property
     def data(self):

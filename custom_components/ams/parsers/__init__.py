@@ -1,26 +1,25 @@
-import logging
 
-_LOGGER = logging.getLogger(__name__)
-
-
-def field_type(default="", fields=None, enc=str, dec=None):
-    """Obis/data field decoder/encoder."""
-    data = default.join(enc(i) for i in fields)
-    if dec:
-        return dec(data)
-    return data
+from ..const import AIDON_METER_SEQ, KAIFA_METER_SEQ, KAMSTRUP_METER_SEQ
 
 
-def byte_decode(fields=None, count=4):
-    """Data content decoder."""
-    _LOGGER.debug('fields= %s', fields)
-    if count == 2:
-        data = (fields[0] << 8 | fields[1])
-        return data
+def auto_detect_parser(pkg):
+    """Helper to detect meter manufacturer."""
+    if pkg == "kamstrup":
+        pkg = KAIFA_METER_SEQ
+    elif pkg == "aidon":
+        pkg = AIDON_METER_SEQ
+    elif pkg == "kaifa":
+        pkg = KAIFA_METER_SEQ
 
-    data = (fields[0] << 24 |
-            fields[1] << 16 |
-            fields[2] << 8 |
-            fields[3])
+    for i in range(len(pkg)):
+        if pkg[i] == AIDON_METER_SEQ[0] and pkg[i:i + len(AIDON_METER_SEQ)] == AIDON_METER_SEQ:
+            from . import aidon
+            return aidon
+        elif pkg[i] == KAIFA_METER_SEQ[0] and pkg[i:i + len(KAIFA_METER_SEQ)] == KAIFA_METER_SEQ:
+            from . import kaifa
+            return kaifa
+        elif pkg[i] == KAMSTRUP_METER_SEQ[0] and pkg[i:i + len(KAMSTRUP_METER_SEQ)] == KAMSTRUP_METER_SEQ:
+            from . import kamstrup
+            return kamstrup
 
-    return data
+    return None

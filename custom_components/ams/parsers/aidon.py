@@ -11,7 +11,7 @@ from crccheck.crc import CrcX25
 from ..const import (DATA_FLAG, FRAME_FLAG, LIST_TYPE_LONG_1PH,
                      LIST_TYPE_LONG_3PH, LIST_TYPE_MINI, LIST_TYPE_SHORT_1PH,
                      LIST_TYPE_SHORT_3PH, WEEKDAY_MAPPING)
-from . import byte_decode, field_type
+from .utils import byte_decode, field_type
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ METER_TYPE = {
     6540: '6540 3-phase CT Meter',
     6550: '6550 3-phase CT Meter'
 }
+meter_manufacturer = "aidon"
 
 
 def parse_data(stored, data):

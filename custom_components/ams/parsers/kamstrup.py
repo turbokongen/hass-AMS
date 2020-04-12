@@ -9,7 +9,7 @@ from datetime import datetime
 from crccheck.crc import CrcX25
 
 from ..const import DATA_FLAG, FRAME_FLAG, WEEKDAY_MAPPING
-from . import byte_decode, field_type
+from .utils import byte_decode, field_type
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ METER_TYPE = {
     6851121: 'Omnipower 3 Phase CT 3-Wire Direct meter',
     6851131: 'Omnipower 3 Phase CT 4-Wire Direct meter'
 }
+meter_manufacturer = "kamstrup"
 
 
 def parse_data(stored, data):
