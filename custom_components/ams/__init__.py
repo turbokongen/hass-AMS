@@ -56,7 +56,7 @@ class AmsHub:
         self._attrs = {}
         self._running = True
         self._ser = None
-        self._runner = hass.loop.create_task(self.aio_run())
+        self._task_serial = hass.loop.create_task(self.aio_run())
         _LOGGER.debug("Connecting to HAN using port %s", self.port)
         _LOGGER.debug("DUMP entry %s", entry.data)
         _LOGGER.debug("Finish init of AMS")
@@ -113,10 +113,9 @@ class AmsHub:
     async def stop_serial_read(self):
         """Stop the task that reads the serial."""
         self._running = False
-        self._runner.cancel()
-        self._ser.close()
+        self._task_serial.cancel()
+        self._task_serial = None
         self._ser = None
-        self._runner = None
 
     async def read_bytes(self):
         """Read the raw data from serial port."""

@@ -5,7 +5,7 @@ from ..const import AIDON_METER_SEQ, KAIFA_METER_SEQ, KAMSTRUP_METER_SEQ
 def auto_detect_parser(pkg):
     """Helper to detect meter manufacturer."""
     if pkg == "kamstrup":
-        pkg = KAIFA_METER_SEQ
+        pkg = KAMSTRUP_METER_SEQ
     elif pkg == "aidon":
         pkg = AIDON_METER_SEQ
     elif pkg == "kaifa":
