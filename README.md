@@ -28,21 +28,38 @@ Aidon:
  - 6540
  - 6550
  
+ 
 ## *Installation
-Copy *ams* folder into your *custom_components* folder, 
+Easiest method is to install via HACS. Then setup via *Integrations* config.
+*Or*
+1. Copy *ams* folder into your *custom_components* folder.
+2. Config by YAML setup
+3. Config by integrations in Home-assistant
+
+*YAML options*
+```yaml
+ams:
+  serial_port: '/dev/ttyUSB0' # Required
+  parity: 'N'  # Optional, defaults to 'N'
+  meter_manufacturer: 'auto' # Optional, defaults to 'auto'
+```
+
+  
 Start Home-Assistant, 
-Set up the integration in the *Integrations* config, 
+Set up the integration in the *Integrations* config if you haven't set up by YAML config.
 
 For parity options see https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79
 
 Meter manufacturer field options are:
 
+*auto*
 *aidon*
 *kamstrup*
 *kaifa*
 
 This will create sensors for each of the available usage data in the meter.
-The accumulative sensors will only be available after first read, and is transmitted from the meter 5 seconds past the hour.
+The accumulative sensors will only be fully available after first read, and is transmitted from the meter 5 seconds past the hour.
+There seems to be a bug in the current Kamstrup firmware that the hour package is transmitted at xx:xx:55.
 
 ## *Known working modules*
 https://www.aliexpress.com/item/32719562958.html?spm=a2g0s.9042311.0.0.c8314c4dpbv1pv
