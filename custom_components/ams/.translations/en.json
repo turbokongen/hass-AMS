@@ -1,5 +1,8 @@
 {
     "config": {
+        "abort": {
+            "single_instance_allowed": "Only one instance of hass-AMS is allowed."
+        },
         "title": "Norwegian AMS",
         "step": {
             "user": {
