@@ -33,8 +33,7 @@ Aidon:
 Easiest method is to install via HACS. Then setup via *Integrations* config.
 *Or*
 1. Copy *ams* folder into your *custom_components* folder.
-2. Config by YAML setup
-3. Config by integrations in Home-assistant
+2. Config by YAML setup or config by integrations in Home-assistant
 
 *YAML options*
 ```yaml
