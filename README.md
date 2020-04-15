@@ -50,12 +50,12 @@ Set up the integration in the *Integrations* config if you haven't set up by YAM
 For parity options see https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79
 
 Meter manufacturer field options are:
-
-*auto*
-*aidon*
-*kamstrup*
-*kaifa*
-
+```
+'auto'
+'aidon'
+'kamstrup'
+'kaifa'
+```
 This will create sensors for each of the available usage data in the meter.
 The accumulative sensors will only be fully available after first read, and is transmitted from the meter 5 seconds past the hour.
 There seems to be a bug in the current Kamstrup firmware that the hour package is transmitted at xx:xx:55.
