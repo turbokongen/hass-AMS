@@ -41,7 +41,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Required(
                     CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
                 ): cv.string,
-                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string
+                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
             }
         )
     },
@@ -96,7 +96,7 @@ class AmsHub:
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = (entry[CONF_SERIAL_PORT].split(":"))[0]
+        port = entry[CONF_SERIAL_PORT]
         _LOGGER.debug("Connecting to HAN using port %s", port)
         parity = entry.get(CONF_PARITY)
         self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
@@ -182,9 +182,10 @@ class AmsHub:
             match = []
             _LOGGER.debug("Testing for %s", meter)
             for i in range(len(pkg)):
-                if pkg[i] == meter[0] and pkg[i:i+len(meter)] == meter:
+                if pkg[i] == meter[0] and pkg[i : i + len(meter)] == meter:
                     match.append(meter)
             return meter in match
+
         if _test_meter(pkg, AIDON_METER_SEQ):
             _LOGGER.info("Detected Adion meter")
             return "aidon"
@@ -235,12 +236,11 @@ class AmsHub:
             # created, the most importent one is the meter_serial as this is
             # use to create the unique_id
             if self.missing_attrs(sensor_data) is True:
-                _LOGGER.debug("Missing some attributes waiting for new read from the serial")
-            else:
                 _LOGGER.debug(
-                    "Got %s new devices from the serial",
-                    len(new_devices)
+                    "Missing some attributes waiting for new read from the serial"
                 )
+            else:
+                _LOGGER.debug("Got %s new devices from the serial", len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
                 async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:
