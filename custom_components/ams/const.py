@@ -2,7 +2,7 @@
 
 import serial
 
-AIDON_METER_SEQ = [65, 105, 100, 111, 110, 95]
+AIDON_METER_SEQ = [65, 73, 68, 79, 78, 95]
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
 # Devices that we have read from the serial connection.
