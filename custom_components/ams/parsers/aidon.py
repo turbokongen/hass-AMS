@@ -147,7 +147,8 @@ def parse_data(stored, data):
         },
     }
 
-    if list_type is LIST_TYPE_SHORT_3PH_3W or LIST_TYPE_LONG_3PH_3W:
+    if (list_type is LIST_TYPE_SHORT_3PH_3W or
+            list_type is LIST_TYPE_LONG_3PH_3W):
 
         han_data["obis_c_l3"] = field_type(".", fields=pkt[194:200])
         han_data["current_l3"] = byte_decode(fields=pkt[201:203], count=2) / 10
