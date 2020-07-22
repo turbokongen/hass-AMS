@@ -346,7 +346,7 @@ def parse_data(stored, data):
                 "icon": "mdi:flash",
             },
         }
-        if list_type is LIST_TYPE_LONG_3PH_3W:
+        if list_type is LIST_TYPE_LONG_3PH:
             meter_date_time_year = byte_decode(fields=pkt[297:299], count=2)
             meter_date_time_month = pkt[299]
             meter_date_time_date = pkt[300]
