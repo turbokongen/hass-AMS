@@ -346,7 +346,7 @@ def parse_data(stored, data):
                 "icon": "mdi:flash",
             },
         }
-        if list_type is LIST_TYPE_LONG_3PH_3W:
+        if list_type is LIST_TYPE_LONG_3PH:
             meter_date_time_year = byte_decode(fields=pkt[297:299], count=2)
             meter_date_time_month = pkt[299]
             meter_date_time_date = pkt[300]
@@ -408,7 +408,7 @@ def parse_data(stored, data):
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["obis_r_e_n"] = field_type(".", fields=pkt[376:3382])
+            han_data["obis_r_e_n"] = field_type(".", fields=pkt[376:382])
             han_data["reactive_energy_n"] = byte_decode(fields=pkt[383:387]) / 100
             sensor_data["ams_reactive_energy_export"] = {
                 "state": han_data["reactive_energy_n"],
@@ -526,7 +526,7 @@ def test_valid_data(data):
     if data is None:
         return False
 
-    if len(data) > 377 or len(data) < 44:
+    if len(data) > 397 or len(data) < 44:
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
 
