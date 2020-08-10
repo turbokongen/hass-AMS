@@ -282,7 +282,7 @@ def parse_data(stored, data):
     if list_type is LIST_TYPE_SHORT_3PH or list_type is LIST_TYPE_LONG_3PH:
 
         han_data["obis_c_l2"] = field_type(".", fields=pkt[194:200])
-        han_data["current_l2"] = byte_decode(fields=pkt[202:204], count=2) / 10
+        han_data["current_l2"] = byte_decode(fields=pkt[201:203], count=2) / 10
         sensor_data["ams_current_l2"] = {
             "state": han_data["current_l2"],
             "attributes": {
