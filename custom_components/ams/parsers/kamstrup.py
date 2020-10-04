@@ -105,7 +105,7 @@ def parse_data(stored, data):
             "meter_type": han_data["meter_type_str"],
             "meter_serial": han_data["meter_serial"],
             "obis_code": han_data["obis_r_p_p"],
-            "unit_of_measurement": "kVAr",
+            "unit_of_measurement": "VAr",
             "icon": "mdi:gauge",
         },
     }
@@ -119,7 +119,7 @@ def parse_data(stored, data):
             "meter_type": han_data["meter_type_str"],
             "meter_serial": han_data["meter_serial"],
             "obis_code": han_data["obis_r_p_n"],
-            "unit_of_measurement": "kVAr",
+            "unit_of_measurement": "VAr",
             "icon": "mdi:gauge",
         },
     }
