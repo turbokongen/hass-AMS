@@ -6,5 +6,6 @@
     "dependencies": [],
     "codeowners": ["@turbokongen"],
     "requirements": ["pyserial==3.4", "crccheck"],
-    "config_flow": true
+    "config_flow": true,
+    "version": "1.2.0"
 }
