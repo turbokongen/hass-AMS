@@ -1,0 +1,22 @@
+{
+    "config": {
+        "abort": {
+            "single_instance_allowed": "Only one instance of hass-AMS is allowed."
+        },
+        "title": "Norwegian AMS",
+        "step": {
+            "user": {
+                "title": "Norwegian AMS",
+                "description": "Setup Norwegian AMS sensors",
+                "data": {
+                    "serial_port": "Serial Port",
+                    "parity": "Parity",
+                    "meter_manufacturer": "Meter manufacturer"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Name already exists"
+        }
+    }
+}

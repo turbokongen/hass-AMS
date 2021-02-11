@@ -1,0 +1,22 @@
+{
+    "config": {
+        "abort": {
+           "single_instance_allowed": "Kun ein oppføring av hass-AMS er tillate"
+        },
+        "title": "AMS Noreg",
+        "step": {
+            "user": {
+                "title": "AMS Noreg",
+                "description": "Installerar sensorar for AMS i Noreg",
+                "data": {
+                    "serial_port": "Serieport",
+                    "parity": "Paritet",
+                    "meter_manufacturer": "Målar produsent"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Navn eksisterar"
+        }
+    }
+}

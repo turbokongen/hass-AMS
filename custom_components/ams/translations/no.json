@@ -1,0 +1,22 @@
+{
+    "config": {
+        "abort": {
+           "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
+        },
+        "title": "AMS Norge",
+        "step": {
+            "user": {
+                "title": "AMS Norge",
+                "description": "Installer sensorer for AMS i Norge",
+                "data": {
+                    "serial_port": "Serieport",
+                    "parity": "Paritet",
+                    "meter_manufacturer": "Måler produsent"
+                }
+            }
+        },
+        "error": {
+            "name_exists": "Navn eksisterer"
+        }
+    }
+}
