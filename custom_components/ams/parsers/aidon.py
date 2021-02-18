@@ -30,6 +30,12 @@ METER_TYPE = {
         "6515 1-phase Meter with CB on both lines and Earth "
         "Fault Current Measurement"
     ),
+    6475: "6475 RF2-system module Master 500mW 2G/3G/4G",
+    6478: "6478 RF2-system module Master 500mW 2G/3G/4G Ethernet",
+    6479: "6479 RF2-system module Master 500mW 2G73G/4G Ethernet Integrated HAN",
+    6483: "6483 RF2-system module Slave 500mW",
+    6484: "6484 RF2-system module Slave 500mW Integrated HAN",
+    6515: "6515 1-phase Meter with CB and Earth fault Measurement",
     6525: "6525 3-phase Meter with CB and Earth Fault Measurement",
     6534: "6534 3-phase Meter with CB and Neutral Current Measurement",
     6540: "6540 3-phase CT Meter",
