@@ -57,7 +57,7 @@ ALL_SENSORS = [
     "ams_current_l3",
 ] + HOURLY_SENSORS
 
-MANUFACTURER_OPTIONS = ["auto", "aidon", "kaifa", "kamstrup"]
+MANUFACTURER_OPTIONS = ["auto", "aidon", "aidon_se", "kaifa", "kamstrup"]
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"
