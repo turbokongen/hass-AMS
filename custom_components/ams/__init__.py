@@ -145,10 +145,12 @@ class AmsHub:
 
     @property
     def meter_serial(self):
+        """The electrical meter's serial number"""
         return self._attrs["meter_serial"]
 
     @property
     def meter_type(self):
+        """The electrical meter's type"""
         return self._attrs["meter_type"]
 
     def connect(self):
