@@ -23,8 +23,10 @@ Aidon:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
+ - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
  Not tested with, but should work:
+ - 6479
  - 6540
  - 6550
  
@@ -53,6 +55,7 @@ Meter manufacturer field options are:
 ```
 'auto'
 'aidon'
+'aidon_se' #Swedish aidon meter RF2 modules
 'kamstrup'
 'kaifa'
 ```

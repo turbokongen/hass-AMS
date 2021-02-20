@@ -9,8 +9,11 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+
 from .const import (
     AIDON_METER_SEQ,
+    AIDON_SE_1PH_ID,
+    AIDON_SE_3PH_ID,
     AMS_DEVICES,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
@@ -30,6 +33,7 @@ from .const import (
 from .parsers import aidon as Aidon
 from .parsers import kaifa as Kaifa
 from .parsers import kamstrup as Kamstrup
+from .parsers import aidon_se as Aidon_se
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +41,9 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT): cv.string,
+                vol.Required(
+                    CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT
+                ): cv.string,
                 vol.Required(
                     CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
                 ): cv.string,
@@ -74,7 +80,8 @@ async def async_setup(hass: HomeAssistant, config: Config) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
-    hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, "sensor"))
+    hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry,
+                                                                     "sensor"))
     return True
 
 
@@ -157,6 +164,8 @@ class AmsHub:
 
         if self.meter_manufacturer == "aidon":
             parser = Aidon
+        elif self.meter_manufacturer == "aidon_se":
+            parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
             parser = Kaifa
         elif self.meter_manufacturer == "kamstrup":
@@ -167,7 +176,8 @@ class AmsHub:
                 data = self.read_bytes()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data, _ = parser.parse_data(self.sensor_data, data)
+                    self.sensor_data, _ = parser.parse_data(self.sensor_data,
+                                                            data)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -187,14 +197,18 @@ class AmsHub:
             return meter in match
 
         if _test_meter(pkg, AIDON_METER_SEQ):
-            _LOGGER.info("Detected Adion meter")
+            _LOGGER.info("Detected Aidon meter")
             return "aidon"
+        elif pkg[19] == AIDON_SE_1PH_ID or pkg[19] == AIDON_SE_3PH_ID:
+            _LOGGER.info("Detected Swedish Aidon meter by list type")
+            return "aidon_se"
         elif _test_meter(pkg, KAIFA_METER_SEQ):
             _LOGGER.info("Detected Kaifa meter")
             return "kaifa"
         elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
+
         _LOGGER.warning("No parser detected")
 
     @property
@@ -233,14 +247,16 @@ class AmsHub:
 
         if len(new_devices):
             # Check that we have all the info we need before the sensors are
-            # created, the most importent one is the meter_serial as this is
+            # created, the most important one is the meter_serial as this is
             # use to create the unique_id
             if self.missing_attrs(sensor_data) is True:
                 _LOGGER.debug(
-                    "Missing some attributes waiting for new read from the serial"
+                    "Missing some attributes waiting for new read from the"
+                    " serial"
                 )
             else:
-                _LOGGER.debug("Got %s new devices from the serial", len(new_devices))
+                _LOGGER.debug("Got %s new devices from the serial",
+                              len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
                 async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:
