@@ -3,6 +3,7 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
 Custom component reading AMS through MBus adapter into HomeAssistant
 Works with the following meters:
+
 Kamstrup:
   - 6861111 tested by janna at homeassistant community forum
   - 6841121 tested by me
@@ -20,16 +21,22 @@ Kamstrup:
   - MA304T3
 
 Aidon:
+Norway:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
+
+Sweden:
  - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
  Not tested with, but should work:
- - 6479
+ 
+ Norway:
  - 6540
  - 6550
  
+ Sweden:
+ - 6479
  
 ## *Installation
 Easiest method is to install via HACS. Then setup via *Integrations* config.
