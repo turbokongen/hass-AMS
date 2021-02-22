@@ -24,9 +24,13 @@ DEFAULT_PARITY = serial.PARITY_NONE
 DEFAULT_TIMEOUT = 0.1
 
 FRAME_FLAG = b"\x7e"
+AIDON_SE_3PH_ID = 27
+AIDON_SE_1PH_ID = 15
 
 KAIFA_METER_SEQ = [75, 102, 109, 95]
 KAMSTRUP_METER_SEQ = [75, 97, 109, 115, 116, 114, 117, 112, 95]
+LIST_TYPE_1PH_SE = 15
+LIST_TYPE_3PH_SE = 27
 LIST_TYPE_MINI = 1
 LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
@@ -53,7 +57,7 @@ ALL_SENSORS = [
     "ams_current_l3",
 ] + HOURLY_SENSORS
 
-MANUFACTURER_OPTIONS = ["auto", "aidon", "kaifa", "kamstrup"]
+MANUFACTURER_OPTIONS = ["auto", "aidon", "aidon_se", "kaifa", "kamstrup"]
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"

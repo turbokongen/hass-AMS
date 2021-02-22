@@ -1,6 +1,6 @@
 {
   "name": "hass-AMS",
-  "country": "NO",
+  "country": ["NO", "SE"],
   "domains": ["sensor"],
   "render_readme": true
 }

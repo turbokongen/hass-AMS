@@ -31,6 +31,7 @@ METER_TYPE = {
 }
 
 
+# pylint: disable=too-many-locals, too-many-statements
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
     sensor_data = {}
@@ -77,7 +78,9 @@ def parse_data(stored, data):
     han_data["obis_list_version"] = field_type(fields=pkt[35:42], enc=chr)
     han_data["meter_serial"] = field_type(fields=pkt[44:60], enc=chr)
     han_data["meter_type"] = field_type(fields=pkt[62:70], enc=chr)
-    han_data["meter_type_str"] = METER_TYPE.get(field_type(fields=pkt[62:70], enc=chr))
+    han_data["meter_type_str"] = (
+        METER_TYPE.get(field_type(fields=pkt[62:70], enc=chr))
+    )
     han_data["active_power_n"] = byte_decode(fields=pkt[76:80]) / 100
     sensor_data["ams_active_power_export"] = {
         "state": han_data["active_power_n"],
@@ -209,52 +212,68 @@ def parse_data(stored, data):
                 + ":"
                 + meter_date_time_seconds
             )
-            han_data["active_energy_p"] = byte_decode(fields=pkt[135:139]) / 1000
+            han_data["active_energy_p"] = (
+                byte_decode(fields=pkt[135:139]) / 1000
+            )
             sensor_data["ams_active_energy_import"] = {
                 "state": han_data["active_energy_p"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kWh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["active_energy_n"] = byte_decode(fields=pkt[140:144]) / 1000
+            han_data["active_energy_n"] = (
+                byte_decode(fields=pkt[140:144]) / 1000
+            )
             sensor_data["ams_active_energy_export"] = {
                 "state": han_data["active_energy_n"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kWh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["reactive_energy_p"] = byte_decode(fields=pkt[145:149]) / 1000
+            han_data["reactive_energy_p"] = (
+                byte_decode(fields=pkt[145:149]) / 1000
+            )
             sensor_data["ams_reactive_energy_import"] = {
                 "state": han_data["reactive_energy_p"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kVArh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["reactive_energy_n"] = byte_decode(fields=pkt[150:154]) / 1000
+            han_data["reactive_energy_n"] = (
+                byte_decode(fields=pkt[150:154]) / 1000
+            )
             sensor_data["ams_reactive_energy_export"] = {
                 "state": han_data["reactive_energy_n"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kVArh",
@@ -298,52 +317,68 @@ def parse_data(stored, data):
                 + ":"
                 + meter_date_time_seconds
             )
-            han_data["active_energy_p"] = byte_decode(fields=pkt[115:120]) / 1000
+            han_data["active_energy_p"] = (
+                byte_decode(fields=pkt[115:120]) / 1000
+            )
             sensor_data["ams_active_energy_import"] = {
                 "state": han_data["active_energy_p"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kWh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["active_energy_n"] = byte_decode(fields=pkt[121:125]) / 1000
+            han_data["active_energy_n"] = (
+                byte_decode(fields=pkt[121:125]) / 1000
+            )
             sensor_data["ams_active_energy_export"] = {
                 "state": han_data["active_energy_n"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kWh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["reactive_energy_p"] = byte_decode(fields=pkt[126:130]) / 1000
+            han_data["reactive_energy_p"] = (
+                byte_decode(fields=pkt[126:130]) / 1000
+            )
             sensor_data["ams_reactive_energy_import"] = {
                 "state": han_data["reactive_energy_p"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kVArh",
                     "icon": "mdi:gauge",
                 },
             }
-            han_data["reactive_energy_n"] = byte_decode(fields=pkt[131:135]) / 1000
+            han_data["reactive_energy_n"] = (
+                byte_decode(fields=pkt[131:135]) / 1000
+            )
             sensor_data["ams_reactive_energy_export"] = {
                 "state": han_data["reactive_energy_n"],
                 "attributes": {
                     "timestamp": han_data["date_time"],
                     "meter_timestamp": han_data["meter_date_time"],
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "unit_of_measurement": "kVArh",
@@ -366,7 +401,7 @@ def test_valid_data(data):
 
     if not data[0] and data[-1] == FRAME_FLAG:
         _LOGGER.debug(
-            "%s Recieved %s bytes of %s data",
+            "%s Received %s bytes of %s data",
             datetime.now().isoformat(),
             len(data),
             False,
