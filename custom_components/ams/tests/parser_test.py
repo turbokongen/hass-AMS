@@ -44,6 +44,6 @@ aidonMeter_validData = METERTYPE.test_valid_data(PACKAGE)
 if aidonMeter_validData:
     print("Valid data test passed")
 print("Running parse_data.......................")
-adionMeter_data = METERTYPE.parse_data(sensor_data, PACKAGE)
+adionMeter_data = METERTYPE.new_parse_data(sensor_data, PACKAGE)
 pprint.pprint(adionMeter_data)
 
