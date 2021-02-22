@@ -4,28 +4,121 @@ Decode for Swedish HAN Aidon.
 This module will decode the incoming message from Mbus serial.
 """
 import logging
+from pprint import pprint
 from datetime import datetime
 from crccheck.crc import CrcX25
+from custom_components.ams import const
 from . import byte_decode, field_type
 
-from ..const import (
-    DATA_FLAG,
-    FRAME_FLAG,
-    LIST_TYPE_1PH_SE,
-    LIST_TYPE_3PH_SE,
-    WEEKDAY_MAPPING,
-)
+
 _LOGGER = logging.getLogger(__name__)
 
-METER_TYPE = {
-    6479: (
-        "6479 RF2-system module Master 500mW 2G/3G/4G Ethernet Integrated "
-        "HAN"
-        ),
-    6484: "6484 RF2-system module Slave 500mW Integrated HAN",
-}
+
+def new_parse_data(stored, data):
+    """Parse the incoming data"""
+    sensor_data = {}
+    han_data = {}
+    pkt = data
+    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
+    han_data["packet_size"] = read_packet_size
+    list_type = pkt[19]
+    han_data["list_type"] = list_type
+    _LOGGER.debug("list_type is %s", list_type)
+
+    for key in const.name_obis_map:
+        if len(const.name_obis_map[key]) == 2:
+            for item in const.name_obis_map[key]:
+                for i in range(len(pkt)):
+                    if pkt[i:i + len(item)] == item:
+                        # Double-long-unsigned construct
+                        if pkt[i + len(item)] == 6:
+                            v_start = i + len(item) + 1
+                            v_stop = v_start + 4
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 6: ", byte_decode(
+                                fields=pkt[v_start:v_stop]) /
+                                  const.SENSOR_SCALER.get(key), v_start,
+                                  v_stop)
+                        # Date time construct
+                        elif pkt[i + len(item)] == 9:
+                            v_start = i + len(item) + 2
+                            v_length = pkt[v_start - 1]
+                            v_stop = v_start + v_length
+                            meter_date_time_year = byte_decode(fields=pkt[
+                                (v_start):(v_start + 2)], count=2)
+                            meter_date_time_month = pkt[v_start + 2]
+                            meter_date_time_date = pkt[v_start + 3]
+                            meter_date_time_day_of_week = (
+                                const.WEEKDAY_MAPPING.get(pkt[v_start + 4]))
+                            meter_date_time_hour = str(pkt[v_start +
+                                                           5]).zfill(2)
+                            meter_date_time_minute = str(pkt[v_start +
+                                                           6]).zfill(2)
+                            meter_date_time_seconds = str(pkt[v_start +
+                                                           7]).zfill(2)
+                            meter_date_time_str = (
+                                str(meter_date_time_year)
+                                + "-"
+                                + str(meter_date_time_month)
+                                + "-"
+                                + str(meter_date_time_date)
+                                + "-"
+                                + str(meter_date_time_hour)
+                                + "-"
+                                + str(meter_date_time_minute)
+                                + "-"
+                                + str(meter_date_time_minute)
+                                + "-"
+                                + str(meter_date_time_seconds)
+                            )
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print(key, item, meter_date_time_year,
+                                  meter_date_time_month,
+                                  meter_date_time_date,
+                                  meter_date_time_day_of_week,
+                                  meter_date_time_hour,
+                                  meter_date_time_minute,
+                                  meter_date_time_seconds,
+                                  meter_date_time_str)
+                        # Long-signed & Long-unsigned construct
+                        elif (pkt[i + len(item)] == 16 or
+                                pkt[i + len(item)] == 18):
+                            v_start = i + len(item) + 1
+                            v_stop = v_start + 2
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 16/18: ", (byte_decode(
+                                fields=pkt[v_start:v_stop], count=2) / 10),
+                                  v_start, v_stop)
+                        # Visible string construct
+                        elif pkt[i + len(item)] == 10:
+                            v_start = i + len(item) + 2
+                            v_length = pkt[v_start - 1]
+                            v_stop = v_start + v_length
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 10: ", (field_type(
+                                fields=pkt[v_start:v_stop], enc=chr)),
+                                  v_start, v_stop)
+
+        for i in range(len(pkt)):
+            if (pkt[i:i + len(const.name_obis_map[key])] ==
+                    const.name_obis_map[key]):
+                print(key, const.name_obis_map[key], (i, i + len(
+                    const.name_obis_map[key])),
+                       (pkt[(i + len(const.name_obis_map[key]))]), "Single")
+                # Double-long-unsigned construct
+                if pkt[i + len(const.name_obis_map[key])] == 6:
+                    v_start = i + len(const.name_obis_map[key]) + 1
+                    v_stop = v_start + 4
+                    print("Value_single 6: ", byte_decode(
+                            fields=pkt[v_start:v_stop]) /
+                          const.SENSOR_SCALER.get(key), v_start, v_stop)
 
 
+    #_LOGGER.debug("Found sequence at %s", values_of_key)
 # pylint: disable=too-many-statements
 def parse_data(stored, data):
     """Parse the incoming data to dict."""
@@ -38,15 +131,17 @@ def parse_data(stored, data):
     han_data["list_type"] = list_type
     _LOGGER.debug("list_type is %s", list_type)
 
-    if list_type is LIST_TYPE_3PH_SE or list_type is LIST_TYPE_1PH_SE:
+
+    if (list_type is const.LIST_TYPE_3PH_SE or list_type is
+            const.LIST_TYPE_1PH_SE):
         han_data["meter_serial"] = "00"
         han_data["obis_list_version"] = "AIDON_H0001"
-        han_data["meter_type_str"] = METER_TYPE.get(6484)
+        han_data["meter_type_str"] = const.METER_TYPE.get(6484)
         han_data["obis_timedate"] = field_type(".", fields=pkt[24:30])
         meter_date_time_year = byte_decode(fields=pkt[32:34], count=2)
         meter_date_time_month = pkt[34]
         meter_date_time_date = pkt[35]
-        han_data["meter_day_of_week"] = WEEKDAY_MAPPING.get(pkt[36])
+        han_data["meter_day_of_week"] = const.WEEKDAY_MAPPING.get(pkt[36])
         meter_date_time_hour = str(pkt[37]).zfill(2)
         meter_date_time_minute = str(pkt[38]).zfill(2)
         meter_date_time_seconds = str(pkt[39]).zfill(2)
@@ -130,7 +225,7 @@ def parse_data(stored, data):
                 "icon": "mdi:current-ac",
             },
         }
-        if list_type is LIST_TYPE_3PH_SE:
+        if list_type is const.LIST_TYPE_3PH_SE:
 
             han_data["obis_c_l2"] = field_type(".", fields=pkt[151:157])
             han_data["current_l2"] = (
@@ -468,18 +563,22 @@ def parse_data(stored, data):
                     "icon": "mdi:gauge",
                 },
             }
-        if list_type is LIST_TYPE_1PH_SE:
+        if list_type is const.LIST_TYPE_1PH_SE:
             han_data["obis_v_l1"] = field_type(".", fields=pkt[151:157])
-            han_data["voltage_l1"] = byte_decode(fields=pkt[158:161], count=2) / 10
+            han_data["voltage_l1"] = (
+                byte_decode(fields=pkt[158:161], count=2) / 10
+            )
             sensor_data["ams_voltage_l1"] = {
                 "state": han_data["voltage_l1"],
                 "attributes": {
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "meter_serial": han_data["meter_serial"],
                     "obis_code": han_data["obis_v_l1"],
-                 "unit_of_measurement": "V",
-                 "icon": "mdi:flash",
+                    "unit_of_measurement": "V",
+                    "icon": "mdi:flash",
                 },
             }
             han_data["obis_a_p_p_l1"] = field_type(".", fields=pkt[170:176])
@@ -487,7 +586,9 @@ def parse_data(stored, data):
             sensor_data["ams_active_power_import_l1"] = {
                 "state": han_data["active_power_p_l1"],
                 "attributes": {
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "obis_code": han_data["obis_a_p_p_l1"],
                     "meter_serial": han_data["meter_serial"],
@@ -500,7 +601,9 @@ def parse_data(stored, data):
             sensor_data["ams_active_power_export_l1"] = {
                 "state": han_data["active_power_n_l1"],
                 "attributes": {
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "obis_code": han_data["obis_a_p_n_l1"],
                     "meter_serial": han_data["meter_serial"],
@@ -513,7 +616,9 @@ def parse_data(stored, data):
             sensor_data["ams_reactive_power_import_l1"] = {
                 "state": han_data["reactive_power_p_l1"],
                 "attributes": {
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "obis_code": han_data["obis_r_p_p_l1"],
                     "meter_serial": han_data["meter_serial"],
@@ -526,7 +631,9 @@ def parse_data(stored, data):
             sensor_data["ams_reactive_power_export_l1"] = {
                 "state": han_data["reactive_power_n_l1"],
                 "attributes": {
-                    "meter_manufacturer": han_data["obis_list_version"].title(),
+                    "meter_manufacturer": (
+                        han_data["obis_list_version"].title()
+                    ),
                     "meter_type": han_data["meter_type_str"],
                     "obis_code": han_data["obis_r_p_n_l1"],
                     "meter_serial": han_data["meter_serial"],
@@ -619,7 +726,7 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
 
-    if not data[0] and data[-1] == FRAME_FLAG:
+    if not data[0] and data[-1] == const.FRAME_FLAG:
         _LOGGER.debug(
             "%s Received %s bytes of %s data",
             datetime.now().isoformat(),
@@ -642,8 +749,9 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid frame CRC check")
         return False
 
-    if data[9:13] != DATA_FLAG:
-        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG, data[9:13])
+    if data[9:13] != const.DATA_FLAG:
+        _LOGGER.debug("Data does not start with %s: %s", const.DATA_FLAG,
+                      data[9:13])
         return False
 
     packet_size = len(data)

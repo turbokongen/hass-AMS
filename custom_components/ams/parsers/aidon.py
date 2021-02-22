@@ -5,7 +5,7 @@ This module will decode the incoming message from Mbus serial.
 """
 import logging
 from datetime import datetime
-
+from custom_components.ams import const
 from crccheck.crc import CrcX25
 
 from ..const import (
@@ -43,6 +43,87 @@ METER_TYPE = {
     6560: "6560 3-phase CT/VT meter 3 Wire",
 }
 
+
+def new_parse_data(stored, data):
+    """Parse the incoming data"""
+    sensor_data = {}
+    han_data = {}
+    pkt = data
+    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
+    han_data["packet_size"] = read_packet_size
+    list_type = pkt[19]
+    han_data["list_type"] = list_type
+    _LOGGER.debug("list_type is %s", list_type)
+
+    for key in const.name_obis_map:
+        if len(const.name_obis_map[key]) == 2:
+            for item in const.name_obis_map[key]:
+                for i in range(len(pkt)):
+                    if pkt[i:i + len(item)] == item:
+                        if pkt[i + len(item)] == 6:
+                            v_start = i + len(item) + 1
+                            v_stop = v_start + 4
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 6: ", byte_decode(
+                                fields=pkt[v_start:v_stop]) /
+                                  const.SENSOR_SCALER.get(key), v_start,
+                                  v_stop)
+
+                        elif (pkt[i + len(item)] == 16 or
+                                pkt[i + len(item)] == 18):
+                            v_start = i + len(item) + 1
+                            v_stop = v_start + 2
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 16/18: ", (byte_decode(
+                                fields=pkt[v_start:v_stop], count=2) / 10),
+                                  v_start, v_stop)
+                        elif pkt[i + len(item)] == 10:
+                            v_start = i + len(item) + 2
+                            v_length = pkt[v_start - 1]
+                            v_stop = v_start + v_length
+                            print(key, item, (i, i + len(
+                                item)), (pkt[(i + len(item))]), "Double")
+                            print("Value_double 10: ", (field_type(
+                                fields=pkt[v_start:v_stop], enc=chr)),
+                                  v_start, v_stop)
+
+        for i in range(len(pkt)):
+            if pkt[i:i + len(const.name_obis_map[key])] == \
+                    const.name_obis_map[key]:
+
+                if pkt[i + len(const.name_obis_map[key])] == 6:
+                    v_start = i + len(const.name_obis_map[key]) + 1
+                    v_stop = v_start + 4
+                    print(key, const.name_obis_map[key], (i, i + len(
+                        const.name_obis_map[key])),
+                          (pkt[(i + len(const.name_obis_map[key]))]), "Single")
+                    print("Value_single 6: ", byte_decode(
+                            fields=pkt[v_start:v_stop]) /
+                          const.SENSOR_SCALER.get(key), v_start, v_stop)
+                elif (pkt[i + len(const.name_obis_map[key])] == 16 or
+                      pkt[i +  len(const.name_obis_map[key])] == 18):
+                    v_start = i + len(const.name_obis_map[key]) + 1
+                    v_stop = v_start + 2
+                    print(key, const.name_obis_map[key], (i, i + len(
+                        const.name_obis_map[key])),
+                          (pkt[(i + len(const.name_obis_map[key]))]), "Single")
+                    print("Value_single 16/18: ", (byte_decode(
+                        fields=pkt[v_start:v_stop], count=2) / 10), v_start,
+                          v_stop)
+                elif pkt[i + len(const.name_obis_map[key])] == 10:
+                    v_start = i + len(const.name_obis_map[key]) + 2
+                    v_length = pkt[v_start - 1]
+                    v_stop = v_start + v_length
+                    print(v_start, v_length, v_stop)
+                    print(key, const.name_obis_map[key], (i, i + len(
+                        const.name_obis_map[key])),
+                          (pkt[(i + len(const.name_obis_map[key]))]), "Single")
+                    print("Value_single 10: ", (field_type(
+                        fields=pkt[v_start:v_stop], enc=chr)), v_start, v_stop)
+
+    #_LOGGER.debug("Found sequence at %s", values_of_key)
 
 # pylint: disable=too-many-statements
 def parse_data(stored, data):
