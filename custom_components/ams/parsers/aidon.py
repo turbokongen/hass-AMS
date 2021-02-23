@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-branches,too-many-locals,too-many-nested-blocks
 # pylint: disable=too-many-statements
-def new_parse_data(stored, data):
+def parse_data(stored, data):
     """Parse the incoming data to dict"""
     sensor_data = {}
     han_data = {}
