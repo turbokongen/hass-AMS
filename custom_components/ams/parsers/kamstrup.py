@@ -158,10 +158,22 @@ def parse_data(stored, data):
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            han_data[key] = (
-                                byte_decode(fields=pkt[v_start:v_stop]) /
-                                const.SENSOR_SCALER.get(key)
-                            )
+                            if (key in (const.HAN_CURRENT_L1,
+                                        const.HAN_CURRENT_L2,
+                                        const.HAN_CURRENT_L3,
+                                        const.HAN_ACTIVE_ENERGY_IMPORT,
+                                        const.HAN_ACTIVE_ENERGY_EXPORT,
+                                        const.HAN_REACTIVE_ENERGY_IMPORT,
+                                        const.HAN_REACTIVE_ENERGY_EXPORT)):
+                                han_data[key] = (
+                                    byte_decode(
+                                        fields=pkt[v_start:v_stop]) / 100
+                                    )
+                            else:
+                                han_data[key] = (
+                                    byte_decode(fields=pkt[v_start:v_stop]) /
+                                    const.SENSOR_SCALER.get(key)
+                                )
                             sensor_data[key] = {
                                 const.SENSOR_STATE: han_data[key],
                                 const.SENSOR_ATTR: {
