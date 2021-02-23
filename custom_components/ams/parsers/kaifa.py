@@ -2,6 +2,7 @@
 Decode for HAN Kaifa.
 
 This module will decode the incoming message from Mbus serial.
+Kaifa does not use OBIS in their data, so real parsing is not possible.
 """
 import logging
 from datetime import datetime
@@ -16,19 +17,12 @@ from ..const import (
     LIST_TYPE_MINI,
     LIST_TYPE_SHORT_1PH,
     LIST_TYPE_SHORT_3PH,
+    METER_TYPE,
     WEEKDAY_MAPPING,
 )
 from . import byte_decode, field_type
 
 _LOGGER = logging.getLogger(__name__)
-
-METER_TYPE = {
-    "MA105H2E": "Domestic 1 Phase 230V/400V meter",
-    "MA304H3E": "Domestic/Industrial 3 Phase 230V 3-Wire meter",
-    "MA304H4": "Domestic/Industrial 3 Phase 400V 4-Wire meter",
-    "MA304T4": "Industrial 3 Phase 230V 3-Wire meter",
-    "MA304T3": "Industrial 3 Phase 400V 4-Wire meter",
-}
 
 
 # pylint: disable=too-many-locals, too-many-statements

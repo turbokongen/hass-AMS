@@ -90,6 +90,12 @@ METER_TYPE = {
     6540: "6540 3-phase CT Meter 3 Wire",
     6550: "6550 3-phase CT Meter 4 Wire",
     6560: "6560 3-phase CT/VT meter 3 Wire",
+    # Kaifa
+    "MA105H2E": "Domestic 1 Phase 230V/400V meter",
+    "MA304H3E": "Domestic/Industrial 3 Phase 230V 3-Wire meter",
+    "MA304H4": "Domestic/Industrial 3 Phase 400V 4-Wire meter",
+    "MA304T4": "Industrial 3 Phase 230V 3-Wire meter",
+    "MA304T3": "Industrial 3 Phase 400V 4-Wire meter",
 }
 
 HOURLY_SENSORS = [
