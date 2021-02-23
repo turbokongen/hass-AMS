@@ -1,32 +1,10 @@
 """ Constants for hass-AMS package"""
-from typing import Dict, List
 import serial
 
-AIDON_METER_SEQ = [65, 73, 68, 79, 78, 95]
-
-AMS_NEW_SENSORS = "ams_new_sensors"
-AMS_SENSORS = "ams_sensors"
-# Devices that we have read from the serial connection.
-AMS_DEVICES = set()
-AMS_SENSOR_CREATED_BUT_NOT_READ = set()
-
-CONF_BAUDRATE = "baudrate"
-CONF_METER_MANUFACTURER = "meter_manufacturer"
-CONF_PARITY = "parity"
-CONF_SERIAL_PORT = "serial_port"
-
-DATA_FLAG = [230, 231, 0, 15]
-DOMAIN = "ams"
-
-DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
-DEFAULT_BAUDRATE = 2400
-DEFAULT_METER_MANUFACTURER = "auto"
-DEFAULT_PARITY = serial.PARITY_NONE
-DEFAULT_TIMEOUT = 0.1
-
-FRAME_FLAG = b"\x7e"
-
-HAN_PACKETSIZE = "han_packetsize"
+HAN_OBIS_CODE = "obis_code"
+HAN_PACKET_SIZE = "packet_size"
+HAN_METER_MANUFACTURER = "meter_manufacturer"
+HAN_METER_LIST_TYPE = "list_type"
 HAN_LIST_VER_ID = "obis_list_version"
 HAN_METER_SERIAL = "meter_serial"
 HAN_METER_TYPE = "meter_type"
@@ -60,10 +38,39 @@ HAN_ACTIVE_ENERGY_EXPORT = "ams_active_energy_export"
 HAN_REACTIVE_ENERGY_IMPORT = "ams_reactive_energy_import"
 HAN_REACTIVE_ENERGY_EXPORT = "ams_reactive_energy_export"
 
+SENSOR_ICON = "icon"
+SENSOR_UOM = "unit_of_measurement"
+SENSOR_ATTR = "attributes"
+SENSOR_STATE = "state"
+
+AMS_NEW_SENSORS = "ams_new_sensors"
+AMS_SENSORS = "ams_sensors"
+# Devices that we have read from the serial connection.
+AMS_DEVICES = set()
+AMS_SENSOR_CREATED_BUT_NOT_READ = set()
+
+CONF_BAUDRATE = "baudrate"
+CONF_METER_MANUFACTURER = HAN_METER_MANUFACTURER
+CONF_PARITY = "parity"
+CONF_SERIAL_PORT = "serial_port"
+
+
+DOMAIN = "ams"
+
+DEFAULT_SERIAL_PORT = "/dev/ttyUSB0"
+DEFAULT_BAUDRATE = 2400
+DEFAULT_METER_MANUFACTURER = "auto"
+DEFAULT_PARITY = serial.PARITY_NONE
+DEFAULT_TIMEOUT = 0.1
+
+DATA_FLAG = [230, 231, 0, 15]
+FRAME_FLAG = b"\x7e"
+AIDON_METER_SEQ = [65, 73, 68, 79, 78, 95]
+AIDON_SE_METER_SEQ = [126, 162, 67]
 KAIFA_METER_SEQ = [75, 102, 109, 95]
 KAMSTRUP_METER_SEQ = [75, 97, 109, 115, 116, 114, 117, 112, 95]
-LIST_TYPE_1PH_SE = "0f"  # 15 CHANGE TO INT BEFORE RELEASE
-LIST_TYPE_3PH_SE = "1b"  # 27 CHANGE TO INT BEFORE RELEASE
+LIST_TYPE_1PH_SE = 15
+LIST_TYPE_3PH_SE = 27
 LIST_TYPE_MINI = 1
 LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
@@ -71,6 +78,7 @@ LIST_TYPE_SHORT_3PH = 13
 LIST_TYPE_LONG_3PH = 18
 LIST_TYPE_SHORT_3PH_3W = 12
 LIST_TYPE_LONG_3PH_3W = 17
+
 
 METER_TYPE = {
     # Aidon
@@ -96,6 +104,12 @@ METER_TYPE = {
     "MA304H4": "Domestic/Industrial 3 Phase 400V 4-Wire meter",
     "MA304T4": "Industrial 3 Phase 230V 3-Wire meter",
     "MA304T3": "Industrial 3 Phase 400V 4-Wire meter",
+    # Kamstrup
+    6861111: "Omnipower 1 Phase Direct meter",
+    6841121: "Omnipower 3 Phase 3-Wire Direct meter",
+    6841131: "Omnipower 3 Phase 4-Wire Direct meter",
+    6851121: "Omnipower 3 Phase CT 3-Wire Direct meter",
+    6851131: "Omnipower 3 Phase CT 4-Wire Direct meter",
 }
 
 HOURLY_SENSORS = [

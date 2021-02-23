@@ -22,17 +22,17 @@ def parse_data(stored, data):
     han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
-    han_data[const.HAN_PACKETSIZE] = read_packet_size
+    han_data[const.HAN_PACKET_SIZE] = read_packet_size
     list_type = pkt[19]
-    han_data["list_type"] = list_type
+    han_data[const.HAN_METER_LIST_TYPE] = list_type
     _LOGGER.debug("list_type is %s", list_type)
     # Swedish Aidon package does not contain meter_type or meter_serial
-    han_data["meter_serial"] = "00"
-    han_data["meter_type_str"] = const.METER_TYPE.get(6484)
+    han_data[const.HAN_METER_SERIAL] = "00"
+    han_data[const.HAN_METER_TYPE] = const.METER_TYPE.get(6484)
     # Swedish Aidon package does not contain obis_list_version. It is
     # defined in document: Aidon RJ45 HAN interface funktionsbeskrivning
     # v1.4A 2020.10.06 as AIDON_H0001.
-    han_data["obis_list_version"] = "AIDON_H0001"
+    han_data[const.HAN_LIST_VER_ID] = "AIDON_H0001"
 
     # Get the date and time
     for item in const.SENSOR_COMMON_OBIS_MAP[const.HAN_METER_DATETIME]:
@@ -102,19 +102,22 @@ def parse_data(stored, data):
                                 const.SENSOR_SCALER.get(key)
                             )
                             sensor_data[key] = {
-                                "state": han_data[key],
-                                "attributes": {
-                                    "meter_manufacturer": han_data[
-                                        "obis_list_version"],
-                                    "meter_type": han_data["meter_type_str"],
-                                    "obis_code": han_data["obis_" + key],
-                                    "meter_serial": han_data["meter_serial"],
-                                    "unit_of_measurement":
+                                const.SENSOR_STATE: han_data[key],
+                                const.SENSOR_ATTR: {
+                                    const.HAN_METER_MANUFACTURER: han_data[
+                                        const.HAN_LIST_VER_ID],
+                                    const.HAN_METER_TYPE: han_data[
+                                        const.HAN_METER_TYPE],
+                                    const.HAN_OBIS_CODE: han_data[
+                                        "obis_" + key],
+                                    const.HAN_METER_SERIAL: han_data[
+                                        const.HAN_METER_SERIAL],
+                                    const.SENSOR_UOM:
                                         const.SENSOR_UNIT.get(key),
-                                    "icon": ("mdi:" +
-                                             const.SENSOR_ICON_MAP.get(key)),
+                                    const.SENSOR_ICON: (
+                                        "mdi:" +
+                                        const.SENSOR_ICON_MAP.get(key)),
                                 },
-
                             }
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
@@ -141,17 +144,21 @@ def parse_data(stored, data):
                                  const.SENSOR_SCALER.get(key))
                             )
                             sensor_data[key] = {
-                                "state": han_data[key],
-                                "attributes": {
-                                    "meter_manufacturer": han_data[
-                                        "obis_list_version"],
-                                    "meter_type": han_data["meter_type_str"],
-                                    "obis_code": han_data["obis_" + key],
-                                    "meter_serial": han_data["meter_serial"],
-                                    "unit_of_measurement":
+                                const.SENSOR_STATE: han_data[key],
+                                const.SENSOR_ATTR: {
+                                    const.HAN_METER_MANUFACTURER: han_data[
+                                        const.HAN_LIST_VER_ID],
+                                    const.HAN_METER_TYPE: han_data[
+                                        const.HAN_METER_TYPE],
+                                    const.HAN_OBIS_CODE: han_data[
+                                        "obis_" + key],
+                                    const.HAN_METER_SERIAL: han_data[
+                                        const.HAN_METER_SERIAL],
+                                    const.SENSOR_UOM:
                                         const.SENSOR_UNIT.get(key),
-                                    "icon": ("mdi:" +
-                                             const.SENSOR_ICON_MAP.get(key)),
+                                    const.SENSOR_ICON: (
+                                        "mdi:" +
+                                        const.SENSOR_ICON_MAP.get(key)),
                                 },
 
                             }
@@ -195,15 +202,18 @@ def parse_data(stored, data):
                         const.SENSOR_SCALER.get(key)
                     )
                     sensor_data[key] = {
-                        "state": han_data[key],
-                        "attributes": {
-                            "meter_manufacturer": han_data[
-                                "obis_list_version"],
-                            "meter_type": han_data["meter_type_str"],
-                            "obis_code": han_data["obis_" + key],
-                            "meter_serial": han_data["meter_serial"],
-                            "unit_of_measurement": const.SENSOR_UNIT.get(key),
-                            "icon": ("mdi:" + const.SENSOR_ICON_MAP.get(key)),
+                        const.SENSOR_STATE: han_data[key],
+                        const.SENSOR_ATTR: {
+                            const.HAN_METER_MANUFACTURER: han_data[
+                                const.HAN_LIST_VER_ID],
+                            const.HAN_METER_TYPE: han_data[
+                                const.HAN_METER_TYPE],
+                            const.HAN_OBIS_CODE: han_data["obis_" + key],
+                            const.HAN_METER_SERIAL: han_data[
+                                const.HAN_METER_SERIAL],
+                            const.SENSOR_UOM: const.SENSOR_UNIT.get(key),
+                            const.SENSOR_ICON: (
+                                "mdi:" + const.SENSOR_ICON_MAP.get(key)),
                         },
 
                     }

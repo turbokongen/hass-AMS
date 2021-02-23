@@ -45,19 +45,23 @@ def parse_data(stored, data):
                             const.SENSOR_SCALER.get(key)
                         )
                         sensor_data[key] = {
-                            "state": han_data[key],
-                            "attributes": {
-                                "meter_manufacturer": stored[key][
-                                    "attributes"]["meter_manufacturer"],
-                                "meter_type": stored[key]["attributes"][
-                                    "meter_type"],
-                                "obis_code": han_data["obis_" + key],
-                                "meter_serial": stored[key]["attributes"][
-                                    "meter_serial"],
-                                "unit_of_measurement":
+                            const.SENSOR_STATE: han_data[key],
+                            const.SENSOR_ATTR: {
+                                const.HAN_METER_MANUFACTURER: stored[key][
+                                    const.SENSOR_ATTR][
+                                        const.HAN_METER_MANUFACTURER],
+                                const.HAN_METER_TYPE: stored[key][
+                                    const.SENSOR_ATTR][
+                                        const.HAN_METER_TYPE],
+                                const.HAN_OBIS_CODE: han_data["obis_" + key],
+                                const.HAN_METER_SERIAL: stored[key][
+                                    const.SENSOR_ATTR][
+                                        const.HAN_METER_SERIAL],
+                                const.SENSOR_UOM:
                                     const.SENSOR_UNIT.get(key),
-                                "icon": ("mdi:" +
-                                         const.SENSOR_ICON_MAP.get(key)),
+                                const.SENSOR_ICON: (
+                                    "mdi:" + const.SENSOR_ICON_MAP.get(
+                                        key)),
                             },
 
                         }
@@ -80,7 +84,6 @@ def parse_data(stored, data):
                     if pkt[i:i + len(item)] == item:
                         # Date time construct
                         if pkt[i + len(item)] == 9:
-                            print("Datetime")
                             han_data[const.HAN_OBIS_DATETIME] = (
                                 '.'.join([str(elem) for elem in item])
                             )
@@ -202,23 +205,27 @@ def parse_data(stored, data):
                                 const.SENSOR_SCALER.get(key)
                             )
                             sensor_data[key] = {
-                                "state": han_data[key],
-                                "attributes": {
-                                    "meter_manufacturer": han_data[
-                                        "obis_list_version"],
-                                    "meter_type": han_data["meter_type"],
-                                    "obis_code": han_data["obis_" + key],
-                                    "meter_serial": han_data["meter_serial"],
-                                    "unit_of_measurement":
+                                const.SENSOR_STATE: han_data[key],
+                                const.SENSOR_ATTR: {
+                                    const.HAN_METER_MANUFACTURER: han_data[
+                                        const.HAN_LIST_VER_ID],
+                                    const.HAN_METER_TYPE: han_data[
+                                        const.HAN_METER_TYPE],
+                                    const.HAN_OBIS_CODE: han_data[
+                                        "obis_" + key],
+                                    const.HAN_METER_SERIAL: han_data[
+                                        const.HAN_METER_SERIAL],
+                                    const.SENSOR_UOM:
                                         const.SENSOR_UNIT.get(key),
-                                    "icon": ("mdi:" +
-                                             const.SENSOR_ICON_MAP.get(key)),
+                                    const.SENSOR_ICON: (
+                                        "mdi:" +
+                                        const.SENSOR_ICON_MAP.get(key)),
                                 },
                             }
                             if key in const.HOURLY_SENSORS:
-                                sensor_data[key]["attributes"][
+                                sensor_data[key][const.SENSOR_ATTR][
                                     const.HAN_METER_DATETIME] = han_data[
-                                    const.HAN_METER_DATETIME]
+                                        const.HAN_METER_DATETIME]
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                 key, item, (i, i + len(item)),
@@ -244,17 +251,21 @@ def parse_data(stored, data):
                                  const.SENSOR_SCALER.get(key))
                             )
                             sensor_data[key] = {
-                                "state": han_data[key],
-                                "attributes": {
-                                    "meter_manufacturer": han_data[
-                                        "obis_list_version"],
-                                    "meter_type": han_data["meter_type"],
-                                    "obis_code": han_data["obis_" + key],
-                                    "meter_serial": han_data["meter_serial"],
-                                    "unit_of_measurement":
+                                const.SENSOR_STATE: han_data[key],
+                                const.SENSOR_ATTR: {
+                                    const.HAN_METER_MANUFACTURER: han_data[
+                                        const.HAN_LIST_VER_ID],
+                                    const.HAN_METER_TYPE: han_data[
+                                        const.HAN_METER_TYPE],
+                                    const.HAN_OBIS_CODE: han_data[
+                                        "obis_" + key],
+                                    const.HAN_METER_SERIAL: han_data[
+                                        const.HAN_METER_SERIAL],
+                                    const.SENSOR_UOM:
                                         const.SENSOR_UNIT.get(key),
-                                    "icon": ("mdi:" +
-                                             const.SENSOR_ICON_MAP.get(key)),
+                                    const.SENSOR_ICON: (
+                                        "mdi:" +
+                                        const.SENSOR_ICON_MAP.get(key)),
                                 },
 
                             }
@@ -284,15 +295,18 @@ def parse_data(stored, data):
                         const.SENSOR_SCALER.get(key)
                     )
                     sensor_data[key] = {
-                        "state": han_data[key],
-                        "attributes": {
-                            "meter_manufacturer": han_data[
-                                "obis_list_version"],
-                            "meter_type": han_data["meter_type"],
-                            "obis_code": han_data["obis_" + key],
-                            "meter_serial": han_data["meter_serial"],
-                            "unit_of_measurement": const.SENSOR_UNIT.get(key),
-                            "icon": ("mdi:" + const.SENSOR_ICON_MAP.get(key)),
+                        const.SENSOR_STATE: han_data[key],
+                        const.SENSOR_ATTR: {
+                            const.HAN_METER_MANUFACTURER: han_data[
+                                const.HAN_LIST_VER_ID],
+                            const.HAN_METER_TYPE: han_data[
+                                const.HAN_METER_TYPE],
+                            const.HAN_OBIS_CODE: han_data["obis_" + key],
+                            const.HAN_METER_SERIAL: han_data[
+                                const.HAN_METER_SERIAL],
+                            const.SENSOR_UOM: const.SENSOR_UNIT.get(key),
+                            const.SENSOR_ICON: (
+                                "mdi:" + const.SENSOR_ICON_MAP.get(key)),
                         },
 
                     }
