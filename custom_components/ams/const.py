@@ -3,8 +3,6 @@ from typing import Dict, List
 import serial
 
 AIDON_METER_SEQ = [65, 73, 68, 79, 78, 95]
-AIDON_SE_3PH_ID = 27  # 27 CHANGE TO INT BEFORE RELEASE
-AIDON_SE_1PH_ID = 15  # 15 CHANGE TO INT BEFORE RELEASE
 
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
@@ -28,11 +26,12 @@ DEFAULT_TIMEOUT = 0.1
 
 FRAME_FLAG = b"\x7e"
 
-
+HAN_PACKETSIZE = "han_packetsize"
 HAN_LIST_VER_ID = "obis_list_version"
 HAN_METER_SERIAL = "meter_serial"
 HAN_METER_TYPE = "meter_type"
 HAN_METER_DATETIME = "meter_date_time"
+HAN_OBIS_DATETIME = "obis_timedate"
 HAN_METER_DAYOFWEEK = "meter_day_of_week"
 HAN_ACTIVE_POWER_IMPORT = "ams_active_power_import"
 HAN_ACTIVE_POWER_EXPORT = "ams_active_power_export"
@@ -63,18 +62,34 @@ HAN_REACTIVE_ENERGY_EXPORT = "ams_reactive_energy_export"
 
 KAIFA_METER_SEQ = [75, 102, 109, 95]
 KAMSTRUP_METER_SEQ = [75, 97, 109, 115, 116, 114, 117, 112, 95]
-LIST_TYPE_1PH_SE = 15
-LIST_TYPE_3PH_SE = 27
+LIST_TYPE_1PH_SE = "0f"  # 15 CHANGE TO INT BEFORE RELEASE
+LIST_TYPE_3PH_SE = "1b"  # 27 CHANGE TO INT BEFORE RELEASE
 LIST_TYPE_MINI = 1
 LIST_TYPE_SHORT_1PH = 9
 LIST_TYPE_LONG_1PH = 14
 LIST_TYPE_SHORT_3PH = 13
 LIST_TYPE_LONG_3PH = 18
-
+LIST_TYPE_SHORT_3PH_3W = 12
+LIST_TYPE_LONG_3PH_3W = 17
 
 METER_TYPE = {
     # Aidon
-    6484: "RF2-system module Integrated HAN",
+    6484: "RF2-system module Integrated HAN",  # Sweden
+    6510: "6510 1-phase Meter",
+    6511: "6511 1-phase Meter with CB",
+    6515: "6515 1-phase Meter with CB and Earth Fault Current Measurement",
+    6520: "6520 3-phase Meter 3 Wire",
+    6521: "6521 2-phase Meter 3 Wire with CB",
+    6525: (
+        "6525 3-phase Meter 3 Wire with CB and Earth Fault Current "
+        "Measurement"
+    ),
+    6530: "6530 3-phase Meter 4 Wire",
+    6531: "6531 3-phase Meter 4 Wire with CB",
+    6534: "6534 3-phase Meter with CB and Neutral Current Measurement",
+    6540: "6540 3-phase CT Meter 3 Wire",
+    6550: "6550 3-phase CT Meter 4 Wire",
+    6560: "6560 3-phase CT/VT meter 3 Wire",
 }
 
 HOURLY_SENSORS = [

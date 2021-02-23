@@ -22,7 +22,7 @@ def parse_data(stored, data):
     han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
-    han_data["packet_size"] = read_packet_size
+    han_data[const.HAN_PACKETSIZE] = read_packet_size
     list_type = pkt[19]
     han_data["list_type"] = list_type
     _LOGGER.debug("list_type is %s", list_type)
@@ -40,7 +40,7 @@ def parse_data(stored, data):
             if pkt[i:i + len(item)] == item:
                 # Date time construct
                 if pkt[i + len(item)] == 9:
-                    han_data["obis_timedate"] = (
+                    han_data[const.HAN_OBIS_DATETIME] = (
                         '.'.join([str(elem) for elem in item])
                     )
                     v_start = i + len(item) + 2
@@ -69,7 +69,7 @@ def parse_data(stored, data):
                         + "-"
                         + str(meter_date_time_seconds)
                     )
-                    han_data["meter_date_time"] = meter_date_time_str
+                    han_data[const.HAN_METER_DATETIME] = meter_date_time_str
                     _LOGGER.debug("%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                   const.HAN_METER_DATETIME, item,
                                   (i, i + len(item)), (pkt[(i + len(item))]))

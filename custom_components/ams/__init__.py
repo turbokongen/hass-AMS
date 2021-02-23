@@ -12,8 +12,6 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from .const import (
     AIDON_METER_SEQ,
-    AIDON_SE_1PH_ID,
-    AIDON_SE_3PH_ID,
     AMS_DEVICES,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
@@ -27,6 +25,8 @@ from .const import (
     FRAME_FLAG,
     KAIFA_METER_SEQ,
     KAMSTRUP_METER_SEQ,
+    LIST_TYPE_1PH_SE,
+    LIST_TYPE_3PH_SE,
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS,
 )
@@ -201,7 +201,7 @@ class AmsHub:
         if _test_meter(pkg, AIDON_METER_SEQ):
             _LOGGER.info("Detected Aidon meter")
             return "aidon"
-        elif pkg[19] == AIDON_SE_1PH_ID or pkg[19] == AIDON_SE_3PH_ID:
+        elif pkg[19] == LIST_TYPE_1PH_SE or pkg[19] == LIST_TYPE_3PH_SE:
             _LOGGER.info("Detected Swedish Aidon meter by list type")
             return "aidon_se"
         elif _test_meter(pkg, KAIFA_METER_SEQ):
