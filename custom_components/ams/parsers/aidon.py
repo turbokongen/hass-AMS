@@ -41,8 +41,7 @@ def parse_data(stored, data):
                             '.'.join([str(elem) for elem in item])
                         )
                         han_data[key] = (
-                            byte_decode(fields=pkt[v_start:v_stop]) /
-                            const.SENSOR_SCALER.get(key)
+                            byte_decode(fields=pkt[v_start:v_stop])
                         )
                         sensor_data[key] = {
                             const.SENSOR_STATE: han_data[key],
@@ -72,9 +71,7 @@ def parse_data(stored, data):
                         )
                         _LOGGER.debug(
                             "Value double OBIS type  6: %s, Index:%s",
-                            (byte_decode(fields=pkt[v_start:v_stop]) /
-                             const.SENSOR_SCALER.get(key)), (v_start,
-                                                             v_stop)
+                            han_data[key], (v_start, v_stop)
                         )
     # Ensure basic data before parsing package
     for key in const.SENSOR_COMMON_OBIS_MAP:
@@ -161,8 +158,7 @@ def parse_data(stored, data):
                                 (pkt[(i + len(item))]))
                             _LOGGER.debug(
                                 "Value double OBIS type 10: %s, Index:%s",
-                                (field_type(fields=pkt[v_start:v_stop],
-                                            enc=chr)), (v_start, v_stop))
+                                han_data[key], (v_start, v_stop))
         for i in range(len(pkt)):
             if (pkt[i:i + len(const.SENSOR_COMMON_OBIS_MAP[key])] ==
                     const.SENSOR_COMMON_OBIS_MAP[key]):
@@ -186,8 +182,7 @@ def parse_data(stored, data):
                         (pkt[(i + len(const.SENSOR_COMMON_OBIS_MAP[key]))]))
                     _LOGGER.debug(
                         "Value Single OBIS type 10: %s, Index:%s",
-                        (field_type(fields=pkt[v_start:v_stop],
-                                    enc=chr)), (v_start, v_stop))
+                        han_data[key], (v_start, v_stop))
     for key in const.SENSOR_OBIS_MAP:
         if len(const.SENSOR_OBIS_MAP[key]) == 2:
             for item in const.SENSOR_OBIS_MAP[key]:
@@ -200,9 +195,17 @@ def parse_data(stored, data):
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            han_data[key] = (
-                                byte_decode(fields=pkt[v_start:v_stop]) /
-                                const.SENSOR_SCALER.get(key)
+                            measure = (
+                                byte_decode(fields=pkt[v_start:v_stop])
+                            )
+                            if key in const.HOURLY_SENSORS:
+                                han_data[key] = measure / 100
+                            else:
+                                han_data[key] = measure
+                            _LOGGER.debug(
+                                "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
+                                key, item, (i, i + len(item)),
+                                (pkt[(i + len(item))])
                             )
                             sensor_data[key] = {
                                 const.SENSOR_STATE: han_data[key],
@@ -227,15 +230,8 @@ def parse_data(stored, data):
                                     const.HAN_METER_DATETIME] = han_data[
                                         const.HAN_METER_DATETIME]
                             _LOGGER.debug(
-                                "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
-                                key, item, (i, i + len(item)),
-                                (pkt[(i + len(item))])
-                            )
-                            _LOGGER.debug(
                                 "Value double OBIS type  6: %s, Index:%s",
-                                (byte_decode(fields=pkt[v_start:v_stop]) /
-                                 const.SENSOR_SCALER.get(key)), (v_start,
-                                                                 v_stop)
+                                han_data[key], (v_start, v_stop)
                             )
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
@@ -247,8 +243,7 @@ def parse_data(stored, data):
                             )
                             han_data[key] = (
                                 (byte_decode(fields=pkt[v_start:v_stop],
-                                             count=2) /
-                                 const.SENSOR_SCALER.get(key))
+                                             count=2) / 10)
                             )
                             sensor_data[key] = {
                                 const.SENSOR_STATE: han_data[key],
@@ -275,10 +270,7 @@ def parse_data(stored, data):
                                 (pkt[(i + len(item))]))
                             _LOGGER.debug(
                                 "Value double OBIS type  16/18: %s, Index:%s",
-                                (byte_decode(fields=pkt[v_start:v_stop],
-                                             count=2) /
-                                 const.SENSOR_SCALER.get(key)), (v_start,
-                                                                 v_stop))
+                                han_data[key], (v_start, v_stop))
         for i in range(len(pkt)):
             if (pkt[i:i + len(const.SENSOR_OBIS_MAP[key])] ==
                     const.SENSOR_OBIS_MAP[key]):
@@ -291,8 +283,7 @@ def parse_data(stored, data):
                                   const.SENSOR_OBIS_MAP[key]])
                     )
                     han_data[key] = (
-                        byte_decode(fields=pkt[v_start:v_stop]) /
-                        const.SENSOR_SCALER.get(key)
+                        byte_decode(fields=pkt[v_start:v_stop])
                     )
                     sensor_data[key] = {
                         const.SENSOR_STATE: han_data[key],
@@ -317,8 +308,7 @@ def parse_data(stored, data):
                         (pkt[(i + len(const.SENSOR_OBIS_MAP[key]))]))
                     _LOGGER.debug(
                         "Value single OBIS type 6: %s Index:%s",
-                        (byte_decode(fields=pkt[v_start:v_stop]) /
-                         const.SENSOR_SCALER.get(key)), (v_start, v_stop))
+                        han_data[key], (v_start, v_stop))
 
     stored.update(sensor_data)
     return stored, han_data
