@@ -84,4 +84,5 @@ Keep in mind, I am not a experienced programmer :)
 Enjoy
 
 Latest information about OBIS for all the norwegian meters: https://www.nek.no/info-ams-han-utviklere/
+
 Latest information about swedish standard for AMS: https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf
