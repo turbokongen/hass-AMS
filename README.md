@@ -48,7 +48,7 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 *YAML options*
 ```yaml
 ams:
-  serial_port: '/dev/ttyUSB0' # Required
+  serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
