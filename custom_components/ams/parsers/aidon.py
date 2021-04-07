@@ -73,6 +73,8 @@ def parse_data(stored, data):
                             "Value double OBIS type  6: %s, Index:%s",
                             han_data[key], (v_start, v_stop)
                         )
+        return stored, han_data
+
     # Ensure basic data before parsing package
     for key in const.SENSOR_COMMON_OBIS_MAP:
         if len(const.SENSOR_COMMON_OBIS_MAP[key]) == 2:
