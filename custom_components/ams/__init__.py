@@ -6,48 +6,31 @@ from copy import deepcopy
 import homeassistant.helpers.config_validation as cv
 import serial
 import voluptuous as vol
+
 from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-
-from .const import (
-    AIDON_METER_SEQ,
-    AIDON_SE_1PH_ID,
-    AIDON_SE_3PH_ID,
-    AMS_DEVICES,
-    CONF_METER_MANUFACTURER,
-    CONF_PARITY,
-    CONF_SERIAL_PORT,
-    DEFAULT_BAUDRATE,
-    DEFAULT_METER_MANUFACTURER,
-    DEFAULT_PARITY,
-    DEFAULT_SERIAL_PORT,
-    DEFAULT_TIMEOUT,
-    DOMAIN,
-    FRAME_FLAG,
-    KAIFA_METER_SEQ,
-    KAMSTRUP_METER_SEQ,
-    SIGNAL_NEW_AMS_SENSOR,
-    SIGNAL_UPDATE_AMS,
-)
-from .parsers import aidon as Aidon
-from .parsers import kaifa as Kaifa
-from .parsers import kamstrup as Kamstrup
-from .parsers import aidon_se as Aidon_se
+from custom_components.ams.parsers import aidon as Aidon
+from custom_components.ams.parsers import kaifa as Kaifa
+from custom_components.ams.parsers import kamstrup as Kamstrup
+from custom_components.ams.parsers import aidon_se as Aidon_se
+from custom_components.ams import const
 
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema(
     {
-        DOMAIN: vol.Schema(
+        const.DOMAIN: vol.Schema(
             {
                 vol.Required(
-                    CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT
+                    const.CONF_SERIAL_PORT, default=const.DEFAULT_SERIAL_PORT
                 ): cv.string,
                 vol.Required(
-                    CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
+                    const.CONF_METER_MANUFACTURER,
+                    default=const.DEFAULT_METER_MANUFACTURER
                 ): cv.string,
-                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
+                vol.Optional(const.CONF_PARITY, default=const.DEFAULT_PARITY):
+                    cv.string,
             }
         )
     },
@@ -57,27 +40,28 @@ CONFIG_SCHEMA = vol.Schema(
 
 def _setup(hass, config):
     """Setup helper for the component."""
-    if DOMAIN not in hass.data:
+    if const.DOMAIN not in hass.data:
         hub = AmsHub(hass, config)
-        hass.data[DOMAIN] = hub
+        hass.data[const.DOMAIN] = hub
 
 
-async def async_setup(hass: HomeAssistant, config: Config) -> bool:
+async def async_setup(hass: HomeAssistant, config: Config):
     """AMS hub YAML setup."""
-    if config.get(DOMAIN) is None:
+    if config.get(const.DOMAIN) is None:
         _LOGGER.info("No YAML config available, using config_entries")
         return True
-    _setup(hass, config[DOMAIN])
-    if not hass.config_entries.async_entries(DOMAIN):
+    _setup(hass, config[const.DOMAIN])
+    if not hass.config_entries.async_entries(const.DOMAIN):
         hass.async_create_task(
             hass.config_entries.flow.async_init(
-                DOMAIN, context={"source": SOURCE_IMPORT}, data=config[DOMAIN]
+                const.DOMAIN, context={"source": SOURCE_IMPORT}, data=config[
+                    const.DOMAIN]
             )
         )
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry,
@@ -85,15 +69,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     return True
 
 
-async def async_remove_entry(hass, entry) -> None:
+async def async_remove_entry(hass, entry):
     """Handle removal of an entry."""
-    await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
+    await hass.async_add_executor_job(hass.data[const.DOMAIN].stop_serial_read)
     return True
 
 
@@ -103,20 +87,20 @@ class AmsHub:
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
         self._hass = hass
-        port = entry[CONF_SERIAL_PORT]
+        port = entry[const.CONF_SERIAL_PORT]
         _LOGGER.debug("Connecting to HAN using port %s", port)
-        parity = entry.get(CONF_PARITY)
-        self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
+        parity = entry.get(const.CONF_PARITY)
+        self.meter_manufacturer = entry.get(const.CONF_METER_MANUFACTURER)
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
         self._ser = serial.Serial(
             port=port,
-            baudrate=DEFAULT_BAUDRATE,
+            baudrate=const.DEFAULT_BAUDRATE,
             parity=parity,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=DEFAULT_TIMEOUT,
+            timeout=const.DEFAULT_TIMEOUT,
         )
         self.connection = threading.Thread(target=self.connect, daemon=True)
         self.connection.start()
@@ -137,7 +121,7 @@ class AmsHub:
             buf = self._ser.read()
             if buf:
                 bytelist.extend(buf)
-                if buf == FRAME_FLAG and byte_counter > 1:
+                if buf == const.FRAME_FLAG and byte_counter > 1:
                     return bytelist
                 byte_counter = byte_counter + 1
             else:
@@ -146,12 +130,13 @@ class AmsHub:
     @property
     def meter_serial(self):
         """The electrical meter's serial number"""
-        return self._attrs["meter_serial"]
+        return self._attrs[const.HAN_METER_SERIAL]
 
     @property
     def meter_type(self):
         """The electrical meter's type"""
-        return self._attrs["meter_type"]
+
+        return self._attrs[const.HAN_METER_TYPE]
 
     def connect(self):
         """Read the data from the port."""
@@ -194,20 +179,23 @@ class AmsHub:
             match = []
             _LOGGER.debug("Testing for %s", meter)
             for i in range(len(pkg)):
-                if pkg[i] == meter[0] and pkg[i : i + len(meter)] == meter:
+                if pkg[i] == meter[0] and pkg[i:(i + len(meter))] == meter:
                     match.append(meter)
             return meter in match
 
-        if _test_meter(pkg, AIDON_METER_SEQ):
+        if _test_meter(pkg, const.AIDON_METER_SEQ):
             _LOGGER.info("Detected Aidon meter")
             return "aidon"
-        elif pkg[19] == AIDON_SE_1PH_ID or pkg[19] == AIDON_SE_3PH_ID:
-            _LOGGER.info("Detected Swedish Aidon meter by list type")
+        if _test_meter(pkg, [const.AIDON_SE_METER_SEQ_3PH]):
+            _LOGGER.info("Detected Swedish Aidon meter")
             return "aidon_se"
-        elif _test_meter(pkg, KAIFA_METER_SEQ):
+        if _test_meter(pkg, [const.AIDON_SE_METER_SEQ_1PH]):
+            _LOGGER.info("Detected Swedish Aidon meter")
+            return "aidon_se"
+        if _test_meter(pkg, const.KAIFA_METER_SEQ):
             _LOGGER.info("Detected Kaifa meter")
             return "kaifa"
-        elif _test_meter(pkg, KAMSTRUP_METER_SEQ):
+        if _test_meter(pkg, const.KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
 
@@ -223,21 +211,19 @@ class AmsHub:
         if data is None:
             data = self.data
 
-        attrs_to_check = ["meter_serial", "meter_manufacturer", "meter_type"]
+        attrs_to_check = [const.HAN_METER_SERIAL,
+                          const.HAN_METER_MANUFACTURER, const.HAN_METER_TYPE]
         miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
         if miss_attrs:
             cp_sensors_data = deepcopy(data)
             for check in miss_attrs:
                 for value in cp_sensors_data.values():
-                    v = value.get("attributes", {}).get(check)
+                    v = value.get(const.SENSOR_ATTR, {}).get(check)
                     if v:
                         self._attrs[check] = v
                         break
             del cp_sensors_data
-            if len([i for i in attrs_to_check if i not in self._attrs]):
-                return True
-            else:
-                return False
+            return len([i for i in attrs_to_check if i not in self._attrs])
         else:
             return False
 
@@ -245,7 +231,7 @@ class AmsHub:
         """Compare sensor list and update."""
         new_devices = []
         sensors_in_data = set(sensor_data.keys())
-        new_devices = sensors_in_data.difference(AMS_DEVICES)
+        new_devices = sensors_in_data.difference(const.AMS_DEVICES)
 
         if len(new_devices):
             # Check that we have all the info we need before the sensors are
@@ -260,7 +246,7 @@ class AmsHub:
                 _LOGGER.debug("Got %s new devices from the serial",
                               len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
-                async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
+                async_dispatcher_send(self._hass, const.SIGNAL_NEW_AMS_SENSOR)
         else:
             # _LOGGER.debug("sensors are the same, updating states")
-            async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)
+            async_dispatcher_send(self._hass, const.SIGNAL_UPDATE_AMS)

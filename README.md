@@ -9,6 +9,7 @@ Kamstrup:
   - 6861111 tested by janna at homeassistant community forum
   - 6841121 tested by me
   - 6841131
+  - 6841138A tested by NilsFA at homeassistant community forum
   - 6851121
   - 6851131
  
@@ -26,6 +27,7 @@ Norway:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
+ - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
 Sweden:
  - 6484 Thanks to @bo1jo for testing and debugging :+1:

@@ -13,7 +13,7 @@ def field_type(default="", fields=None, enc=str, dec=None):
 
 def byte_decode(fields=None, count=4):
     """Data content decoder."""
-    _LOGGER.debug("fields= %s", fields)
+#    _LOGGER.debug("fields= %s", fields)
     if count == 2:
         data = fields[0] << 8 | fields[1]
         return data
