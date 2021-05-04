@@ -148,7 +148,7 @@ def parse_data(stored, data):
                                     const.METER_TYPE.get(field_type(fields=pkt[
                                         v_start:v_stop], enc=chr, dec=int))
                                 )
-
+                                
                             else:
                                 han_data[key] = (
                                     field_type(fields=pkt[v_start:v_stop],

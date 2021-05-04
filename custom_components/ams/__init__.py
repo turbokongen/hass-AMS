@@ -135,6 +135,7 @@ class AmsHub:
     @property
     def meter_type(self):
         """The electrical meter's type"""
+
         return self._attrs[const.HAN_METER_TYPE]
 
     def connect(self):

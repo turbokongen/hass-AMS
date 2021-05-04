@@ -1,12 +1,15 @@
 # hass-AMS
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
+
 Custom component reading AMS through MBus adapter into HomeAssistant
-Works with the following meters:
+Works with the following swedish and norwegian meters:
+
 Kamstrup:
   - 6861111 tested by janna at homeassistant community forum
   - 6841121 tested by me
   - 6841131
+  - 6841138A tested by NilsFA at homeassistant community forum
   - 6851121
   - 6851131
  
@@ -20,16 +23,23 @@ Kamstrup:
   - MA304T3
 
 Aidon:
+Norway:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
  - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
+Sweden:
+ - 6484 Thanks to @bo1jo for testing and debugging :+1:
+
  Not tested with, but should work:
- - 6479
+ 
+ Norway:
  - 6540
  - 6550
  
+ Sweden:
+ - 6479
  
 ## *Installation
 Easiest method is to install via HACS. Then setup via *Integrations* config.
@@ -40,7 +50,7 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 *YAML options*
 ```yaml
 ams:
-  serial_port: '/dev/ttyUSB0' # Required
+  serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
@@ -75,4 +85,6 @@ Improvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
 Enjoy
 
-Latest information about OBIS for all the meters: https://www.nek.no/info-ams-han-utviklere/
+Latest information about OBIS for all the norwegian meters: https://www.nek.no/info-ams-han-utviklere/
+
+Latest information about swedish standard for AMS: https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf
