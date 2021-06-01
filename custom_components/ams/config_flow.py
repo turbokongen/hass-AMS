@@ -31,9 +31,6 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
-
         portdata = await self.hass.async_add_executor_job(devices.comports)
         ports = [(comport.device + ": " + comport.description) for
                  comport in portdata]
