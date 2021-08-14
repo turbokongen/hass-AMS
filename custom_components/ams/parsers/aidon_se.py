@@ -100,6 +100,15 @@ def parse_data(stored, data):
                             measure = byte_decode(fields=pkt[v_start:v_stop])
                             if key in const.HOURLY_SENSORS:
                                 han_data[key] = measure / 1000
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_STATE_CLASS] = (
+                                        const.STATE_CLASS_MEASUREMENT)
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_DEVICE_CLASS] = (
+                                        const.DEVICE_CLASS_ENERGY)
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_LAST_RESET] = (
+                                        const.LAST_RESET_DATA)
                             else:
                                 han_data[key] = measure
                             sensor_data[key] = {
