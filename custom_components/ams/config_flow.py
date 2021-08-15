@@ -7,9 +7,11 @@ import voluptuous as vol
 from homeassistant import config_entries
 
 from .const import (
+    CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
     CONF_SERIAL_PORT,
+    DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
     DEFAULT_PARITY,
     DOMAIN,
@@ -59,11 +61,16 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_PARITY, default=DEFAULT_PARITY
                     ): vol.All(str),
+                    vol.Optional(
+                        CONF_BAUDRATE, default=DEFAULT_BAUDRATE
+                    ): vol.All(int),
                 }
             ),
             description_placeholders={
                 CONF_SERIAL_PORT: ports,
                 CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS,
+                CONF_PARITY: DEFAULT_PARITY,
+                CONF_BAUDRATE: DEFAULT_BAUDRATE,
             },
             errors=self._errors,
         )

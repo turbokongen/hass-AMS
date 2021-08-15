@@ -11,7 +11,8 @@
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
-                    "meter_manufacturer": "Målar produsent"
+                    "meter_manufacturer": "Målar produsent",
+                    "baudrate": "Baudrate"
                 }
             }
         },
