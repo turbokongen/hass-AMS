@@ -3,6 +3,8 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
 
 Custom component reading AMS through MBus adapter into HomeAssistant
+Supports the new energy dashboard in Home-Assistant.
+
 Works with the following swedish and norwegian meters:
 
 Kamstrup:

@@ -220,6 +220,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kWh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["active_energy_n"] = (
@@ -238,6 +241,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kWh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_p"] = (
@@ -256,6 +262,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kVArh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_n"] = (
@@ -274,6 +283,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kVArh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
 
@@ -332,6 +344,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kWh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["active_energy_n"] = (
@@ -350,6 +365,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kWh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_p"] = (
@@ -368,6 +386,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kVArh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_n"] = (
@@ -386,6 +407,9 @@ def parse_data(stored, data):
                     const.HAN_METER_SERIAL: han_data[const.HAN_METER_SERIAL],
                     const.SENSOR_UOM: "kVArh",
                     const.SENSOR_ICON: "mdi:gauge",
+                    const.ATTR_STATE_CLASS: const.STATE_CLASS_MEASUREMENT,
+                    const.ATTR_DEVICE_CLASS: const.DEVICE_CLASS_ENERGY,
+                    const.ATTR_LAST_RESET: const.LAST_RESET_DATA,
                 },
             }
     stored.update(sensor_data)

@@ -148,7 +148,6 @@ def parse_data(stored, data):
                                     const.METER_TYPE.get(field_type(fields=pkt[
                                         v_start:v_stop], enc=chr, dec=int))
                                 )
-                                
                             else:
                                 han_data[key] = (
                                     field_type(fields=pkt[v_start:v_stop],
@@ -231,6 +230,15 @@ def parse_data(stored, data):
                                 sensor_data[key][const.SENSOR_ATTR][
                                     const.HAN_METER_DATETIME] = han_data[
                                         const.HAN_METER_DATETIME]
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_STATE_CLASS] = (
+                                        const.STATE_CLASS_MEASUREMENT)
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_DEVICE_CLASS] = (
+                                        const.DEVICE_CLASS_ENERGY)
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_LAST_RESET] = (
+                                        const.LAST_RESET_DATA)
                             _LOGGER.debug(
                                 "Value double OBIS type  6: %s, Index:%s",
                                 han_data[key], (v_start, v_stop)
