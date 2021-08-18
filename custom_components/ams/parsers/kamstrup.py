@@ -194,13 +194,10 @@ def parse_data(stored, data):
                                         const.HAN_METER_DATETIME]
                                 sensor_data[key][const.SENSOR_ATTR][
                                     const.ATTR_STATE_CLASS] = (
-                                        const.STATE_CLASS_MEASUREMENT)
+                                        const.STATE_CLASS_TOTAL_INCREASING)
                                 sensor_data[key][const.SENSOR_ATTR][
                                     const.ATTR_DEVICE_CLASS] = (
                                         const.DEVICE_CLASS_ENERGY)
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_LAST_RESET] = (
-                                        const.LAST_RESET_DATA)
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                 key, item, (i, i + len(item)),
