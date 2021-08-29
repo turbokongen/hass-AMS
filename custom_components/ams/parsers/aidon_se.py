@@ -100,12 +100,6 @@ def parse_data(stored, data):
                             measure = byte_decode(fields=pkt[v_start:v_stop])
                             if key in const.HOURLY_SENSORS:
                                 han_data[key] = measure / 1000
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_STATE_CLASS] = (
-                                        const.STATE_CLASS_TOTAL_INCREASING)
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_DEVICE_CLASS] = (
-                                        const.DEVICE_CLASS_ENERGY)
                             else:
                                 han_data[key] = measure
                             sensor_data[key] = {
@@ -126,6 +120,13 @@ def parse_data(stored, data):
                                         const.SENSOR_ICON_MAP.get(key)),
                                 },
                             }
+                            if key in const.HOURLY_SENSORS:
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_STATE_CLASS] = (
+                                    const.STATE_CLASS_TOTAL_INCREASING)
+                                sensor_data[key][const.SENSOR_ATTR][
+                                    const.ATTR_DEVICE_CLASS] = (
+                                    const.DEVICE_CLASS_ENERGY)
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                 key, item, (i, i + len(item)),
