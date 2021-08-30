@@ -120,14 +120,21 @@ class AmsHub:
         """Read the raw data from serial port."""
         byte_counter = 0
         bytelist = []
+        _LOGGER.debug("byte_counter and bytelist set")
         while self._running:
+            _LOGGER.debug("self._running and starting to read buffer")
             buf = self._ser.read()
+            _LOGGER.debug("buf=%s", buf)
             if buf:
+                _LOGGER.debug("buffer read=%s", buf)
                 bytelist.extend(buf)
                 if buf == const.FRAME_FLAG and byte_counter > 1:
+                    _LOGGER.debug("bytelist found")
                     return bytelist
+                _LOGGER.debug("Adding to byte counter")
                 byte_counter = byte_counter + 1
             else:
+                _LOGGER.debug("Nothing read!")
                 continue
 
     @property
