@@ -31,6 +31,9 @@ CONFIG_SCHEMA = vol.Schema(
                 ): cv.string,
                 vol.Optional(const.CONF_PARITY, default=const.DEFAULT_PARITY):
                     cv.string,
+                vol.Optional(
+                    const.CONF_BAUDRATE, default=const.DEFAULT_BAUDRATE
+                ): vol.All(int),
             }
         )
     },
