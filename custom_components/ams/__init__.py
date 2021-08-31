@@ -121,6 +121,7 @@ class AmsHub:
         byte_counter = 0
         bytelist = []
         _LOGGER.debug("byte_counter and bytelist set")
+        _LOGGER.debug("self._ser=%s", self._ser)
         while self._running:
             _LOGGER.debug("self._running and starting to read buffer")
             buf = self._ser.read()
