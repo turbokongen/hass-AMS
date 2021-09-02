@@ -60,6 +60,7 @@ ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"
 DEVICE_CLASS_ENERGY = "energy"
 LAST_RESET_DATA = util.dt.utc_from_timestamp(0)
+STATE_CLASS_TOTAL_INCREASING = "total_increasing"
 STATE_CLASS_MEASUREMENT = "measurement"
 
 DOMAIN = "ams"

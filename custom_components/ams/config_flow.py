@@ -6,7 +6,7 @@ import serial.tools.list_ports as devices
 import voluptuous as vol
 from homeassistant import config_entries
 
-from .const import (
+from custom_components.ams.const import (
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
@@ -15,7 +15,7 @@ from .const import (
     DEFAULT_METER_MANUFACTURER,
     DEFAULT_PARITY,
     DOMAIN,
-    MANUFACTURER_OPTIONS,
+    MANUFACTURER_OPTIONS
 )
 
 _LOGGER = logging.getLogger(__name__)
