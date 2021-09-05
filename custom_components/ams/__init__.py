@@ -122,7 +122,7 @@ class AmsHub:
         self._running = True
         self._ser = serial.Serial(
             port=port,
-            baudrate=entry.get(CONF_BAUDRATE),
+            baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
             parity=parity,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
