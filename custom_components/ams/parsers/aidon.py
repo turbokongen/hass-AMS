@@ -9,7 +9,6 @@ from crccheck.crc import CrcX25
 from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.const import (
     ATTR_DEVICE_CLASS,
-    ATTR_LAST_RESET,
     ATTR_STATE_CLASS,
     DATA_FLAG,
     DEVICE_CLASS_ENERGY,
@@ -23,7 +22,6 @@ from custom_components.ams.const import (
     HAN_OBIS_CODE,
     HAN_OBIS_DATETIME,
     HOURLY_SENSORS,
-    LAST_RESET_DATA,
     LIST_TYPE_MINI,
     METER_TYPE,
     SENSOR_ATTR,
@@ -34,7 +32,7 @@ from custom_components.ams.const import (
     SENSOR_STATE,
     SENSOR_UNIT,
     SENSOR_UOM,
-    STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     WEEKDAY_MAPPING,
 )
 _LOGGER = logging.getLogger(__name__)
@@ -260,13 +258,10 @@ def parse_data(stored, data):
                                         HAN_METER_DATETIME]
                                 sensor_data[key][SENSOR_ATTR][
                                     ATTR_STATE_CLASS] = (
-                                        STATE_CLASS_MEASUREMENT)
+                                        STATE_CLASS_TOTAL_INCREASING)
                                 sensor_data[key][SENSOR_ATTR][
                                     ATTR_DEVICE_CLASS] = (
                                         DEVICE_CLASS_ENERGY)
-                                sensor_data[key][SENSOR_ATTR][
-                                    ATTR_LAST_RESET] = (
-                                        LAST_RESET_DATA)
                             _LOGGER.debug(
                                 "Value double OBIS type  6: %s, Index:%s",
                                 han_data[key], (v_start, v_stop)

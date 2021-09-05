@@ -10,7 +10,6 @@ from crccheck.crc import CrcX25
 from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.const import (
     ATTR_DEVICE_CLASS,
-    ATTR_LAST_RESET,
     ATTR_STATE_CLASS,
     DATA_FLAG,
     DEVICE_CLASS_ENERGY,
@@ -23,7 +22,6 @@ from custom_components.ams.const import (
     HAN_METER_SERIAL,
     HAN_METER_TYPE,
     HAN_PACKET_SIZE,
-    LAST_RESET_DATA,
     LIST_TYPE_LONG_1PH,
     LIST_TYPE_LONG_3PH,
     LIST_TYPE_SHORT_1PH,
@@ -34,7 +32,7 @@ from custom_components.ams.const import (
     SENSOR_ICON,
     SENSOR_STATE,
     SENSOR_UOM,
-    STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     WEEKDAY_MAPPING,
 )
 _LOGGER = logging.getLogger(__name__)
@@ -247,9 +245,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kWh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["active_energy_n"] = (
@@ -268,9 +265,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kWh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_p"] = (
@@ -289,9 +285,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kVArh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_n"] = (
@@ -310,9 +305,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kVArh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
 
@@ -371,9 +365,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kWh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["active_energy_n"] = (
@@ -392,9 +385,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kWh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_p"] = (
@@ -413,9 +405,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kVArh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
             han_data["reactive_energy_n"] = (
@@ -434,9 +425,8 @@ def parse_data(stored, data):
                     HAN_METER_SERIAL: han_data[HAN_METER_SERIAL],
                     SENSOR_UOM: "kVArh",
                     SENSOR_ICON: "mdi:gauge",
-                    ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+                    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
                     ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
-                    ATTR_LAST_RESET: LAST_RESET_DATA,
                 },
             }
     stored.update(sensor_data)

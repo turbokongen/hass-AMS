@@ -1,3 +1,4 @@
+"""Base functions to convert data from meter"""
 import logging
 
 _LOGGER = logging.getLogger(__name__)

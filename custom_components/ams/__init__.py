@@ -220,10 +220,10 @@ class AmsHub:
         if _test_meter(pkg, AIDON_METER_SEQ):
             _LOGGER.info("Detected Aidon meter")
             return "aidon"
-        if _test_meter(pkg, [AIDON_SE_METER_SEQ_3PH]):
+        if _test_meter(pkg, AIDON_SE_METER_SEQ_3PH):
             _LOGGER.info("Detected Swedish Aidon meter")
             return "aidon_se"
-        if _test_meter(pkg, [AIDON_SE_METER_SEQ_1PH]):
+        if _test_meter(pkg, AIDON_SE_METER_SEQ_1PH):
             _LOGGER.info("Detected Swedish Aidon meter")
             return "aidon_se"
         if _test_meter(pkg, KAIFA_METER_SEQ):

@@ -30,7 +30,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
         data = hass.data[DOMAIN].sensor_data
 
         for sensor_name in data:
-            # Check that we dont add a new sensor that already exists.
+            # Check that we don't add a new sensor that already exists.
             # We only try to update the state for sensors in AMS_DEVICES
             if sensor_name not in AMS_DEVICES:
                 AMS_DEVICES.add(sensor_name)
@@ -47,10 +47,12 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
         # Handle the hourly sensors.
         for hourly in HOURLY_SENSORS:
-            if hourly not in data and hourly not in AMS_SENSOR_CREATED_BUT_NOT_READ:
+            if hourly not in data and hourly not in (
+                    AMS_SENSOR_CREATED_BUT_NOT_READ):
                 AMS_SENSOR_CREATED_BUT_NOT_READ.add(hourly)
                 _LOGGER.debug(
-                    "Hourly sensor %s added so we can attempt to restore state", hourly
+                    "Hourly sensor %s added so we can attempt to restore"
+                    " state", hourly
                 )
                 sensor_states = {
                     "name": hourly,
@@ -73,7 +75,8 @@ async def async_remove_entry(hass, entry):
     _LOGGER.debug("async_remove_entry AMS")
     try:
         await hass.config_entries.async_forward_entry_unload(entry, "sensor")
-        _LOGGER.info("Successfully removed sensor from the Norwegian AMS integration")
+        _LOGGER.info("Successfully removed sensor from the Norwegian AMS"
+                     " integration")
     except ValueError:
         pass
 
@@ -90,13 +93,15 @@ class AmsSensor(RestoreEntity):
         self._state = None
         self._attributes = {}
         self._update_properties()
-        _LOGGER.debug("Init %s DUMP sensor_states %s", self._name, sensor_states)
+        _LOGGER.debug("Init %s DUMP sensor_states %s", self._name,
+                      sensor_states)
 
     def _update_properties(self):
         """Update all portions of sensor."""
         try:
             self._state = self.ams.sensor_data[self._name].get("state")
-            self._attributes = self.ams.sensor_data[self._name].get("attributes")
+            self._attributes = self.ams.sensor_data[self._name].get(
+                "attributes")
             self._meter_id = self.ams.meter_serial
             _LOGGER.debug("Updating sensor %s", self._name)
         except KeyError:
@@ -140,11 +145,14 @@ class AmsSensor(RestoreEntity):
     async def async_added_to_hass(self):
         """Register callbacks and restoring states to hourly sensors."""
         await super().async_added_to_hass()
-        async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS, self._update_callback)
+        async_dispatcher_connect(self._hass, SIGNAL_UPDATE_AMS,
+                                 self._update_callback)
         old_state = await self.async_get_last_state()
 
-        if old_state is not None and self._name and self._name in HOURLY_SENSORS:
-            if dt_utils.utcnow() - old_state.last_changed < timedelta(minutes=60):
+        if old_state is not None and self._name and self._name in (
+                HOURLY_SENSORS):
+            if dt_utils.utcnow() - old_state.last_changed < timedelta(
+                    minutes=60):
                 if old_state.state == STATE_UNKNOWN:
                     _LOGGER.debug(
                         "%s state is unknown, this typically happens if "
@@ -156,7 +164,8 @@ class AmsSensor(RestoreEntity):
                 else:
                     _LOGGER.debug(
                         "The state for %s was set less then a hour ago,"
-                        " so its still correct. Restoring state to %s with attrs %s",
+                        " so its still correct. Restoring state to %s with"
+                        " attrs %s",
                         self._name,
                         old_state.state,
                         old_state.attributes,
@@ -167,7 +176,8 @@ class AmsSensor(RestoreEntity):
             else:
                 # I'll rather have unknown then wrong values.
                 _LOGGER.debug(
-                    "The old state %s was set more then 60 minutes ago %s, ignoring it.",
+                    "The old state %s was set more then 60 minutes ago %s,"
+                    " ignoring it.",
                     old_state.state,
                     old_state.last_changed,
                 )
