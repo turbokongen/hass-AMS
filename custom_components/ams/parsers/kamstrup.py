@@ -6,7 +6,41 @@ This module will decode the incoming message from Mbus serial.
 import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams import const
+from custom_components.ams.const import (
+    ATTR_DEVICE_CLASS,
+    ATTR_STATE_CLASS,
+    DATA_FLAG,
+    DEVICE_CLASS_ENERGY,
+    FRAME_FLAG,
+    HAN_ACTIVE_ENERGY_EXPORT,
+    HAN_ACTIVE_ENERGY_IMPORT,
+    HAN_CURRENT_L1,
+    HAN_CURRENT_L2,
+    HAN_CURRENT_L3,
+    HAN_LIST_VER_ID,
+    HAN_METER_DATETIME,
+    HAN_METER_LIST_TYPE,
+    HAN_METER_MANUFACTURER,
+    HAN_METER_SERIAL,
+    HAN_METER_TYPE,
+    HAN_OBIS_CODE,
+    HAN_OBIS_DATETIME,
+    HAN_PACKET_SIZE,
+    HAN_REACTIVE_ENERGY_EXPORT,
+    HAN_REACTIVE_ENERGY_IMPORT,
+    HOURLY_SENSORS,
+    METER_TYPE,
+    SENSOR_ATTR,
+    SENSOR_COMMON_OBIS_MAP,
+    SENSOR_ICON,
+    SENSOR_ICON_MAP,
+    SENSOR_OBIS_MAP,
+    SENSOR_STATE,
+    SENSOR_UNIT,
+    SENSOR_UOM,
+    STATE_CLASS_TOTAL_INCREASING,
+    WEEKDAY_MAPPING,
+)
 from custom_components.ams.parsers import byte_decode, field_type
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,22 +59,22 @@ def parse_data(stored, data):
     han_data = {}
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
-    han_data[const.HAN_PACKET_SIZE] = read_packet_size
+    han_data[HAN_PACKET_SIZE] = read_packet_size
     list_type = pkt[30]
-    han_data[const.HAN_METER_LIST_TYPE] = list_type
+    han_data[HAN_METER_LIST_TYPE] = list_type
     _LOGGER.debug("list_type is %s", list_type)
 
     # Ensure basic data before parsing package
     # Kamstrup does not include OBIS in their package for the list version
-    han_data[const.HAN_LIST_VER_ID] = field_type(fields=pkt[33:47], enc=chr)
-    for key in const.SENSOR_COMMON_OBIS_MAP:
-        if len(const.SENSOR_COMMON_OBIS_MAP[key]) == 2:
-            for item in const.SENSOR_COMMON_OBIS_MAP[key]:
+    han_data[HAN_LIST_VER_ID] = field_type(fields=pkt[33:47], enc=chr)
+    for key in SENSOR_COMMON_OBIS_MAP:
+        if len(SENSOR_COMMON_OBIS_MAP[key]) == 2:
+            for item in SENSOR_COMMON_OBIS_MAP[key]:
                 for i in range(len(pkt)):
                     if pkt[i:i + len(item)] == item:
                         # Date time construct
                         if pkt[i + len(item)] == 9:
-                            han_data[const.HAN_OBIS_DATETIME] = (
+                            han_data[HAN_OBIS_DATETIME] = (
                                 '.'.join([str(elem) for elem in item])
                             )
                             v_start = i + len(item) + 2
@@ -50,7 +84,7 @@ def parse_data(stored, data):
                             meter_date_time_month = pkt[v_start + 2]
                             meter_date_time_date = pkt[v_start + 3]
                             meter_date_time_day_of_week = (
-                                const.WEEKDAY_MAPPING.get(pkt[v_start + 4]))
+                                WEEKDAY_MAPPING.get(pkt[v_start + 4]))
                             meter_date_time_hour = (
                                 str(pkt[v_start + 5]).zfill(2)
                             )
@@ -76,14 +110,14 @@ def parse_data(stored, data):
                                 + str(meter_date_time_seconds)
                             )
                             han_data[
-                                const.HAN_METER_DATETIME] = meter_date_time_str
+                                HAN_METER_DATETIME] = meter_date_time_str
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
-                                const.HAN_METER_DATETIME, item,
+                                HAN_METER_DATETIME, item,
                                 (i, i + len(item)), (pkt[(i + len(item))]))
                             _LOGGER.debug("%s, %s, %s, %s, %s, %s, %s, %s, "
                                           "%s, %s",
-                                          const.HAN_METER_DATETIME,
+                                          HAN_METER_DATETIME,
                                           item, meter_date_time_year,
                                           meter_date_time_month,
                                           meter_date_time_date,
@@ -100,11 +134,11 @@ def parse_data(stored, data):
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            if key == const.HAN_METER_TYPE:
+                            if key == HAN_METER_TYPE:
                                 han_data[key] = (
-                                    const.METER_TYPE.get(field_type(fields=pkt[
+                                    METER_TYPE.get(field_type(fields=pkt[
                                         v_start:v_start + 7], enc=chr,
-                                                                    dec=int))
+                                                              dec=int))
                                 )
 
                             else:
@@ -120,32 +154,32 @@ def parse_data(stored, data):
                                 "Value double OBIS type 10: %s, Index:%s",
                                 han_data[key], (v_start, v_stop))
         for i in range(len(pkt)):
-            if (pkt[i:i + len(const.SENSOR_COMMON_OBIS_MAP[key])] ==
-                    const.SENSOR_COMMON_OBIS_MAP[key]):
+            if (pkt[i:i + len(SENSOR_COMMON_OBIS_MAP[key])] ==
+                    SENSOR_COMMON_OBIS_MAP[key]):
                 # Visible string construct
-                if pkt[i + len(const.SENSOR_COMMON_OBIS_MAP[key])] == 10:
-                    print(const.SENSOR_COMMON_OBIS_MAP[key], key)
-                    v_start = i + len(const.SENSOR_COMMON_OBIS_MAP[key]) + 2
+                if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 10:
+                    print(SENSOR_COMMON_OBIS_MAP[key], key)
+                    v_start = i + len(SENSOR_COMMON_OBIS_MAP[key]) + 2
                     v_length = pkt[v_start - 1]
                     v_stop = v_start + v_length
                     han_data["obis_" + key] = (
                         '.'.join([str(elem) for elem in
-                                  const.SENSOR_COMMON_OBIS_MAP[key]])
+                                  SENSOR_COMMON_OBIS_MAP[key]])
                     )
                     han_data[key] = (
                         field_type(fields=pkt[v_start:v_stop], enc=chr)
                     )
                     _LOGGER.debug(
                         "%s, OBIS:%s, Index:%s, Type:%s Single OBIS",
-                        key, const.SENSOR_COMMON_OBIS_MAP[key],
-                        (i, i + len(const.SENSOR_COMMON_OBIS_MAP[key])),
-                        (pkt[(i + len(const.SENSOR_COMMON_OBIS_MAP[key]))]))
+                        key, SENSOR_COMMON_OBIS_MAP[key],
+                        (i, i + len(SENSOR_COMMON_OBIS_MAP[key])),
+                        (pkt[(i + len(SENSOR_COMMON_OBIS_MAP[key]))]))
                     _LOGGER.debug(
                         "Value Single OBIS type 10: %s, Index:%s",
                         han_data[key], (v_start, v_stop))
-    for key in const.SENSOR_OBIS_MAP:
-        if len(const.SENSOR_OBIS_MAP[key]) == 2:
-            for item in const.SENSOR_OBIS_MAP[key]:
+    for key in SENSOR_OBIS_MAP:
+        if len(SENSOR_OBIS_MAP[key]) == 2:
+            for item in SENSOR_OBIS_MAP[key]:
                 for i in range(len(pkt)):
                     if pkt[i:i + len(item)] == item:
                         # Double-long-unsigned dict construct
@@ -155,13 +189,13 @@ def parse_data(stored, data):
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            if (key in (const.HAN_CURRENT_L1,
-                                        const.HAN_CURRENT_L2,
-                                        const.HAN_CURRENT_L3,
-                                        const.HAN_ACTIVE_ENERGY_IMPORT,
-                                        const.HAN_ACTIVE_ENERGY_EXPORT,
-                                        const.HAN_REACTIVE_ENERGY_IMPORT,
-                                        const.HAN_REACTIVE_ENERGY_EXPORT)):
+                            if (key in (HAN_CURRENT_L1,
+                                        HAN_CURRENT_L2,
+                                        HAN_CURRENT_L3,
+                                        HAN_ACTIVE_ENERGY_IMPORT,
+                                        HAN_ACTIVE_ENERGY_EXPORT,
+                                        HAN_REACTIVE_ENERGY_IMPORT,
+                                        HAN_REACTIVE_ENERGY_EXPORT)):
                                 han_data[key] = (
                                     byte_decode(
                                         fields=pkt[v_start:v_stop]) / 100
@@ -171,36 +205,33 @@ def parse_data(stored, data):
                                     byte_decode(fields=pkt[v_start:v_stop])
                                 )
                             sensor_data[key] = {
-                                const.SENSOR_STATE: han_data[key],
-                                const.SENSOR_ATTR: {
-                                    const.HAN_METER_MANUFACTURER: han_data[
-                                        const.HAN_LIST_VER_ID],
-                                    const.HAN_METER_TYPE: han_data[
-                                        const.HAN_METER_TYPE],
-                                    const.HAN_OBIS_CODE: han_data[
+                                SENSOR_STATE: han_data[key],
+                                SENSOR_ATTR: {
+                                    HAN_METER_MANUFACTURER: han_data[
+                                        HAN_LIST_VER_ID],
+                                    HAN_METER_TYPE: han_data[
+                                        HAN_METER_TYPE],
+                                    HAN_OBIS_CODE: han_data[
                                         "obis_" + key],
-                                    const.HAN_METER_SERIAL: han_data[
-                                        const.HAN_METER_SERIAL],
-                                    const.SENSOR_UOM:
-                                        const.SENSOR_UNIT.get(key),
-                                    const.SENSOR_ICON: (
+                                    HAN_METER_SERIAL: han_data[
+                                        HAN_METER_SERIAL],
+                                    SENSOR_UOM:
+                                        SENSOR_UNIT.get(key),
+                                    SENSOR_ICON: (
                                         "mdi:" +
-                                        const.SENSOR_ICON_MAP.get(key)),
+                                        SENSOR_ICON_MAP.get(key)),
                                 },
                             }
-                            if key in const.HOURLY_SENSORS:
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.HAN_METER_DATETIME] = han_data[
-                                        const.HAN_METER_DATETIME]
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_STATE_CLASS] = (
-                                        const.STATE_CLASS_MEASUREMENT)
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_DEVICE_CLASS] = (
-                                        const.DEVICE_CLASS_ENERGY)
-                                sensor_data[key][const.SENSOR_ATTR][
-                                    const.ATTR_LAST_RESET] = (
-                                        const.LAST_RESET_DATA)
+                            if key in HOURLY_SENSORS:
+                                sensor_data[key][SENSOR_ATTR][
+                                    HAN_METER_DATETIME] = han_data[
+                                        HAN_METER_DATETIME]
+                                sensor_data[key][SENSOR_ATTR][
+                                    ATTR_STATE_CLASS] = (
+                                        STATE_CLASS_TOTAL_INCREASING)
+                                sensor_data[key][SENSOR_ATTR][
+                                    ATTR_DEVICE_CLASS] = (
+                                        DEVICE_CLASS_ENERGY)
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                 key, item, (i, i + len(item)),
@@ -223,21 +254,21 @@ def parse_data(stored, data):
                                              count=2))
                             )
                             sensor_data[key] = {
-                                const.SENSOR_STATE: han_data[key],
-                                const.SENSOR_ATTR: {
-                                    const.HAN_METER_MANUFACTURER: han_data[
-                                        const.HAN_LIST_VER_ID],
-                                    const.HAN_METER_TYPE: han_data[
-                                        const.HAN_METER_TYPE],
-                                    const.HAN_OBIS_CODE: han_data[
+                                SENSOR_STATE: han_data[key],
+                                SENSOR_ATTR: {
+                                    HAN_METER_MANUFACTURER: han_data[
+                                        HAN_LIST_VER_ID],
+                                    HAN_METER_TYPE: han_data[
+                                        HAN_METER_TYPE],
+                                    HAN_OBIS_CODE: han_data[
                                         "obis_" + key],
-                                    const.HAN_METER_SERIAL: han_data[
-                                        const.HAN_METER_SERIAL],
-                                    const.SENSOR_UOM:
-                                        const.SENSOR_UNIT.get(key),
-                                    const.SENSOR_ICON: (
+                                    HAN_METER_SERIAL: han_data[
+                                        HAN_METER_SERIAL],
+                                    SENSOR_UOM:
+                                        SENSOR_UNIT.get(key),
+                                    SENSOR_ICON: (
                                         "mdi:" +
-                                        const.SENSOR_ICON_MAP.get(key)),
+                                        SENSOR_ICON_MAP.get(key)),
                                 },
 
                             }
@@ -262,7 +293,7 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
 
-    if not data[0] and data[-1] == const.FRAME_FLAG:
+    if not data[0] and data[-1] == FRAME_FLAG:
         _LOGGER.debug(
             "%s Received %s bytes of %s data",
             datetime.now().isoformat(),
@@ -285,8 +316,8 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid frame CRC check")
         return False
 
-    if data[8:12] != const.DATA_FLAG:
-        _LOGGER.debug("Data does not start with %s: %s", const.DATA_FLAG,
+    if data[8:12] != DATA_FLAG:
+        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,
                       data[8:12])
         return False
 

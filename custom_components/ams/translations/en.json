@@ -11,7 +11,8 @@
                 "data": {
                     "serial_port": "Serial Port",
                     "parity": "Parity",
-                    "meter_manufacturer": "Meter manufacturer"
+                    "meter_manufacturer": "Meter manufacturer",
+                    "baudrate": "Baudrate"
                 }
             }
         },

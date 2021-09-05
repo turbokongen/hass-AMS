@@ -1,6 +1,5 @@
 """ Constants for hass-AMS package"""
 import serial
-from homeassistant import util
 
 HAN_OBIS_CODE = "obis_code"
 HAN_PACKET_SIZE = "packet_size"
@@ -59,8 +58,7 @@ ATTR_DEVICE_CLASS = "device_class"
 ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"
 DEVICE_CLASS_ENERGY = "energy"
-LAST_RESET_DATA = util.dt.utc_from_timestamp(0)
-STATE_CLASS_MEASUREMENT = "measurement"
+STATE_CLASS_TOTAL_INCREASING = "total_increasing"
 
 DOMAIN = "ams"
 
