@@ -58,6 +58,7 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 ```yaml
 ams:
   serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
+  baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
