@@ -43,6 +43,7 @@ SENSOR_UOM = "unit_of_measurement"
 SENSOR_ATTR = "attributes"
 SENSOR_STATE = "state"
 
+AMS_ENERGY_METER = "AMS energy meter"
 AMS_NEW_SENSORS = "ams_new_sensors"
 AMS_SENSORS = "ams_sensors"
 # Devices that we have read from the serial connection.
@@ -91,6 +92,7 @@ LIST_TYPE_LONG_3PH_3W = 17
 METER_TYPE = {
     # Aidon
     6484: "RF2-system module Integrated HAN",  # Sweden
+    6483: "RF2-system module Integrated HAN",  # Norway
     6510: "6510 1-phase Meter",
     6511: "6511 1-phase Meter with CB",
     6515: "6515 1-phase Meter with CB and Earth Fault Current Measurement",
