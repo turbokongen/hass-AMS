@@ -1,4 +1,4 @@
-# hass-AMS - AMS Reader for Norwegian and swedish AMS meters
+# hass-AMS
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
 
@@ -7,9 +7,6 @@ Supports the new energy dashboard in Home-Assistant.
 
 If it does not decode your data, please submit a ticket, and I will try to 
 make a parser for your meter.
-
-If your meter type shown "unknown", please submit a ticket, and I will add 
-your meter to the module.
 
 Works with the following swedish and norwegian meters:
 
@@ -61,7 +58,6 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 ```yaml
 ams:
   serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
-  baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
@@ -76,10 +72,9 @@ Meter manufacturer field options are:
 ```
 'auto'
 'aidon'
-'aidon_se' # Swedish aidon meter RF2 modules
+'aidon_se' #Swedish aidon meter RF2 modules
 'kamstrup'
 'kaifa'
-'kaifa_se' # Swedish kaifa meters
 ```
 This will create sensors for each of the available usage data in the meter.
 The accumulative sensors will only be fully available after first read, and is transmitted from the meter 5 seconds past the hour.

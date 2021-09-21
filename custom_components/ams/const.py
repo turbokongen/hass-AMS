@@ -118,10 +118,8 @@ METER_TYPE = {
     6841131: "Omnipower 3 Phase 4-Wire Direct meter",
     6851121: "Omnipower 3 Phase CT 3-Wire Direct meter",
     6851131: "Omnipower 3 Phase CT 4-Wire Direct meter",
-    6851128: "Omnipower 3 Phase Direct meter",
     6841138: "Omnipower 3 Phase Direct meter",
 }
-UNKNOWN_METER = "Unknown"
 
 HOURLY_SENSORS = [
     HAN_ACTIVE_ENERGY_IMPORT,
@@ -134,12 +132,6 @@ CURRENT_SENSORS = [
     HAN_CURRENT_L1,
     HAN_CURRENT_L2,
     HAN_CURRENT_L3,
-]
-
-VOLTAGE_SENSORS = [
-    HAN_VOLTAGE_L1,
-    HAN_VOLTAGE_L2,
-    HAN_VOLTAGE_L3,
 ]
 
 ALL_SENSORS = [

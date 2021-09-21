@@ -1,12 +1,12 @@
 {
     "domain": "ams",
-    "name": "AMS Reader",
+    "name": "Norwegian AMS",
     "documentation": "https://github.com/turbokongen/hass-AMS",
     "issue_tracker": "https://github.com/turbokongen/hass-AMS/issues",
     "dependencies": [],
     "codeowners": ["@turbokongen"],
     "requirements": ["pyserial==3.5", "crccheck==1.0"],
     "config_flow": true,
-    "version": "1.7.1",
+    "version": "1.7.0",
     "iot_class": "local_push"
 }
