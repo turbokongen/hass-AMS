@@ -5,6 +5,9 @@
 Custom component reading AMS through MBus adapter into HomeAssistant
 Supports the new energy dashboard in Home-Assistant.
 
+If it does not decode your data, please submit a ticket, and I will try to 
+make a parser for your meter.
+
 Works with the following swedish and norwegian meters:
 
 Kamstrup:
@@ -15,12 +18,15 @@ Kamstrup:
   - 6851121
   - 6851131
  
- Kaifa:
+Kaifa:
+Norway: 
   - MA304H3E Thanks to @thomasja27 for testing :+1:
- 
- Not tested with, but should work:
+
+Sweden:
+  - MA304H4 Thanks to @runlar for testing (swedish version) :+1:
+
+Not tested with, but should work:
   - MA105H2E
-  - MA304H4
   - MA304T4
   - MA304T3
 
@@ -29,12 +35,11 @@ Norway:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
- - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
 Sweden:
  - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
- Not tested with, but should work:
+Not tested with, but should work:
  
  Norway:
  - 6540

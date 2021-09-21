@@ -14,6 +14,7 @@ from custom_components.ams.parsers import aidon as Aidon
 from custom_components.ams.parsers import kaifa as Kaifa
 from custom_components.ams.parsers import kamstrup as Kamstrup
 from custom_components.ams.parsers import aidon_se as Aidon_se
+from custom_components.ams.parsers import kaifa_se as Kaifa_se
 from custom_components.ams.const import (
     AMS_DEVICES,
     AIDON_METER_SEQ,
@@ -34,6 +35,7 @@ from custom_components.ams.const import (
     HAN_METER_SERIAL,
     HAN_METER_TYPE,
     KAIFA_METER_SEQ,
+    KAIFA_SE_METER_SEQ,
     KAMSTRUP_METER_SEQ,
     SENSOR_ATTR,
     SIGNAL_NEW_AMS_SENSOR,
@@ -143,22 +145,15 @@ class AmsHub:
         """Read the raw data from serial port."""
         byte_counter = 0
         bytelist = []
-        _LOGGER.debug("byte_counter and bytelist set")
-        _LOGGER.debug("self._ser=%s", self._ser)
         while self._running:
-            _LOGGER.debug("self._running and starting to read buffer")
             buf = self._ser.read()
-            _LOGGER.debug("buf=%s", buf)
+
             if buf:
-                _LOGGER.debug("buffer read=%s", buf)
                 bytelist.extend(buf)
                 if buf == FRAME_FLAG and byte_counter > 1:
-                    _LOGGER.debug("bytelist found")
                     return bytelist
-                _LOGGER.debug("Adding to byte counter")
                 byte_counter = byte_counter + 1
             else:
-                _LOGGER.debug("Nothing read!")
                 continue
 
     @property
@@ -189,6 +184,8 @@ class AmsHub:
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
             parser = Kaifa
+        elif self.meter_manufacturer == "kaifa_se":
+            parser = Kaifa_se
         elif self.meter_manufacturer == "kamstrup":
             parser = Kamstrup
 
@@ -229,11 +226,15 @@ class AmsHub:
         if _test_meter(pkg, KAIFA_METER_SEQ):
             _LOGGER.info("Detected Kaifa meter")
             return "kaifa"
+        if _test_meter(pkg, KAIFA_SE_METER_SEQ):
+            _LOGGER.info("Detected Swedish Kaifa meter")
+            return "kaifa_se"
         if _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
 
         _LOGGER.warning("No parser detected")
+        _LOGGER.debug("Package dump: %s", pkg)
 
     @property
     def data(self):
