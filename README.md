@@ -72,9 +72,10 @@ Meter manufacturer field options are:
 ```
 'auto'
 'aidon'
-'aidon_se' #Swedish aidon meter RF2 modules
+'aidon_se' # Swedish aidon meter RF2 modules
 'kamstrup'
 'kaifa'
+'kaifa_se' # Swedish kaifa meters
 ```
 This will create sensors for each of the available usage data in the meter.
 The accumulative sensors will only be fully available after first read, and is transmitted from the meter 5 seconds past the hour.
