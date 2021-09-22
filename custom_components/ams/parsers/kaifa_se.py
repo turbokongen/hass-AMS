@@ -129,7 +129,7 @@ def parse_data(stored, data):
                             elif key in CURRENT_SENSORS:
                                 han_data[key] = measure / 100
                             else:
-                                han_data[key] = measure / 10
+                                han_data[key] = measure
                             sensor_data[key] = {
                                 SENSOR_STATE: han_data[key],
                                 SENSOR_ATTR: {
