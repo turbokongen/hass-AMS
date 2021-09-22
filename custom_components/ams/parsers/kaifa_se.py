@@ -24,6 +24,7 @@ from custom_components.ams.const import (
     HAN_OBIS_CODE,
     HAN_OBIS_DATETIME,
     HAN_PACKET_SIZE,
+    VOLTAGE_SENSORS,
     HOURLY_SENSORS,
     METER_TYPE,
     SENSOR_ATTR,
@@ -128,6 +129,8 @@ def parse_data(stored, data):
                                 han_data[key] = measure / 1000
                             elif key in CURRENT_SENSORS:
                                 han_data[key] = measure / 100
+                            elif key in VOLTAGE_SENSORS:
+                                han_data[key] = measure / 10
                             else:
                                 han_data[key] = measure
                             sensor_data[key] = {
