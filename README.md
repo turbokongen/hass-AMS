@@ -1,9 +1,12 @@
-# hass-AMS
+# hass-AMS - AMS Reader for Norwegian and swedish AMS meters
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
 
 Custom component reading AMS through MBus adapter into HomeAssistant
 Supports the new energy dashboard in Home-Assistant.
+
+If it does not decode your data, please submit a ticket, and I will try to 
+make a parser for your meter.
 
 Works with the following swedish and norwegian meters:
 
@@ -15,12 +18,15 @@ Kamstrup:
   - 6851121
   - 6851131
  
- Kaifa:
+Kaifa:
+Norway: 
   - MA304H3E Thanks to @thomasja27 for testing :+1:
- 
- Not tested with, but should work:
+
+Sweden:
+  - MA304H4 Thanks to @runlar for testing (swedish version) :+1:
+
+Not tested with, but should work:
   - MA105H2E
-  - MA304H4
   - MA304T4
   - MA304T3
 
@@ -29,12 +35,11 @@ Norway:
  - 6525 Thanks to @razzymoose for testing and providing patch :+1:
  - 6515 Thanks to @maxgyver87 for fault finding and testing :+1:
  - 6534 Thanks to @mariwing for testing and debugging :+1:
- - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
 Sweden:
  - 6484 Thanks to @bo1jo for testing and debugging :+1:
 
- Not tested with, but should work:
+Not tested with, but should work:
  
  Norway:
  - 6540
@@ -53,6 +58,7 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 ```yaml
 ams:
   serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
+  baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
@@ -67,9 +73,10 @@ Meter manufacturer field options are:
 ```
 'auto'
 'aidon'
-'aidon_se' #Swedish aidon meter RF2 modules
+'aidon_se' # Swedish aidon meter RF2 modules
 'kamstrup'
 'kaifa'
+'kaifa_se' # Swedish kaifa meters
 ```
 This will create sensors for each of the available usage data in the meter.
 The accumulative sensors will only be fully available after first read, and is transmitted from the meter 5 seconds past the hour.

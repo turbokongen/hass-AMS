@@ -75,7 +75,7 @@ async def async_remove_entry(hass, entry):
     _LOGGER.debug("async_remove_entry AMS")
     try:
         await hass.config_entries.async_forward_entry_unload(entry, "sensor")
-        _LOGGER.info("Successfully removed sensor from the Norwegian AMS"
+        _LOGGER.info("Successfully removed sensor from the AMS Reader"
                      " integration")
     except ValueError:
         pass

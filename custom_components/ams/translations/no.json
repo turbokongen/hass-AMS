@@ -1,12 +1,12 @@
 {
     "config": {
         "abort": {
-           "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
+           "single_instance_allowed": "Kun en oppføring av AMS Leser er tillatt"
         },
-        "title": "AMS Norge",
+        "title": "AMS Leser",
         "step": {
             "user": {
-                "title": "AMS Norge",
+                "title": "AMS Leser",
                 "description": "Installer sensorer for AMS i Norge",
                 "data": {
                     "serial_port": "Serieport",
