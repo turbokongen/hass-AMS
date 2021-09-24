@@ -1,6 +1,6 @@
 {
     "domain": "ams",
-    "name": "Norwegian AMS",
+    "name": "AMS Reader",
     "documentation": "https://github.com/turbokongen/hass-AMS",
     "issue_tracker": "https://github.com/turbokongen/hass-AMS/issues",
     "dependencies": [],

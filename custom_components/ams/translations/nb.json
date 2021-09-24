@@ -3,11 +3,11 @@
         "abort": {
            "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
         },
-        "title": "AMS Norge",
+        "title": "AMS Leser",
         "step": {
             "user": {
-                "title": "AMS Norge",
-                "description": "Installer sensorer for AMS i Norge",
+                "title": "AMS Leser",
+                "description": "Installer sensorer for AMS leser",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",

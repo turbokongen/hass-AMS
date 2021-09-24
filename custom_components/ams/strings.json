@@ -1,10 +1,10 @@
 {
     "config": {
-        "title": "Norwegian AMS",
+        "title": "AMS Reader",
         "step": {
             "user": {
-                "title": "Norwegian AMS",
-                "description": "Setup Norwegian AMS sensors",
+                "title": "AMS Reader",
+                "description": "Setup AMS Reader sensors",
                 "data": {
                     "serial_port": "Serial Port",
                     "parity": "Parity",

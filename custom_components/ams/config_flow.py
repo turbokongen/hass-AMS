@@ -44,7 +44,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 get_serial_by_id, port.device
             )
             user_input[CONF_SERIAL_PORT] = serial_by_id
-            return self.async_create_entry(title="Norwegian AMS",
+            return self.async_create_entry(title="AMS Reader",
                                            data=user_input)
         _LOGGER.debug(ports)
         return self.async_show_form(
@@ -78,7 +78,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_import(self, import_config):
         """Import a config flow from configuration."""
         if self._async_current_entries():
-            _LOGGER.warning("Only one configuration of hass-AMS is allowed.")
+            _LOGGER.warning("Only one configuration of AMS Reader is allowed.")
             return self.async_abort(reason="singel_instance_allowed")
 
         return self.async_create_entry(title="configuration.yaml",
