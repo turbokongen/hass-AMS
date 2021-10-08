@@ -33,6 +33,7 @@ from custom_components.ams.const import (
     SENSOR_UNIT,
     SENSOR_UOM,
     STATE_CLASS_TOTAL_INCREASING,
+    UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
 _LOGGER = logging.getLogger(__name__)
@@ -172,7 +173,8 @@ def parse_data(stored, data):
                             if key == HAN_METER_TYPE:
                                 han_data[key] = (
                                     METER_TYPE.get(field_type(fields=pkt[
-                                        v_start:v_stop], enc=chr, dec=int))
+                                        v_start:v_stop], enc=chr, dec=int),
+                                                   UNKNOWN_METER)
                                 )
                             else:
                                 han_data[key] = (
