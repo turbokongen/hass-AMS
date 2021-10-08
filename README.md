@@ -8,6 +8,9 @@ Supports the new energy dashboard in Home-Assistant.
 If it does not decode your data, please submit a ticket, and I will try to 
 make a parser for your meter.
 
+If your meter type shown "unknown", please submit a ticket, and I will add 
+your meter to the module.
+
 Works with the following swedish and norwegian meters:
 
 Kamstrup:

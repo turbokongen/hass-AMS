@@ -36,6 +36,7 @@ from custom_components.ams.const import (
     SENSOR_UNIT,
     SENSOR_UOM,
     STATE_CLASS_TOTAL_INCREASING,
+    UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
 
@@ -56,7 +57,7 @@ def parse_data(stored, data):
     _LOGGER.debug("list_type is %s", list_type)
     han_data[HAN_METER_SERIAL] = "00"
     han_data[HAN_METER_TYPE] = (
-        METER_TYPE.get(field_type(fields=pkt[73:80], enc=chr))
+        METER_TYPE.get(field_type(fields=pkt[73:80], enc=chr), UNKNOWN_METER)
     )
     han_data[HAN_METER_SERIAL] = field_type(fields=pkt[47:63], enc=chr)
     han_data[HAN_LIST_VER_ID] = field_type(fields=pkt[30:37], enc=chr)

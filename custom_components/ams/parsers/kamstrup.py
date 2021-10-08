@@ -39,6 +39,7 @@ from custom_components.ams.const import (
     SENSOR_UNIT,
     SENSOR_UOM,
     STATE_CLASS_TOTAL_INCREASING,
+    UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
 from custom_components.ams.parsers import byte_decode, field_type
@@ -138,7 +139,8 @@ def parse_data(stored, data):
                                 han_data[key] = (
                                     METER_TYPE.get(field_type(fields=pkt[
                                         v_start:v_start + 7], enc=chr,
-                                                              dec=int))
+                                                              dec=int),
+                                                   UNKNOWN_METER)
                                 )
 
                             else:
