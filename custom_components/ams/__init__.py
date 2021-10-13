@@ -92,8 +92,9 @@ async def async_setup(hass: HomeAssistant, config: Config):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
-    hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry,
-                                                                     "sensor"))
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(
+            entry, "sensor"))
     return True
 
 
@@ -103,7 +104,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_remove_entry(hass, entry):
+async def async_remove_entry(hass, entry):  # pylint: disable=unused-argument
     """Handle removal of an entry."""
     await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
     return True
@@ -202,14 +203,15 @@ class AmsHub:
             except serial.serialutil.SerialException:
                 pass
 
-    def _find_parser(self, pkg):
+    @classmethod
+    def _find_parser(cls, pkg):
         """Helper to detect meter manufacturer."""
 
         def _test_meter(pkg, meter):
             """Meter tester."""
             match = []
             _LOGGER.debug("Testing for %s", meter)
-            for i in range(len(pkg)):
+            for i, _ in enumerate(pkg):
                 if pkg[i] == meter[0] and pkg[i:(i + len(meter))] == meter:
                     match.append(meter)
             return meter in match
@@ -253,14 +255,13 @@ class AmsHub:
             cp_sensors_data = deepcopy(data)
             for check in miss_attrs:
                 for value in cp_sensors_data.values():
-                    v = value.get(SENSOR_ATTR, {}).get(check)
-                    if v:
-                        self._attrs[check] = v
+                    val = value.get(SENSOR_ATTR, {}).get(check)
+                    if val:
+                        self._attrs[check] = val
                         break
             del cp_sensors_data
             return len([i for i in attrs_to_check if i not in self._attrs])
-        else:
-            return False
+        return False
 
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
@@ -268,7 +269,7 @@ class AmsHub:
         sensors_in_data = set(sensor_data.keys())
         new_devices = sensors_in_data.difference(AMS_DEVICES)
 
-        if len(new_devices):
+        if new_devices:
             # Check that we have all the info we need before the sensors are
             # created, the most important one is the meter_serial as this is
             # use to create the unique_id

@@ -21,6 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
+    # pylint: disable=unused-argument
     """Setup sensor platform for the ui"""
 
     @callback
@@ -61,7 +62,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                 }
                 sensors.append(AmsSensor(hass, sensor_states))
 
-        if len(sensors):
+        if sensors:
             _LOGGER.debug("Trying to add %s sensors", len(sensors))
             async_add_devices(sensors)
 

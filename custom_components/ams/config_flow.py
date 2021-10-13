@@ -6,7 +6,7 @@ import serial.tools.list_ports as devices
 import voluptuous as vol
 from homeassistant import config_entries
 
-from custom_components.ams.const import (
+from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
@@ -79,7 +79,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Import a config flow from configuration."""
         if self._async_current_entries():
             _LOGGER.warning("Only one configuration of AMS Reader is allowed.")
-            return self.async_abort(reason="singel_instance_allowed")
+            return self.async_abort(reason="single_instance_allowed")
 
         return self.async_create_entry(title="configuration.yaml",
                                        data=import_config)

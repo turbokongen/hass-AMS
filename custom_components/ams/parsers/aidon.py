@@ -8,6 +8,7 @@ from datetime import datetime
 from crccheck.crc import CrcX25
 from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.const import (
+    ACTIVE_ENERGY_SENSORS,
     ATTR_DEVICE_CLASS,
     ATTR_STATE_CLASS,
     DATA_FLAG,
@@ -259,11 +260,12 @@ def parse_data(stored, data):
                                     HAN_METER_DATETIME] = han_data[
                                         HAN_METER_DATETIME]
                                 sensor_data[key][SENSOR_ATTR][
-                                    ATTR_STATE_CLASS] = (
-                                        STATE_CLASS_TOTAL_INCREASING)
-                                sensor_data[key][SENSOR_ATTR][
                                     ATTR_DEVICE_CLASS] = (
                                         DEVICE_CLASS_ENERGY)
+                                if key in ACTIVE_ENERGY_SENSORS:
+                                    sensor_data[key][SENSOR_ATTR][
+                                        ATTR_STATE_CLASS] = (
+                                            STATE_CLASS_TOTAL_INCREASING)
                             _LOGGER.debug(
                                 "Value double OBIS type  6: %s, Index:%s",
                                 han_data[key], (v_start, v_stop)
