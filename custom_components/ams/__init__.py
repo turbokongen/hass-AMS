@@ -110,7 +110,7 @@ async def async_remove_entry(hass, entry):  # pylint: disable=unused-argument
     return True
 
 
-class AmsHub:
+class AmsHub:  # pylint: disable=too-many-instance-attributes
     """AmsHub wrapper for all sensors."""
 
     def __init__(self, hass, entry):
@@ -120,6 +120,7 @@ class AmsHub:
         _LOGGER.debug("Connecting to HAN using port %s", port)
         parity = entry.get(CONF_PARITY)
         self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
+        self.detect_pkg = None
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
@@ -168,15 +169,15 @@ class AmsHub:
 
         return self._attrs[HAN_METER_TYPE]
 
-    def connect(self):
+    def connect(self):  # pylint: disable=too-many-branches
         """Read the data from the port."""
         parser = None
 
         if self.meter_manufacturer == "auto":
             while parser is None:
                 _LOGGER.info("Autodetecting meter manufacturer")
-                pkg = self.read_bytes()
-                self.meter_manufacturer = self._find_parser(pkg)
+                self.detect_pkg = self.read_bytes()
+                self.meter_manufacturer = self._find_parser(self.detect_pkg)
                 parser = self.meter_manufacturer
 
         if self.meter_manufacturer == "aidon":
@@ -192,7 +193,10 @@ class AmsHub:
 
         while self._running:
             try:
-                data = self.read_bytes()
+                if self.detect_pkg:
+                    data = self.detect_pkg
+                else:
+                    data = self.read_bytes()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data, _ = parser.parse_data(self.sensor_data,
@@ -200,6 +204,8 @@ class AmsHub:
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
+                if self.detect_pkg:
+                    self.detect_pkg = None
             except serial.serialutil.SerialException:
                 pass
 

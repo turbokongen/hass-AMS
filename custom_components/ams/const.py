@@ -129,10 +129,16 @@ HOURLY_SENSORS = [
     HAN_REACTIVE_ENERGY_IMPORT,
     HAN_REACTIVE_ENERGY_EXPORT,
 ]
+
 ACTIVE_ENERGY_SENSORS = [
     HAN_ACTIVE_ENERGY_IMPORT,
     HAN_ACTIVE_ENERGY_EXPORT,
 ]
+
+ACTIVE_ENERGY_DEFAULT_ATTRS = {
+    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
+    ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
+}
 
 CURRENT_SENSORS = [
     HAN_CURRENT_L1,
@@ -159,7 +165,14 @@ ALL_SENSORS = [
     HAN_CURRENT_L3,
 ] + HOURLY_SENSORS
 
-MANUFACTURER_OPTIONS = ["auto", "aidon", "aidon_se", "kaifa", "kamstrup"]
+MANUFACTURER_OPTIONS = [
+    "auto",
+    "aidon",
+    "aidon_se",
+    "kaifa",
+    "kaifa_se,",
+    "kamstrup",
+]
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"
