@@ -9,6 +9,8 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import dt as dt_utils
 
 from custom_components.ams.const import (
+    ACTIVE_ENERGY_DEFAULT_ATTRS,
+    ACTIVE_ENERGY_SENSORS,
     AMS_DEVICES,
     AMS_SENSOR_CREATED_BUT_NOT_READ,
     DOMAIN,
@@ -21,6 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
+    # pylint: disable=unused-argument
     """Setup sensor platform for the ui"""
 
     @callback
@@ -59,10 +62,18 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
                     "state": data.get(hourly, {}).get("state"),
                     "attributes": data.get(hourly, {}).get("attributes"),
                 }
+                if hourly in ACTIVE_ENERGY_SENSORS:
+                    sensor_states = {
+                        "name": hourly,
+                        "state": data.get(hourly, {}).get("state"),
+                        "attributes": data.get(hourly, {}).get("attributes", (
+                            ACTIVE_ENERGY_DEFAULT_ATTRS)),
+                    }
                 sensors.append(AmsSensor(hass, sensor_states))
 
-        if len(sensors):
-            _LOGGER.debug("Trying to add %s sensors", len(sensors))
+        if sensors:
+            _LOGGER.debug("Trying to add %s sensors: %s", len(sensors),
+                          sensors)
             async_add_devices(sensors)
 
     async_dispatcher_connect(hass, SIGNAL_NEW_AMS_SENSOR, async_add_sensor)

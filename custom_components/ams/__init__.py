@@ -92,8 +92,9 @@ async def async_setup(hass: HomeAssistant, config: Config):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
-    hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry,
-                                                                     "sensor"))
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(
+            entry, "sensor"))
     return True
 
 
@@ -103,7 +104,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_remove_entry(hass, entry):
+async def async_remove_entry(hass, entry):  # pylint: disable=unused-argument
     """Handle removal of an entry."""
     await hass.async_add_executor_job(hass.data[DOMAIN].stop_serial_read)
     return True
@@ -167,15 +168,17 @@ class AmsHub:
 
         return self._attrs[HAN_METER_TYPE]
 
-    def connect(self):
+    def connect(self):  # pylint: disable=too-many-branches
         """Read the data from the port."""
         parser = None
-
+        detect_pkg = None  # This is needed to push the package used for
+        # detecting the meter straight to the parser. If not, users will get
+        # unknown state class None for energy sensors at startup.
         if self.meter_manufacturer == "auto":
             while parser is None:
                 _LOGGER.info("Autodetecting meter manufacturer")
-                pkg = self.read_bytes()
-                self.meter_manufacturer = self._find_parser(pkg)
+                detect_pkg = self.read_bytes()
+                self.meter_manufacturer = self._find_parser(detect_pkg)
                 parser = self.meter_manufacturer
 
         if self.meter_manufacturer == "aidon":
@@ -191,7 +194,10 @@ class AmsHub:
 
         while self._running:
             try:
-                data = self.read_bytes()
+                if detect_pkg:
+                    data = detect_pkg
+                else:
+                    data = self.read_bytes()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data, _ = parser.parse_data(self.sensor_data,
@@ -199,18 +205,22 @@ class AmsHub:
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
+                if detect_pkg:
+                    detect_pkg = None
             except serial.serialutil.SerialException:
                 pass
 
-    def _find_parser(self, pkg):
+    @classmethod
+    def _find_parser(cls, pkg):
         """Helper to detect meter manufacturer."""
 
-        def _test_meter(pkg, meter):
+        def _test_meter(test_pkg, meter):
             """Meter tester."""
             match = []
             _LOGGER.debug("Testing for %s", meter)
-            for i in range(len(pkg)):
-                if pkg[i] == meter[0] and pkg[i:(i + len(meter))] == meter:
+            for i, _ in enumerate(test_pkg):
+                if test_pkg[i] == meter[0] and (
+                        test_pkg[i:(i + len(meter))] == meter):
                     match.append(meter)
             return meter in match
 
@@ -234,7 +244,7 @@ class AmsHub:
             return "kamstrup"
 
         _LOGGER.warning("No parser detected")
-        _LOGGER.debug("Package dump: %s", pkg)
+        _LOGGER.debug("Meter detection package dump: %s", pkg)
 
     @property
     def data(self):
@@ -253,14 +263,13 @@ class AmsHub:
             cp_sensors_data = deepcopy(data)
             for check in miss_attrs:
                 for value in cp_sensors_data.values():
-                    v = value.get(SENSOR_ATTR, {}).get(check)
-                    if v:
-                        self._attrs[check] = v
+                    val = value.get(SENSOR_ATTR, {}).get(check)
+                    if val:
+                        self._attrs[check] = val
                         break
             del cp_sensors_data
             return len([i for i in attrs_to_check if i not in self._attrs])
-        else:
-            return False
+        return False
 
     def _check_for_new_sensors_and_update(self, sensor_data):
         """Compare sensor list and update."""
@@ -268,7 +277,7 @@ class AmsHub:
         sensors_in_data = set(sensor_data.keys())
         new_devices = sensors_in_data.difference(AMS_DEVICES)
 
-        if len(new_devices):
+        if new_devices:
             # Check that we have all the info we need before the sensors are
             # created, the most important one is the meter_serial as this is
             # use to create the unique_id

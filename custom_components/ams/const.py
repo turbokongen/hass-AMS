@@ -118,7 +118,7 @@ METER_TYPE = {
     6841131: "Omnipower 3 Phase 4-Wire Direct meter",
     6851121: "Omnipower 3 Phase CT 3-Wire Direct meter",
     6851131: "Omnipower 3 Phase CT 4-Wire Direct meter",
-    6851128: "Omnipower 3 Phase Direct meter",
+    6841128: "Omnipower 3 Phase Direct meter",
     6841138: "Omnipower 3 Phase Direct meter",
 }
 UNKNOWN_METER = "Unknown"
@@ -129,6 +129,16 @@ HOURLY_SENSORS = [
     HAN_REACTIVE_ENERGY_IMPORT,
     HAN_REACTIVE_ENERGY_EXPORT,
 ]
+
+ACTIVE_ENERGY_SENSORS = [
+    HAN_ACTIVE_ENERGY_IMPORT,
+    HAN_ACTIVE_ENERGY_EXPORT,
+]
+
+ACTIVE_ENERGY_DEFAULT_ATTRS = {
+    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
+    ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
+}
 
 CURRENT_SENSORS = [
     HAN_CURRENT_L1,
@@ -155,7 +165,14 @@ ALL_SENSORS = [
     HAN_CURRENT_L3,
 ] + HOURLY_SENSORS
 
-MANUFACTURER_OPTIONS = ["auto", "aidon", "aidon_se", "kaifa", "kamstrup"]
+MANUFACTURER_OPTIONS = [
+    "auto",
+    "aidon",
+    "aidon_se",
+    "kaifa",
+    "kaifa_se,",
+    "kamstrup",
+]
 
 SIGNAL_UPDATE_AMS = "ams_update"
 SIGNAL_NEW_AMS_SENSOR = "ams_new_sensor"
