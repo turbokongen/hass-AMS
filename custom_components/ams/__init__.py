@@ -110,7 +110,7 @@ async def async_remove_entry(hass, entry):  # pylint: disable=unused-argument
     return True
 
 
-class AmsHub:  # pylint: disable=too-many-instance-attributes
+class AmsHub:
     """AmsHub wrapper for all sensors."""
 
     def __init__(self, hass, entry):
@@ -120,7 +120,6 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
         _LOGGER.debug("Connecting to HAN using port %s", port)
         parity = entry.get(CONF_PARITY)
         self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
-        self.detect_pkg = None
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
@@ -172,12 +171,14 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
     def connect(self):  # pylint: disable=too-many-branches
         """Read the data from the port."""
         parser = None
-
+        detect_pkg = None  # This is needed to push the package used for
+        # detecting the meter straight to the parser. If not, users will get
+        # unknown state class None for energy sensors at startup.
         if self.meter_manufacturer == "auto":
             while parser is None:
                 _LOGGER.info("Autodetecting meter manufacturer")
-                self.detect_pkg = self.read_bytes()
-                self.meter_manufacturer = self._find_parser(self.detect_pkg)
+                detect_pkg = self.read_bytes()
+                self.meter_manufacturer = self._find_parser(detect_pkg)
                 parser = self.meter_manufacturer
 
         if self.meter_manufacturer == "aidon":
@@ -193,8 +194,8 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
 
         while self._running:
             try:
-                if self.detect_pkg:
-                    data = self.detect_pkg
+                if detect_pkg:
+                    data = detect_pkg
                 else:
                     data = self.read_bytes()
                 if parser.test_valid_data(data):
@@ -204,8 +205,8 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
-                if self.detect_pkg:
-                    self.detect_pkg = None
+                if detect_pkg:
+                    detect_pkg = None
             except serial.serialutil.SerialException:
                 pass
 
@@ -213,12 +214,13 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
     def _find_parser(cls, pkg):
         """Helper to detect meter manufacturer."""
 
-        def _test_meter(pkg, meter):
+        def _test_meter(test_pkg, meter):
             """Meter tester."""
             match = []
             _LOGGER.debug("Testing for %s", meter)
-            for i, _ in enumerate(pkg):
-                if pkg[i] == meter[0] and pkg[i:(i + len(meter))] == meter:
+            for i, _ in enumerate(test_pkg):
+                if test_pkg[i] == meter[0] and (
+                        test_pkg[i:(i + len(meter))] == meter):
                     match.append(meter)
             return meter in match
 
@@ -242,7 +244,7 @@ class AmsHub:  # pylint: disable=too-many-instance-attributes
             return "kamstrup"
 
         _LOGGER.warning("No parser detected")
-        _LOGGER.debug("Package dump: %s", pkg)
+        _LOGGER.debug("Meter detection package dump: %s", pkg)
 
     @property
     def data(self):
