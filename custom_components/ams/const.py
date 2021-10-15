@@ -118,7 +118,7 @@ METER_TYPE = {
     6841131: "Omnipower 3 Phase 4-Wire Direct meter",
     6851121: "Omnipower 3 Phase CT 3-Wire Direct meter",
     6851131: "Omnipower 3 Phase CT 4-Wire Direct meter",
-    6851128: "Omnipower 3 Phase Direct meter",
+    6841128: "Omnipower 3 Phase Direct meter",
     6841138: "Omnipower 3 Phase Direct meter",
 }
 UNKNOWN_METER = "Unknown"
