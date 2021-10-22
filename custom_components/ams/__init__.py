@@ -268,7 +268,7 @@ class AmsHub:
                         self._attrs[check] = val
                         break
             del cp_sensors_data
-            return len([i for i in attrs_to_check if i not in self._attrs])
+            return ([i for i in attrs_to_check if i not in self._attrs])
         return False
 
     def _check_for_new_sensors_and_update(self, sensor_data):
