@@ -258,17 +258,22 @@ class AmsHub:
 
         attrs_to_check = [HAN_METER_SERIAL,
                           HAN_METER_MANUFACTURER, HAN_METER_TYPE]
-        miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
-        if miss_attrs:
+        imp_attrs = [i for i in attrs_to_check if i not in self._attrs]
+        if imp_attrs:
             cp_sensors_data = deepcopy(data)
-            for check in miss_attrs:
+            for check in imp_attrs:
                 for value in cp_sensors_data.values():
                     val = value.get(SENSOR_ATTR, {}).get(check)
                     if val:
                         self._attrs[check] = val
                         break
             del cp_sensors_data
-            return ([i for i in attrs_to_check if i not in self._attrs])
+            miss_attrs = ([i for i in attrs_to_check if i not in self._attrs])
+            _LOGGER.debug("miss_attrs=%s", ([i for i in attrs_to_check
+                                             if i not in self._attrs]))
+            if miss_attrs:
+                _LOGGER.debug("We miss some attributes: %s", miss_attrs)
+                return True
         return False
 
     def _check_for_new_sensors_and_update(self, sensor_data):
