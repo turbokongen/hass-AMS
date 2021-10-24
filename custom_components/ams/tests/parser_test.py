@@ -3,14 +3,17 @@
 import logging
 import pprint
 import sys
+from homeassistant.core import HomeAssistant
 from custom_components.ams.parsers import aidon
 from custom_components.ams.parsers import aidon_se
 from custom_components.ams.parsers import kaifa
 from custom_components.ams.parsers import kaifa_se
 from custom_components.ams.parsers import kamstrup
 from custom_components.ams import AmsHub
-METERTYPE=kaifa_se
-PACKAGE = [126, 161, 29, 1, 0, 1, 16, 176, 174, 230, 231, 0, 15, 64, 0, 0, 0, 0, 2, 36, 9, 6, 1, 0, 0, 2, 129, 255, 9, 7, 75, 70, 77, 95, 48, 48, 49, 9, 6, 0, 0, 96, 1, 0, 255, 9, 16, 55, 51, 52, 48, 49, 53, 55, 48, 51, 48, 53, 52, 56, 51, 48, 48, 9, 6, 0, 0, 96, 1, 7, 255, 9, 7, 77, 65, 51, 48, 52, 72, 52, 9, 6, 1, 0, 1, 7, 0, 255, 6, 0, 0, 6, 242, 9, 6, 1, 0, 2, 7, 0, 255, 6, 0, 0, 0, 0, 9, 6, 1, 0, 3, 7, 0, 255, 6, 0, 0, 0, 0, 9, 6, 1, 0, 4, 7, 0, 255, 6, 0, 0, 0, 81, 9, 6, 1, 0, 31, 7, 0, 255, 6, 0, 0, 16, 190, 9, 6, 1, 0, 51, 7, 0, 255, 6, 0, 0, 3, 73, 9, 6, 1, 0, 71, 7, 0, 255, 6, 0, 0, 13, 111, 9, 6, 1, 0, 32, 7, 0, 255, 6, 0, 0, 9, 15, 9, 6, 1, 0, 52, 7, 0, 255, 6, 0, 0, 8, 234, 9, 6, 1, 0, 72, 7, 0, 255, 6, 0, 0, 8, 234, 9, 6, 0, 0, 1, 0, 0, 255, 9, 12, 7, 229, 9, 22, 3, 17, 31, 15, 255, 255, 196, 0, 9, 6, 1, 0, 1, 8, 0, 255, 6, 0, 73, 10, 147, 9, 6, 1, 0, 2, 8, 0, 255, 6, 0, 0, 0, 0, 9, 6, 1, 0, 3, 8, 0, 255, 6, 0, 0, 102, 116, 9, 6, 1, 0, 4, 8, 0, 255, 6, 0, 8, 211, 219, 37, 236, 126]
+from custom_components.ams.const import DOMAIN
+
+METERTYPE = kaifa  # Input parser to use
+PACKAGE = [126, 160, 39, 1, 2, 1, 16, 90, 135, 230, 231, 0, 15, 64, 0, 0, 0, 9, 12, 7, 229, 10, 22, 5, 11, 29, 26, 255, 128, 0, 0, 2, 1, 6, 0, 0, 8, 69, 105, 27, 126]
 PKG = []
 for item in PACKAGE:
     PKG.append(hex(item)[2:].zfill(2))
@@ -40,12 +43,25 @@ handler.setLevel(logging.DEBUG)
 root.addHandler(handler)
 sensor_data = {}
 print("Testing for parser.......................")
-parser = AmsHub._find_parser(AmsHub, PKG)
+parser = AmsHub._find_parser(PACKAGE)
 print("Running test_valid_data..................")
 meter_validData = METERTYPE.test_valid_data(PACKAGE)
 if meter_validData:
-    print("Valid data test passed")
+    print("--------------Valid data test passed----------------")
 print("Running parse_data.......................")
-meter_data = METERTYPE.parse_data(sensor_data, PACKAGE)
+meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE)
+print("Checking for missing attributes")
+print(type(meter_data))
+Config = {
+    "serial_port": "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB"
+                   "-Serial_Controller-if00-port0",
+    "meter_manufacturer": "auto",
+    "parity": "N",
+    "baudrate": 2400
+}
+hub = AmsHub(HomeAssistant, Config)
+hass = HomeAssistant
+hass.data = {}
+hass.data[DOMAIN] = hub
+AmsHub._check_for_new_sensors_and_update(hub, meter_data)
 pprint.pprint(meter_data)
-

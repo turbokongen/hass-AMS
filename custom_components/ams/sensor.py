@@ -12,6 +12,7 @@ from custom_components.ams.const import (
     ACTIVE_ENERGY_DEFAULT_ATTRS,
     ACTIVE_ENERGY_SENSORS,
     AMS_DEVICES,
+    AMS_ENERGY_METER,
     AMS_SENSOR_CREATED_BUT_NOT_READ,
     DOMAIN,
     HOURLY_SENSORS,
@@ -147,8 +148,8 @@ class AmsSensor(RestoreEntity):
     def device_info(self) -> dict:
         """Return the device info."""
         return {
-            "name": self.name,
-            "identifiers": {(DOMAIN, self.unique_id)},
+            "name": AMS_ENERGY_METER,
+            "identifiers": {(DOMAIN, self._meter_id)},
             "manufacturer": self.ams.meter_manufacturer,
             "model": self.ams.meter_type,
         }
