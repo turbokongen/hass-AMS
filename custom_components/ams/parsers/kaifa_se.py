@@ -130,7 +130,7 @@ def parse_data(stored, data):
                             if key in HOURLY_SENSORS:
                                 han_data[key] = measure / 1000
                             elif key in CURRENT_SENSORS:
-                                han_data[key] = measure / 100
+                                han_data[key] = measure / 1000
                             elif key in VOLTAGE_SENSORS:
                                 han_data[key] = measure / 10
                             else:

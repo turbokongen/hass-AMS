@@ -172,7 +172,7 @@ MANUFACTURER_OPTIONS = [
     "aidon",
     "aidon_se",
     "kaifa",
-    "kaifa_se,",
+    "kaifa_se",
     "kamstrup",
 ]
 
