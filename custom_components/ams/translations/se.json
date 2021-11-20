@@ -1,17 +1,17 @@
 {
     "config": {
         "abort": {
-           "single_instance_allowed": "Endast en inträde av AMS läsare är tillåten"
+           "single_instance_allowed": "Endast en intstans av AMS läsare är tillåten"
         },
         "title": "AMS Reader",
         "step": {
             "user": {
                 "title": "AMS läsare",
-                "description": "Installera sensorer för AMS läsare",
+                "description": "Installera sensor för AMS läsare",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
-                    "meter_manufacturer": "Mätar tilverkare",
+                    "meter_manufacturer": "Mätartilverkare",
                     "baudrate": "Baudrate"
                 }
             }
