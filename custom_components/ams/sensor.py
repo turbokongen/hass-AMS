@@ -135,7 +135,7 @@ class AmsSensor(RestoreEntity):
         return False
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the attributes of the entity (if any JSON present)."""
         return self._attributes
 
