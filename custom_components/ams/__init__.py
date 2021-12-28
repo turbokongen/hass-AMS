@@ -159,11 +159,17 @@ class AmsHub:
                     bytelist = []
                 if frame_started:
                     # Build packet
+                    if buf == FRAME_FLAG and byte_counter == 1:
+                        _LOGGER.debug("Whoops, got a second FRAME_FLAG "
+                                        "after first. Just discard it.")
+                        continue
                     bytelist.extend(buf)
                     byte_counter = byte_counter + 1
                     if byte_counter == 3: 
                         # Calculate size after FRAME_FLAG + 2 bytes are received
                         packet_size = ((bytelist[1] & 0x0F) << 8 | bytelist[2]) + 2
+                        _LOGGER.debug("Calculated packet size is: %s",
+                                      packet_size)
                     if byte_counter == packet_size:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
@@ -171,7 +177,13 @@ class AmsHub:
                             return bytelist
                         else:
                             # Not valid packet. Flush what we have built so far.
-                            _LOGGER.debug("Not a valid packet. Start over again")
+                            _LOGGER.debug("Not a valid packet. Start "
+                                               "over "
+                                          "again. /n byte_counter=%s /n"
+                                          "frame_started=%s /n "
+                                          "packet_size=%s /n DUMP: %s",
+                                          byte_counter, frame_started,
+                                          packet_size, bytelist)
                             bytelist = []
                             byte_counter = 0
                             frame_started = 0
