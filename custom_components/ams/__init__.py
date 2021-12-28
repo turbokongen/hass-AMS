@@ -142,18 +142,40 @@ class AmsHub:
         self.connection.join()
         self._ser.close()
 
-    def read_bytes(self):
-        """Read the raw data from serial port."""
+    def read_packet(self):
+        """Read raw data for one packet from serial port."""
         byte_counter = 0
         bytelist = []
+        frame_started = False
+        packet_size = -1
         while self._running:
             buf = self._ser.read()
 
             if buf:
-                bytelist.extend(buf)
-                if buf == FRAME_FLAG and byte_counter > 1:
-                    return bytelist
-                byte_counter = byte_counter + 1
+                if buf == FRAME_FLAG and not frame_started:
+                    # Purge data until FRAME_FLAG is received
+                    frame_started = True
+                    byte_counter = 0
+                    bytelist = []
+                if frame_started:
+                    # Build packet
+                    bytelist.extend(buf)
+                    byte_counter = byte_counter + 1
+                    if byte_counter == 3: 
+                        # Calculate size after FRAME_FLAG + 2 bytes are received
+                        packet_size = ((bytelist[1] & 0x0F) << 8 | bytelist[2]) + 2
+                    if byte_counter == packet_size:
+                        # If we have built a packet equal to packet size
+                        if buf == FRAME_FLAG:
+                            # Valid packet as last byte is FRAME_FLAG
+                            return bytelist
+                        else:
+                            # Not valid packet. Flush what we have built so far.
+                            _LOGGER.debug("Not a valid packet. Start over again")
+                            bytelist = []
+                            byte_counter = 0
+                            frame_started = 0
+                            packet_size = -1
             else:
                 continue
 
@@ -177,7 +199,7 @@ class AmsHub:
         if self.meter_manufacturer == "auto":
             while parser is None:
                 _LOGGER.info("Autodetecting meter manufacturer")
-                detect_pkg = self.read_bytes()
+                detect_pkg = self.read_packet()
                 self.meter_manufacturer = self._find_parser(detect_pkg)
                 parser = self.meter_manufacturer
 
@@ -197,7 +219,7 @@ class AmsHub:
                 if detect_pkg:
                     data = detect_pkg
                 else:
-                    data = self.read_bytes()
+                    data = self.read_packet()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data, _ = parser.parse_data(self.sensor_data,
