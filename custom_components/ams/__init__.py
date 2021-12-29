@@ -162,23 +162,35 @@ class AmsHub:
                     bytelist.extend(buf)
                     byte_counter = byte_counter + 1
                     if byte_counter == 3: 
-                        # Calculate size after FRAME_FLAG + 2 bytes are received
-                        packet_size = ((bytelist[1] & 0x0F) << 8 | bytelist[2]) + 2
+                        # Calculate size after FRAME_FLAG + 2 bytes are
+                        # received
+                        packet_size = ((bytelist[1] & 0x0F) << 8 |
+                                       bytelist[2]) + 2
                     if byte_counter == packet_size:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
                             # Valid packet as last byte is FRAME_FLAG
                             return bytelist
                         else:
-                            # Not valid packet. Flush what we have built so far.
-                            _LOGGER.debug("Not a valid packet. Start over again")
+                            # Not valid packet. Flush what we have built so
+                            # far.
+                            _LOGGER.debug("Not a valid packet. Start over "
+                                          "again. byte_counter=%s, "
+                                          "frame_started=%s, "
+                                          "packet_size=%s, DUMP: %s",
+                                          byte_counter, frame_started,
+                                          packet_size, bytelist)
                             bytelist = []
                             byte_counter = 0
-                            frame_started = 0
+                            frame_started = False
                             packet_size = -1
             else:
                 if frame_started:
-                    _LOGGER.debug("Timeout waiting for end of packet. Flush current packet.")
+                    _LOGGER.debug("Timeout waiting for end of packet. Flush "
+                                  " current packet. byte_counter=%s, "
+                                  "frame_started=%s, package_size=%s, "
+                                  "DUMP: %s", byte_counter, frame_started,
+                                  packet_size, bytelist)
                     frame_started = False
                     byte_counter = 0
                     bytelist = []
