@@ -177,7 +177,11 @@ class AmsHub:
                             frame_started = 0
                             packet_size = -1
             else:
-                continue
+                if frame_started:
+                    _LOGGER.debug("Timeout waiting for end of packet. Flush current packet.")
+                    frame_started = False
+                    byte_counter = 0
+                    bytelist = []
 
     @property
     def meter_serial(self):
