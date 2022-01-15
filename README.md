@@ -1,6 +1,30 @@
 # hass-AMS - AMS Reader for Norwegian and swedish AMS meters
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=AS5PQHAERQ85J&currency_code=NOK&source=url)
+<a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
+Buy me a coffeeBuy me a coffee
+Prev article
+How to write a custom URL extractor for Rasa
+Next article
+How to Test Your Python Code in OSX using Travis CI
+Loading...
+Latest Articles
+1
+Simple Way to Use Ghost via Docker
+2
+This Template Helped Me Land a Job in Cologne 🇩🇪
+3
+I Built a File Upload/Download Service Out of Frustration
+4
+Handling Custom Django Error Pages the Proper Way
+5
+How to Deploy Django Static Files in Nginx
+Newsletter
+Stay up to date! Get all the latest & greatest posts delivered straight to your inbox
+
+    Python 30
+    Flask
 
 Custom component reading AMS through MBus adapter into HomeAssistant
 Supports the new energy dashboard in Home-Assistant.
