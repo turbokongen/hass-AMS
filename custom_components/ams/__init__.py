@@ -123,8 +123,8 @@ class AmsHub:
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
-        self._ser = serial.Serial(
-            port=port,
+        self._ser = serial.serial_for_url(
+            port,
             baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
             parity=parity,
             stopbits=serial.STOPBITS_ONE,
