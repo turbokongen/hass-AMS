@@ -124,10 +124,6 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="network_connection",
             data_schema=DATA_SCHEMA_NETWORK_DATA,
-            description_placeholders={
-                CONF_TCP_HOST: DEFAULT_BAUDRATE,
-                CONF_TCP_PORT: DEFAULT_PARITY,
-            },
             errors={},
         )
 
