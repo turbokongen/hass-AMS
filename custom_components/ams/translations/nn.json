@@ -5,9 +5,27 @@
         },
         "title": "AMS Lesar",
         "step": {
-            "user": {
+            "network_connection": {
+                "title": "AMS Lesar",
+                "description": "Vel data for TCP/IP tilkobling",
+                "data": {
+                    "tcp_host": "IP adresse",
+                    "tcp_port": "Port",
+                    "meter_manufacturer": "Målar produsent"
+                }
+            },
+            "network_connection": {
+                "title": "AMS Lesar",
+                "description": "Vel data for TCP/IP tilkobling",
+                "data": {
+                    "tcp_host": "IP adresse",
+                    "tcp_port": "Port",
+                    "meter_manufacturer": "Målar produsent"
+                }
+            },
+            "serial_connection": {
                 "title": "AMS Noreg",
-                "description": "Installerar sensorar for AMS Lesar",
+                "description": "Vel portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",

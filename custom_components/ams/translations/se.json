@@ -7,7 +7,23 @@
         "step": {
             "user": {
                 "title": "AMS läsare",
-                "description": "Installera sensor för AMS läsare",
+                "description": "Välj kommunikastionsprotokoll för inndata",
+                "data":{
+                    "type": "Protokolltyp"
+                }
+            },
+            "network_connection": {
+                "title": "AMS läsare",
+                "description": "Välj data för TCP/IP tilkobling",
+                "data": {
+                    "tcp_host": "IP adress",
+                    "tcp_port": "Port",
+                    "meter_manufacturer": "Mätartilverkare"
+                }
+            },
+            "serial_connection": {
+                "title": "AMS läsare",
+                "description": "Välj data for seriell anslutning",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
