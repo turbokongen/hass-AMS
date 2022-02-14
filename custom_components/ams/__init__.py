@@ -130,18 +130,24 @@ class AmsHub:
             port = entry.get(CONF_SERIAL_PORT)
             _LOGGER.debug("Connecting to HAN using serialport %s", port)
             parity = entry.get(CONF_PARITY)
-            self._ser = serial.serial_for_url(
-                port,
-                baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
-                parity=parity,
-                stopbits=serial.STOPBITS_ONE,
-                bytesize=serial.EIGHTBITS,
-                timeout=DEFAULT_TIMEOUT,
-            )
+            try:
+                self._ser = serial.serial_for_url(
+                    port,
+                    baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
+                    parity=parity,
+                    stopbits=serial.STOPBITS_ONE,
+                    bytesize=serial.EIGHTBITS,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            except serial.serialutil.SerialException as ex:
+                _LOGGER.warning("Serial error: %", ex)
         if entry.get(CONF_PROTOCOL) == NETWORK:
             port = f"socket://{entry.get(CONF_TCP_HOST)}:{entry.get(CONF_TCP_PORT)}"
             _LOGGER.debug("Connecting to HAN using TCP/IP %s", port)
-            self._ser = serial.serial_for_url(port)
+            try:
+                self._ser = serial.serial_for_url(port)
+            except serial.serialutil.SerialException as ex:
+                _LOGGER.warning("Serial error: %s", ex)
         self.connection = threading.Thread(target=self.connect, daemon=True)
         self.connection.start()
         _LOGGER.debug("Finish init of AMS")
