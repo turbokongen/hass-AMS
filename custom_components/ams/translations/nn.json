@@ -20,6 +20,8 @@
                 "data": {
                     "tcp_host": "IP adresse",
                     "tcp_port": "Port",
+                    "parity": "Paritet",
+                    "baudrate": "Baudrate",
                     "meter_manufacturer": "Målar produsent"
                 }
             },

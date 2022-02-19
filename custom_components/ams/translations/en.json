@@ -18,6 +18,8 @@
                 "data": {
                     "tcp_host": "IP address",
                     "tcp_port": "Port",
+                    "parity": "Parity",
+                    "baudrate": "Baud rate",
                     "meter_manufacturer": "Meter manufacturer"
                 }
             },

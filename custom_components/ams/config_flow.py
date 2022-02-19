@@ -33,6 +33,12 @@ DATA_SCHEMA_NETWORK_DATA = vol.Schema(
             CONF_METER_MANUFACTURER,
             default=DEFAULT_METER_MANUFACTURER
         ): vol.In(MANUFACTURER_OPTIONS),
+        vol.Optional(
+            CONF_PARITY, default=DEFAULT_PARITY
+        ): vol.All(str),
+        vol.Optional(
+            CONF_BAUDRATE, default=DEFAULT_BAUDRATE
+        ): vol.All(int),
     }
 )
 _LOGGER = logging.getLogger(__name__)
@@ -102,12 +108,6 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.All(int),
                 }
             ),
-            description_placeholders={
-                CONF_SERIAL_PORT: ports,
-                CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS,
-                CONF_PARITY: DEFAULT_PARITY,
-                CONF_BAUDRATE: DEFAULT_BAUDRATE,
-            },
             errors=self._errors,
         )
 
