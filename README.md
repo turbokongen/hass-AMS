@@ -24,12 +24,12 @@ Kamstrup:
 Kaifa:
 Norway: 
   - MA304H3E Thanks to @thomasja27 for testing :+1:
+  - MA105H2E Thanks for confirming: @Futrax
 
 Sweden:
   - MA304H4 Thanks to @runlar for testing (swedish version) :+1:
 
 Not tested with, but should work:
-  - MA105H2E
   - MA304T4
   - MA304T3
 
