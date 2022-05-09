@@ -87,7 +87,7 @@ The accumulative sensors will only be fully available after first read, and is t
 There seems to be a bug in the current Kamstrup firmware that the hour package is transmitted at xx:xx:55.
 
 ## *Known working modules*
-https://www.aliexpress.com/item/32719562958.html?spm=a2g0s.9042311.0.0.c8314c4dpbv1pv
+https://www.aliexpress.com/item/32894249052.html
 https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3189f8fCOsSM
 https://www.aliexpress.com/item/32834331647.html?spm=a2g0o.detail.1000060.1.74cfdcd4qts4jp
 
