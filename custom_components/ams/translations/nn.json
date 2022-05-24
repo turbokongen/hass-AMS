@@ -6,7 +6,6 @@
         "title": "AMS Lesar",
         "step": {
             "user": {
-                "title": "AMS Noreg",
                 "description": "Installerar sensorar for AMS Lesar",
                 "data": {
                     "serial_port": "Serieport",

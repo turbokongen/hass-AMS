@@ -6,7 +6,6 @@
         "title": "AMS Leser",
         "step": {
             "user": {
-                "title": "AMS Leser",
                 "description": "Installer sensorer for AMS leser",
                 "data": {
                     "serial_port": "Serieport",

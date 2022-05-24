@@ -6,7 +6,6 @@
         "title": "AMS Leser",
         "step": {
             "user": {
-                "title": "AMS Leser",
                 "description": "Installer sensorer for AMS i Norge",
                 "data": {
                     "serial_port": "Serieport",
