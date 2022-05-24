@@ -351,7 +351,7 @@ def parse_data(stored, data):
                 + meter_date_time_seconds
             )
             han_data["active_energy_p"] = (
-                byte_decode(fields=pkt[115:120]) / 1000
+                byte_decode(fields=pkt[115:119]) / 1000
             )
             sensor_data["ams_active_energy_import"] = {
                 SENSOR_STATE: han_data["active_energy_p"],
@@ -371,7 +371,7 @@ def parse_data(stored, data):
                 },
             }
             han_data["active_energy_n"] = (
-                byte_decode(fields=pkt[121:125]) / 1000
+                byte_decode(fields=pkt[120:124]) / 1000
             )
             sensor_data["ams_active_energy_export"] = {
                 SENSOR_STATE: han_data["active_energy_n"],
@@ -391,7 +391,7 @@ def parse_data(stored, data):
                 },
             }
             han_data["reactive_energy_p"] = (
-                byte_decode(fields=pkt[126:130]) / 1000
+                byte_decode(fields=pkt[125:129]) / 1000
             )
             sensor_data["ams_reactive_energy_import"] = {
                 SENSOR_STATE: han_data["reactive_energy_p"],
@@ -411,7 +411,7 @@ def parse_data(stored, data):
                 },
             }
             han_data["reactive_energy_n"] = (
-                byte_decode(fields=pkt[131:135]) / 1000
+                byte_decode(fields=pkt[130:134]) / 1000
             )
             sensor_data["ams_reactive_energy_export"] = {
                 SENSOR_STATE: han_data["reactive_energy_n"],
