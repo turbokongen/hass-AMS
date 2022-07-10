@@ -3,17 +3,14 @@
         "abort": {
            "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
         },
-        "title": "AMS Leser",
         "step": {
             "user": {
-                "title": "AMS Leser",
                 "description": "Velg kommunikasjonsprotokoll for inndata",
                 "data":{
                     "type": "Protokolltype"
                 }
             },
             "network_connection": {
-                "title": "AMS Leser",
                 "description": "Velg data for TCP/IP tilkobling",
                 "data": {
                     "tcp_host": "IP adresse",
@@ -24,7 +21,6 @@
                 }
             },
             "serial_connection": {
-                "title": "AMS Leser",
                 "description": "Velg portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",

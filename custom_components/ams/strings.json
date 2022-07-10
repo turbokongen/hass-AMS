@@ -3,7 +3,6 @@
         "title": "AMS Reader",
         "step": {
             "user": {
-                "title": "AMS Reader",
                 "description": "Setup AMS Reader sensors",
                 "data": {
                     "serial_port": "Serial Port",

@@ -6,14 +6,12 @@
         "title": "AMS Reader",
         "step": {
             "user": {
-                "title": "AMS Reader",
                 "description": "Choose protocol for communications",
                 "data": {
                     "type": "Protocol type"
                 }
             },
             "network_connection": {
-                "title": "AMS Reader",
                 "description": "Setup options for TCP/IP connection",
                 "data": {
                     "tcp_host": "IP address",
@@ -24,7 +22,6 @@
                 }
             },
             "serial_connection": {
-                "title": "AMS Reader",
                 "description": "Setup options for serial communication",
                 "data": {
                     "serial_port": "Serial Port",
