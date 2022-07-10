@@ -23,7 +23,10 @@ from custom_components.ams.const import (
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
+    CONF_PROTOCOL,
     CONF_SERIAL_PORT,
+    CONF_TCP_HOST,
+    CONF_TCP_PORT,
     DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
     DEFAULT_PARITY,
@@ -37,7 +40,9 @@ from custom_components.ams.const import (
     KAIFA_METER_SEQ,
     KAIFA_SE_METER_SEQ,
     KAMSTRUP_METER_SEQ,
+    NETWORK,
     SENSOR_ATTR,
+    SERIAL,
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS
 )
@@ -115,22 +120,40 @@ class AmsHub:
 
     def __init__(self, hass, entry):
         """Initialize the AMS hub."""
+        _LOGGER.debug("config entry = %s", entry)
         self._hass = hass
-        port = entry.get(CONF_SERIAL_PORT)
-        _LOGGER.debug("Connecting to HAN using port %s", port)
-        parity = entry.get(CONF_PARITY)
         self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
-        self._ser = serial.Serial(
-            port=port,
-            baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
-            parity=parity,
-            stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS,
-            timeout=DEFAULT_TIMEOUT,
-        )
+        if entry.get(CONF_PROTOCOL) == SERIAL:
+            port = entry.get(CONF_SERIAL_PORT)
+            _LOGGER.debug("Connecting to HAN using serialport %s", port)
+            try:
+                self._ser = serial.serial_for_url(
+                    port,
+                    baudrate=entry.get(CONF_BAUDRATE),
+                    parity=entry.get(CONF_PARITY),
+                    stopbits=serial.STOPBITS_ONE,
+                    bytesize=serial.EIGHTBITS,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            except serial.serialutil.SerialException as ex:
+                _LOGGER.warning("Serial error: %", ex)
+        if entry.get(CONF_PROTOCOL) == NETWORK:
+            port = f"socket://{entry.get(CONF_TCP_HOST)}:{entry.get(CONF_TCP_PORT)}"
+            _LOGGER.debug("Connecting to HAN using TCP/IP %s", port)
+            try:
+                self._ser = serial.serial_for_url(
+                    port,
+                    baudrate=entry.get(CONF_BAUDRATE, DEFAULT_BAUDRATE),
+                    parity=entry.get(CONF_PARITY, DEFAULT_PARITY),
+                    stopbits=serial.STOPBITS_ONE,
+                    bytesize=serial.EIGHTBITS,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            except serial.serialutil.SerialException as ex:
+                _LOGGER.warning("Serial error: %s", ex)
         self.connection = threading.Thread(target=self.connect, daemon=True)
         self.connection.start()
         _LOGGER.debug("Finish init of AMS")

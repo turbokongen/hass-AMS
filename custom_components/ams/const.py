@@ -54,11 +54,17 @@ CONF_BAUDRATE = "baudrate"
 CONF_METER_MANUFACTURER = HAN_METER_MANUFACTURER
 CONF_PARITY = "parity"
 CONF_SERIAL_PORT = "serial_port"
+CONF_TCP_PORT = "tcp_port"
+CONF_TCP_HOST = "tcp_host"
+CONF_PROTOCOL = "protocol"
+CONF_PROTOCOL_CONFIG = "protocol_config"
 
 ATTR_DEVICE_CLASS = "device_class"
 ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"
 DEVICE_CLASS_ENERGY = "energy"
+SERIAL = "Serial port"
+NETWORK = "TCP/IP"
 STATE_CLASS_TOTAL_INCREASING = "total_increasing"
 
 DOMAIN = "ams"

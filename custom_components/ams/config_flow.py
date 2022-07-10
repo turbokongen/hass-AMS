@@ -10,14 +10,37 @@ from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
+    CONF_PROTOCOL,
+    CONF_TCP_HOST,
+    CONF_TCP_PORT,
     CONF_SERIAL_PORT,
     DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
     DEFAULT_PARITY,
     DOMAIN,
-    MANUFACTURER_OPTIONS
+    NETWORK,
+    MANUFACTURER_OPTIONS,
+    SERIAL,
 )
-
+DATA_SCHEMA_SELECT_PROTOCOL = vol.Schema(
+    {vol.Required("type"): vol.In([SERIAL, NETWORK])}
+)
+DATA_SCHEMA_NETWORK_DATA = vol.Schema(
+    {
+        vol.Required(CONF_TCP_HOST): str,
+        vol.Required(CONF_TCP_PORT): vol.All(vol.Coerce(int), vol.Range(0, 65535)),
+        vol.Required(
+            CONF_METER_MANUFACTURER,
+            default=DEFAULT_METER_MANUFACTURER
+        ): vol.In(MANUFACTURER_OPTIONS),
+        vol.Optional(
+            CONF_PARITY, default=DEFAULT_PARITY
+        ): vol.All(str),
+        vol.Optional(
+            CONF_BAUDRATE, default=DEFAULT_BAUDRATE
+        ): vol.All(int),
+    }
+)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -30,25 +53,44 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
+        self.connection_type = None
 
     async def async_step_user(self, user_input=None):
-        """Handle a flow initialized by the user."""
+        """Handle selection of protocol."""
+        if user_input is not None:
+            self.connection_type = user_input["type"]
+            if self.connection_type == NETWORK:
+                return await self.async_step_network_connection()
+            if self.connection_type == SERIAL:
+                return await self.async_step_serial_connection()
+
+        return self.async_show_form(
+            step_id="user", data_schema=DATA_SCHEMA_SELECT_PROTOCOL, errors=self._errors
+        )
+
+    async def async_step_serial_connection(self, user_input=None):
+        """Handle the serialport connection step."""
         portdata = await self.hass.async_add_executor_job(devices.comports)
         ports = [(comport.device + ": " + comport.description) for
                  comport in portdata]
 
         if user_input is not None:
+            user_input[CONF_PROTOCOL] = self.connection_type
             user_selection = user_input[CONF_SERIAL_PORT]
             port = portdata[ports.index(user_selection)]
             serial_by_id = await self.hass.async_add_executor_job(
                 get_serial_by_id, port.device
             )
             user_input[CONF_SERIAL_PORT] = serial_by_id
-            return self.async_create_entry(title="AMS Reader",
-                                           data=user_input)
+            entry_result = self.async_create_entry(
+                title="AMS Reader", data=user_input,
+            )
+            if entry_result:
+                return entry_result
+
         _LOGGER.debug(ports)
         return self.async_show_form(
-            step_id="user",
+            step_id="serial_connection",
             data_schema=vol.Schema(
                 {
                     vol.Required(
@@ -66,13 +108,23 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.All(int),
                 }
             ),
-            description_placeholders={
-                CONF_SERIAL_PORT: ports,
-                CONF_METER_MANUFACTURER: MANUFACTURER_OPTIONS,
-                CONF_PARITY: DEFAULT_PARITY,
-                CONF_BAUDRATE: DEFAULT_BAUDRATE,
-            },
             errors=self._errors,
+        )
+
+    async def async_step_network_connection(self, user_input=None):
+        """Handle the network connection step."""
+        if user_input:
+            user_input[CONF_PROTOCOL] = self.connection_type
+            entry_result = self.async_create_entry(
+                title="AMS Reader", data=user_input,
+            )
+            if entry_result:
+                return entry_result
+
+        return self.async_show_form(
+            step_id="network_connection",
+            data_schema=DATA_SCHEMA_NETWORK_DATA,
+            errors={},
         )
 
     async def async_step_import(self, import_config):

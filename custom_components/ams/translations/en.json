@@ -6,12 +6,28 @@
         "title": "AMS Reader",
         "step": {
             "user": {
-                "description": "Setup AMS sensors",
+                "description": "Choose protocol for communications",
+                "data": {
+                    "type": "Protocol type"
+                }
+            },
+            "network_connection": {
+                "description": "Setup options for TCP/IP connection",
+                "data": {
+                    "tcp_host": "IP address",
+                    "tcp_port": "Port",
+                    "parity": "Parity",
+                    "baudrate": "Baud rate",
+                    "meter_manufacturer": "Meter manufacturer"
+                }
+            },
+            "serial_connection": {
+                "description": "Setup options for serial communication",
                 "data": {
                     "serial_port": "Serial Port",
                     "parity": "Parity",
                     "meter_manufacturer": "Meter manufacturer",
-                    "baudrate": "Baudrate"
+                    "baudrate": "Baud rate"
                 }
             }
         },

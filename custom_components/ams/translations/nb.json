@@ -3,10 +3,25 @@
         "abort": {
            "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
         },
-        "title": "AMS Leser",
         "step": {
             "user": {
-                "description": "Installer sensorer for AMS leser",
+                "description": "Velg kommunikasjonsprotokoll for inndata",
+                "data":{
+                    "type": "Protokolltype"
+                }
+            },
+            "network_connection": {
+                "description": "Velg data for TCP/IP tilkobling",
+                "data": {
+                    "tcp_host": "IP adresse",
+                    "tcp_port": "Port",
+                    "parity": "Paritet",
+                    "baudrate": "Baudrate",
+                    "meter_manufacturer": "Måler produsent"
+                }
+            },
+            "serial_connection": {
+                "description": "Velg portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",

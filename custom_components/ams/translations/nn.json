@@ -6,7 +6,25 @@
         "title": "AMS Lesar",
         "step": {
             "user": {
-                "description": "Installerar sensorar for AMS Lesar",
+                "description": "Velg kommunikasjonsprotokoll for inndata",
+                "data": {
+                    "type": "Protokolltype"
+                }
+            },
+            "network_connection": {
+                "title": "AMS Lesar",
+                "description": "Vel data for TCP/IP tilkobling",
+                "data": {
+                    "tcp_host": "IP adresse",
+                    "tcp_port": "Port",
+                    "parity": "Paritet",
+                    "baudrate": "Baudrate",
+                    "meter_manufacturer": "Målar produsent"
+                }
+            },
+            "serial_connection": {
+                "title": "AMS Noreg",
+                "description": "Vel portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
