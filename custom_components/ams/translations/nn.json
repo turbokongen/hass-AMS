@@ -5,13 +5,10 @@
         },
         "title": "AMS Lesar",
         "step": {
-            "network_connection": {
-                "title": "AMS Lesar",
-                "description": "Vel data for TCP/IP tilkobling",
+            "user": {
+                "description": "Velg kommunikasjonsprotokoll for inndata",
                 "data": {
-                    "tcp_host": "IP adresse",
-                    "tcp_port": "Port",
-                    "meter_manufacturer": "Målar produsent"
+                    "type": "Protokolltype"
                 }
             },
             "network_connection": {
