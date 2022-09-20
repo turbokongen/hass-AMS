@@ -120,6 +120,7 @@ METER_TYPE = {
     "MA304H4": "Domestic/Industrial 3 Phase 400V 4-Wire meter",
     "MA304T4": "Industrial 3 Phase 230V 3-Wire meter",
     "MA304T3": "Industrial 3 Phase 400V 4-Wire meter",
+    "MA304H4D": "Poly Phase 3 Phase 230V/400V 4-Wire meter",
     # Kamstrup
     6861111: "Omnipower 1 Phase Direct meter",
     6841121: "Omnipower 3 Phase 3-Wire Direct meter",
