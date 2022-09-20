@@ -14,7 +14,6 @@ from custom_components.ams.parsers import aidon as Aidon
 from custom_components.ams.parsers import kaifa as Kaifa
 from custom_components.ams.parsers import kamstrup as Kamstrup
 from custom_components.ams.parsers import aidon_se as Aidon_se
-from custom_components.ams.parsers import kaifa_se as Kaifa_se
 from custom_components.ams.const import (
     AMS_DEVICES,
     AIDON_METER_SEQ,
@@ -242,6 +241,7 @@ class AmsHub:
                 self.meter_manufacturer = self._find_parser(detect_pkg)
                 parser = self.meter_manufacturer
 
+        swedish = None
         if self.meter_manufacturer == "aidon":
             parser = Aidon
         elif self.meter_manufacturer == "aidon_se":
@@ -249,9 +249,11 @@ class AmsHub:
         elif self.meter_manufacturer == "kaifa":
             parser = Kaifa
         elif self.meter_manufacturer == "kaifa_se":
-            parser = Kaifa_se
+            parser = Kaifa
+            swedish = True
         elif self.meter_manufacturer == "kamstrup":
             parser = Kamstrup
+
 
         while self._running:
             try:
@@ -262,7 +264,7 @@ class AmsHub:
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
                     self.sensor_data, _ = parser.parse_data(self.sensor_data,
-                                                            data)
+                                                            data, swedish)
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
