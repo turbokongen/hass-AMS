@@ -100,13 +100,13 @@ There seems to be a bug in the current Kamstrup firmware that the hour package i
 
 ## *Known working modules*
 
-https://www.aliexpress.com/item/32894249052.html
-https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3189f8fCOsSM
-https://www.ebay.com/itm/273122508071?_trkparms=amclksrc%3DITM%26aid%3D1110006%26algo%3DHOMESPLICE.SIM%26ao%3D1%26asc%3D20201210111314%26meid%3D4ae500c42d6c43dba4fbc3c8ed06db95%26pid%3D101195%26rk%3D1%26rkt%3D12%26sd%3D274011702607%26itm%3D273122508071%26pmt%3D1%26noa%3D0%26pg%3D2047675%26algv%3DSimplAMLv9PairwiseWebMskuAspectsV202110NoVariantSeed%26brand%3DUnbranded&_trksid=p2047675.c101195.m1851&amdata=cksum%3A2731225080714ae500c42d6c43dba4fbc3c8ed06db95%7Cenc%3AAQAGAAABEIIp3bTCXFAKw6S9crk9CpCrrtOgadqFiC10NVPbN0936eprYVB4SXfDa52e1mbPLFwdBXChmaGoQQy%252BBr%252F%252B6GwMcxzo7LNbOSruw8JYl4DlyP7oF0HAfDyaq70zO7kJ5TaNT4YP7AkcEgketK%252BSXiNU63J9O%252FNGJW%252FFzn%252B66oRh%252Ff51%252FOd%252BA7ejgOOSfiKyvRVua%252FiFnXrxVBuK6ejVzVdYQ8RkXWB%252BnAu4penvUGurSKh3gR%252B7GDYFpsU4WtTtZ59xj8h1jM8sf1rmoti2QMtmA6IzzxoTGR%252FY%252BwYIH5Ouq6dr2FeuKZP7nES3I5AT%252FKa7fdaUOT27KtkO6Rie2slNPzgZrUAyecfyWTwfQBCc%7Campid%3APL_CLK%7Cclp%3A2047675
+- [USB to MBUS slave module MBUS master slave communication debugging bus monitor TSS721](https://www.aliexpress.com/item/32894249052.html)
+- [TSS721 Module M-BUS To TTL with RX TX Indicator STM32 Development](https://www.aliexpress.com/item/32751482255.html?spm=2114.10010108.1000014.1.2a3189f8fCOsSM)
+- [TTL to MBUS, Serial to MBUS Slave Module, Instead of TSS721A, Signal Isolation](https://www.ebay.com/itm/273122508071?_trkparms=amclksrc%3DITM%26aid%3D1110006%26algo%3DHOMESPLICE.SIM%26ao%3D1%26asc%3D20201210111314%26meid%3D4ae500c42d6c43dba4fbc3c8ed06db95%26pid%3D101195%26rk%3D1%26rkt%3D12%26sd%3D274011702607%26itm%3D273122508071%26pmt%3D1%26noa%3D0%26pg%3D2047675%26algv%3DSimplAMLv9PairwiseWebMskuAspectsV202110NoVariantSeed%26brand%3DUnbranded&_trksid=p2047675.c101195.m1851&amdata=cksum%3A2731225080714ae500c42d6c43dba4fbc3c8ed06db95%7Cenc%3AAQAGAAABEIIp3bTCXFAKw6S9crk9CpCrrtOgadqFiC10NVPbN0936eprYVB4SXfDa52e1mbPLFwdBXChmaGoQQy%252BBr%252F%252B6GwMcxzo7LNbOSruw8JYl4DlyP7oF0HAfDyaq70zO7kJ5TaNT4YP7AkcEgketK%252BSXiNU63J9O%252FNGJW%252FFzn%252B66oRh%252Ff51%252FOd%252BA7ejgOOSfiKyvRVua%252FiFnXrxVBuK6ejVzVdYQ8RkXWB%252BnAu4penvUGurSKh3gR%252B7GDYFpsU4WtTtZ59xj8h1jM8sf1rmoti2QMtmA6IzzxoTGR%252FY%252BwYIH5Ouq6dr2FeuKZP7nES3I5AT%252FKa7fdaUOT27KtkO6Rie2slNPzgZrUAyecfyWTwfQBCc%7Campid%3APL_CLK%7Cclp%3A2047675)
 
 ## *Known NOT working modules*
 
-https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=600
+- [USB to MBUS slave module discrete component non TSS721 circuit M-BUS bus data monitor](https://www.aliexpress.com/item/32814808312.html?shortkey=iM7rQb67&addresstype=600)
 
 Improvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
