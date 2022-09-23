@@ -82,9 +82,9 @@ ams:
 Start Home-Assistant,
 Set up the integration in the *Integrations* config if you haven't set up by YAML config.
 
-For parity options see <https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79>
+For `parity` values see <https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79>
 
-Meter manufacturer field options are:
+For `meter_manufacturer` values the options are:
 
 ```python
 'auto'
