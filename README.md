@@ -1,4 +1,4 @@
-# hass-AMS - AMS Reader for Norwegian and swedish AMS meters
+# hass-AMS - AMS Reader for Norwegian and Swedish AMS meters
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 <a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
@@ -11,7 +11,7 @@ make a parser for your meter.
 If your meter type shown "unknown", please submit a ticket, and I will add
 your meter to the module.
 
-Works with the following swedish and norwegian meters:
+Works with the following Swedish and Norwegian meters:
 
 Kamstrup:
 
@@ -30,7 +30,7 @@ Norway:
 
 Sweden:
 
-- MA304H4 Thanks to @runlar for testing (swedish version) :+1:
+- MA304H4 Thanks to @runlar for testing (Swedish version) :+1:
 
 Not tested with, but should work:
 
@@ -112,6 +112,6 @@ Improvements and suggestions are also welcome.
 Keep in mind, I am not a experienced programmer :)
 Enjoy
 
-Latest information about OBIS for all the norwegian meters: <https://www.nek.no/info-ams-han-utviklere/>
+Latest information about OBIS for all the Norwegian meters: <https://www.nek.no/info-ams-han-utviklere/>
 
-Latest information about swedish standard for AMS: <https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf>
+Latest information about Swedish standard for AMS: <https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf>
