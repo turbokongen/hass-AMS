@@ -1,5 +1,7 @@
 # hass-AMS - AMS Reader for Norwegian and Swedish AMS meters
 
+![logo](logo_images/logo.png)
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 <a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
