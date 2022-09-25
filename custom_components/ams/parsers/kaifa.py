@@ -70,8 +70,11 @@ def parse_data(stored, data, swedish):
     han_data["date_time"] = date_time_str
     list_type = pkt[32]
     han_data[HAN_METER_LIST_TYPE] = list_type
-    if list_type is LIST_TYPE_MINI or swedish is True:
-        han_data["active_power_p"] = byte_decode(fields=pkt[34:38])
+    if list_type is LIST_TYPE_MINI or swedish:
+        if swedish:
+            han_data["active_power_p"] = byte_decode(fields=pkt[71:75])
+        else:
+            han_data["active_power_p"] = byte_decode(fields=pkt[34:38])
         sensor_data["ams_active_power_import"] = {
             SENSOR_STATE: han_data["active_power_p"],
             SENSOR_ATTR: {
