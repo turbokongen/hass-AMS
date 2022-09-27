@@ -54,7 +54,11 @@ CONFIG_SCHEMA = vol.Schema(
             {
                 vol.Required(
                     CONF_PROTOCOL, default=SERIAL
-                ): cv.string,
+                ):
+                    vol.All({
+                        vol.Optional(CONF_TCP_HOST): cv.string,
+                        vol.Optional(CONF_TCP_PORT): cv.int,
+                    }),
                 vol.Required(
                     CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT
                 ): cv.string,
