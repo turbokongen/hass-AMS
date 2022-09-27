@@ -61,12 +61,20 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 *YAML options*
 ```yaml
 ams:
+  protocol: 'serial' #Required. The protocol type for communications. Defaults to 'serial'
   serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
   baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
 
+```
+protocol options:
+  serial: Defines serial port communications.
+  tcp_ip: Defines network communications. Addidtional optinos needs to be set.
+    tcp_host: Host of tcp data
+    tcp_port: Port to tcp host.
+```
   
 Start Home-Assistant, 
 Set up the integration in the *Integrations* config if you haven't set up by YAML config.

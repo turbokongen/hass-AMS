@@ -53,6 +53,7 @@ meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE, SWEDISH)
 print("Checking for missing attributes")
 print(type(meter_data))
 Config = {
+    "protocol": "serial",
     "serial_port": "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB"
                    "-Serial_Controller-if00-port0",
     "meter_manufacturer": "auto",
