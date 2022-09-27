@@ -53,6 +53,9 @@ CONFIG_SCHEMA = vol.Schema(
         DOMAIN: vol.Schema(
             {
                 vol.Required(
+                    CONF_PROTOCOL, default=SERIAL
+                ): cv.string,
+                vol.Required(
                     CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT
                 ): cv.string,
                 vol.Required(
@@ -253,7 +256,6 @@ class AmsHub:
             swedish = True
         elif self.meter_manufacturer == "kamstrup":
             parser = Kamstrup
-
 
         while self._running:
             try:
