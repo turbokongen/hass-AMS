@@ -58,7 +58,7 @@ CONF_TCP_PORT = "tcp_port"
 CONF_TCP_HOST = "tcp_host"
 CONF_PROTOCOL = "protocol"
 CONF_PROTOCOL_CONFIG = "protocol_config"
-
+CONF_PROTOCOL_TYPE = "type"
 ATTR_DEVICE_CLASS = "device_class"
 ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"

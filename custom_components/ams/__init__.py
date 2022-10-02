@@ -23,6 +23,7 @@ from custom_components.ams.const import (
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
     CONF_PROTOCOL,
+    CONF_PROTOCOL_TYPE,
     CONF_SERIAL_PORT,
     CONF_TCP_HOST,
     CONF_TCP_PORT,
@@ -43,34 +44,34 @@ from custom_components.ams.const import (
     SENSOR_ATTR,
     SERIAL,
     SIGNAL_NEW_AMS_SENSOR,
-    SIGNAL_UPDATE_AMS
+    SIGNAL_UPDATE_AMS,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
+SERIAL_SCHEMA = {vol.Required(CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT)}
+NETWORK_SCHEMA = {vol.Required(CONF_TCP_HOST), vol.Required(CONF_TCP_PORT)}
+PROTOCOL_SCHEMA = {
+    vol.Required(SERIAL): SERIAL_SCHEMA,
+    vol.Required(NETWORK): NETWORK_SCHEMA,
+}
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(
-                    CONF_PROTOCOL, default=SERIAL
-                ):
-                    vol.All({
-                        vol.Optional(CONF_TCP_HOST): cv.string,
-                        vol.Optional(CONF_TCP_PORT): cv.positive_int,
-                    }),
-                vol.Required(
-                    CONF_SERIAL_PORT, default=DEFAULT_SERIAL_PORT
-                ): cv.string,
-                vol.Required(
-                    CONF_METER_MANUFACTURER,
-                    default=DEFAULT_METER_MANUFACTURER
-                ): cv.string,
-                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY):
-                    cv.string,
+                vol.Required(CONF_PROTOCOL, default=SERIAL): vol.In([NETWORK, SERIAL]),
+                vol.Optional(CONF_TCP_HOST): str,
+                vol.Optional(CONF_TCP_PORT): vol.All(
+                    vol.Coerce(int), vol.Range(0, 65535)
+                ),
+                vol.Optional(CONF_SERIAL_PORT): str,
+                vol.Optional(CONF_PARITY, default=DEFAULT_PARITY): cv.string,
+                vol.Optional(CONF_BAUDRATE, default=DEFAULT_BAUDRATE): vol.All(
+                    vol.Coerce(int), vol.Range(0, 256000)
+                ),
                 vol.Optional(
-                    CONF_BAUDRATE, default=DEFAULT_BAUDRATE
-                ): vol.All(int),
+                    CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
+                ): cv.string,
             }
         )
     },
@@ -104,8 +105,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(
-            entry, "sensor"))
+        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    )
     return True
 
 
@@ -190,11 +191,10 @@ class AmsHub:
                     # Build packet
                     bytelist.extend(buf)
                     byte_counter = byte_counter + 1
-                    if byte_counter == 3: 
+                    if byte_counter == 3:
                         # Calculate size after FRAME_FLAG + 2 bytes are
                         # received
-                        packet_size = ((bytelist[1] & 0x0F) << 8 |
-                                       bytelist[2]) + 2
+                        packet_size = ((bytelist[1] & 0x0F) << 8 | bytelist[2]) + 2
                     if byte_counter == packet_size:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
@@ -203,23 +203,32 @@ class AmsHub:
                         else:
                             # Not valid packet. Flush what we have built so
                             # far.
-                            _LOGGER.debug("Not a valid packet. Start over "
-                                          "again. byte_counter=%s, "
-                                          "frame_started=%s, "
-                                          "packet_size=%s, DUMP: %s",
-                                          byte_counter, frame_started,
-                                          packet_size, bytelist)
+                            _LOGGER.debug(
+                                "Not a valid packet. Start over "
+                                "again. byte_counter=%s, "
+                                "frame_started=%s, "
+                                "packet_size=%s, DUMP: %s",
+                                byte_counter,
+                                frame_started,
+                                packet_size,
+                                bytelist,
+                            )
                             bytelist = []
                             byte_counter = 0
                             frame_started = False
                             packet_size = -1
             else:
                 if frame_started:
-                    _LOGGER.debug("Timeout waiting for end of packet. Flush "
-                                  " current packet. byte_counter=%s, "
-                                  "frame_started=%s, package_size=%s, "
-                                  "DUMP: %s", byte_counter, frame_started,
-                                  packet_size, bytelist)
+                    _LOGGER.debug(
+                        "Timeout waiting for end of packet. Flush "
+                        " current packet. byte_counter=%s, "
+                        "frame_started=%s, package_size=%s, "
+                        "DUMP: %s",
+                        byte_counter,
+                        frame_started,
+                        packet_size,
+                        bytelist,
+                    )
                     frame_started = False
                     byte_counter = 0
                     bytelist = []
@@ -269,8 +278,9 @@ class AmsHub:
                     data = self.read_packet()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data, _ = parser.parse_data(self.sensor_data,
-                                                            data, swedish)
+                    self.sensor_data, _ = parser.parse_data(
+                        self.sensor_data, data, swedish
+                    )
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
@@ -289,7 +299,8 @@ class AmsHub:
             _LOGGER.debug("Testing for %s", meter)
             for i, _ in enumerate(test_pkg):
                 if test_pkg[i] == meter[0] and (
-                        test_pkg[i:(i + len(meter))] == meter):
+                    test_pkg[i:(i + len(meter))] == meter
+                ):
                     match.append(meter)
             return meter in match
 
@@ -325,8 +336,7 @@ class AmsHub:
         if data is None:
             data = self.data
 
-        attrs_to_check = [HAN_METER_SERIAL,
-                          HAN_METER_MANUFACTURER, HAN_METER_TYPE]
+        attrs_to_check = [HAN_METER_SERIAL, HAN_METER_MANUFACTURER, HAN_METER_TYPE]
         imp_attrs = [i for i in attrs_to_check if i not in self._attrs]
         if imp_attrs:
             cp_sensors_data = deepcopy(data)
@@ -337,9 +347,10 @@ class AmsHub:
                         self._attrs[check] = val
                         break
             del cp_sensors_data
-            miss_attrs = ([i for i in attrs_to_check if i not in self._attrs])
-            _LOGGER.debug("miss_attrs=%s", ([i for i in attrs_to_check
-                                             if i not in self._attrs]))
+            miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
+            _LOGGER.debug(
+                "miss_attrs=%s", ([i for i in attrs_to_check if i not in self._attrs])
+            )
             if miss_attrs:
                 _LOGGER.debug("We miss some attributes: %s", miss_attrs)
                 return True
@@ -357,12 +368,10 @@ class AmsHub:
             # use to create the unique_id
             if self.missing_attrs(sensor_data) is True:
                 _LOGGER.debug(
-                    "Missing some attributes waiting for new read from the"
-                    " serial"
+                    "Missing some attributes waiting for new read from the" " serial"
                 )
             else:
-                _LOGGER.debug("Got %s new devices from the serial",
-                              len(new_devices))
+                _LOGGER.debug("Got %s new devices from the serial", len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
                 async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:

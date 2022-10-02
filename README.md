@@ -60,21 +60,32 @@ Easiest method is to install via HACS. Then setup via *Integrations* config.
 
 *YAML options*
 ```yaml
+# Serial port example
 ams:
-  protocol: 'serial' #Required. The protocol type for communications. Defaults to 'serial'
-  serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
+  protocol: 'serial' #Required. The protocol type for communications.
+  serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through.
   baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
-  meter_manufacturer: 'auto' # Optional, defaults to 'auto'
+  meter_manufacturer: 'kamstrup' # Optional, defaults to 'auto'
 ```
+```yaml
+# TCP/IP config example
+ams:
+  protocol: 'tcp_ip' #Required. The protocol type for communications.
+  tcp_host: '192.168.2.11' # Required. The transmitting host address.
+  tcp_port: '8900' #Required. The transmitting host port.
+  meter_manufacturer: 'kamstrup' # Optional, defaults to 'auto'
+```
+*All options:*
 
-```
-protocol options:
-  serial: Defines serial port communications.
-  tcp_ip: Defines network communications. Addidtional optinos needs to be set.
-    tcp_host: Host of tcp data
-    tcp_port: Port to tcp host.
-```
+`protocol:` Options are `tcp_ip`, `serial` This is required.
+`serial_port:` Input your serial port to communicate through. Required if `serial`is selected.
+`baudrate:` Input a custom baudrate. Default is 2400.
+`parity:` Input a custom parity option. Default is N.
+`tcp_host:` Ip adress to host of meter data. Required if `tcp_ip` is selected
+`tcp_port:` Port at host of meter data. Required if `tcp_ip` is selected.
+`m̀eter_manufacturer:` Set the meter manufacturer if auto fails.
+
   
 Start Home-Assistant, 
 Set up the integration in the *Integrations* config if you haven't set up by YAML config.
