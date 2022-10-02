@@ -4,6 +4,10 @@ import logging
 import pprint
 import sys
 from homeassistant.core import HomeAssistant
+import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
+from custom_components.ams.const import *
+import custom_components.ams
 from custom_components.ams.parsers import aidon
 from custom_components.ams.parsers import aidon_se
 from custom_components.ams.parsers import kaifa
@@ -52,15 +56,16 @@ print("Running parse_data.......................")
 meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE, SWEDISH)
 print("Checking for missing attributes")
 print(type(meter_data))
-Config = {
-    "protocol": "serial",
+config = {
+    "protocol": "",
     "serial_port": "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB"
                    "-Serial_Controller-if00-port0",
     "meter_manufacturer": "auto",
     "parity": "N",
     "baudrate": 2400
 }
-hub = AmsHub(HomeAssistant, Config)
+
+hub = AmsHub(HomeAssistant, config)
 hass = HomeAssistant
 hass.data = {}
 hass.data[DOMAIN] = hub
