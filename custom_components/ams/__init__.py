@@ -278,9 +278,15 @@ class AmsHub:
                     data = self.read_packet()
                 if parser.test_valid_data(data):
                     _LOGGER.debug("data read from port=%s", data)
-                    self.sensor_data, _ = parser.parse_data(
-                        self.sensor_data, data, swedish
-                    )
+                    if swedish:
+                        self.sensor_data, _ = parser.parse_data(
+                            self.sensor_data, data, swedish
+                        )
+                    else:
+                        self.sensor_data, _ = parser.parse_data(
+                            self.sensor_data, data
+                        )
+
                     self._check_for_new_sensors_and_update(self.sensor_data)
                 else:
                     _LOGGER.debug("failed package: %s", data)
