@@ -33,7 +33,7 @@
                 }
             },
             "enter_serial_connection": {
-                "description": "Vel portdata for serietilkobling,
+                "description": "Vel portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
