@@ -21,7 +21,16 @@
                     "meter_manufacturer": "Meter manufacturer"
                 }
             },
-            "serial_connection": {
+            "select_serial_connection": {
+                "description": "Setup options for serial communication",
+                "data": {
+                    "serial_port": "Serial Port",
+                    "parity": "Parity",
+                    "meter_manufacturer": "Meter manufacturer",
+                    "baudrate": "Baud rate"
+                }
+            },
+            "enter_serial_connection": {
                 "description": "Setup options for serial communication",
                 "data": {
                     "serial_port": "Serial Port",

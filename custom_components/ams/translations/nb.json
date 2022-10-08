@@ -20,13 +20,22 @@
                     "meter_manufacturer": "Måler produsent"
                 }
             },
-            "serial_connection": {
+            "select_serial_connection": {
                 "description": "Velg portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
                     "meter_manufacturer": "Måler produsent",
                     "baudrate": "Baudrate"
+                }
+            },
+            "enter_serial_connection": {
+                "description": "Setup options for serial communication",
+                "data": {
+                    "serial_port": "Serial Port",
+                    "parity": "Parity",
+                    "meter_manufacturer": "Meter manufacturer",
+                    "baudrate": "Baud rate"
                 }
             }
         },

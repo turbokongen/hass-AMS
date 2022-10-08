@@ -8,6 +8,7 @@ from homeassistant import config_entries
 
 from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_BAUDRATE,
+    CONF_MANUAL_SERIAL_PORT,
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
     CONF_PROTOCOL,
@@ -23,7 +24,7 @@ from custom_components.ams.const import (  # pylint: disable=unused-import
     SERIAL,
 )
 DATA_SCHEMA_SELECT_PROTOCOL = vol.Schema(
-    {vol.Required("type"): vol.In([SERIAL, NETWORK])}
+    {vol.Required("type"): vol.In([SERIAL, CONF_MANUAL_SERIAL_PORT, NETWORK])}
 )
 DATA_SCHEMA_NETWORK_DATA = vol.Schema(
     {
@@ -62,21 +63,56 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if self.connection_type == NETWORK:
                 return await self.async_step_network_connection()
             if self.connection_type == SERIAL:
-                return await self.async_step_serial_connection()
+                return await self.async_step_select_serial_connection()
+            if self.connection_type == CONF_MANUAL_SERIAL_PORT:
+                return await self.async_step_enter_serial_connection()
 
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA_SELECT_PROTOCOL, errors=self._errors
         )
 
-    async def async_step_serial_connection(self, user_input=None):
-        """Handle the serialport connection step."""
+    async def async_step_enter_serial_connection(self, user_input=None):
+        """Handle the manual serialport connection step."""
+
+        if user_input is not None:
+            user_input[CONF_PROTOCOL] = SERIAL
+            entry_result = self.async_create_entry(
+                title="AMS Reader", data=user_input,
+            )
+            if entry_result:
+                return entry_result
+
+        return self.async_show_form(
+            step_id="enter_serial_connection",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_SERIAL_PORT, default=None
+                    ): vol.All(str),
+                    vol.Required(
+                        CONF_METER_MANUFACTURER,
+                        default=DEFAULT_METER_MANUFACTURER
+                    ): vol.In(MANUFACTURER_OPTIONS),
+                    vol.Optional(
+                        CONF_PARITY, default=DEFAULT_PARITY
+                    ): vol.All(str),
+                    vol.Optional(
+                        CONF_BAUDRATE, default=DEFAULT_BAUDRATE
+                    ): vol.All(int),
+                }
+            ),
+            errors=self._errors,
+        )
+
+    async def async_step_select_serial_connection(self, user_input=None):
+        """Handle the select serialport connection step."""
         portdata = await self.hass.async_add_executor_job(devices.comports)
         _LOGGER.debug(portdata)
         ports = [(comport.device + ": " + comport.description) for
                  comport in portdata]
 
         if user_input is not None:
-            user_input[CONF_PROTOCOL] = self.connection_type
+            user_input[CONF_PROTOCOL] = SERIAL
             user_selection = user_input[CONF_SERIAL_PORT]
             port = portdata[ports.index(user_selection)]
             serial_by_id = await self.hass.async_add_executor_job(
@@ -91,7 +127,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         _LOGGER.debug(ports)
         return self.async_show_form(
-            step_id="serial_connection",
+            step_id="select_serial_connection",
             data_schema=vol.Schema(
                 {
                     vol.Required(
@@ -115,7 +151,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_network_connection(self, user_input=None):
         """Handle the network connection step."""
         if user_input:
-            user_input[CONF_PROTOCOL] = self.connection_type
+            user_input[CONF_PROTOCOL] = NETWORK
             entry_result = self.async_create_entry(
                 title="AMS Reader", data=user_input,
             )
