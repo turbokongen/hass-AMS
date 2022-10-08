@@ -21,13 +21,22 @@
                     "meter_manufacturer": "Mätartilverkare"
                 }
             },
-            "serial_connection": {
+            "select_serial_connection": {
                 "description": "Välj data for seriell anslutning",
                 "data": {
                     "serial_port": "Serieport",
                     "parity": "Paritet",
                     "meter_manufacturer": "Mätartilverkare",
                     "baudrate": "Baudrate"
+                }
+            },
+            "enter_manual_serial_connection": {
+                "description": "Vãlj data for seriell anslutning",
+                "data": {
+                    "serial_port": "Serieport",
+                    "parity": "Paritet",
+                    "meter_manufacturer": "Mãtartilverkare",
+                    "baudrate": "Baud rate"
                 }
             }
         },
