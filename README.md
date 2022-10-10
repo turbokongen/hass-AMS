@@ -2,7 +2,7 @@
 
 ![logo](logo_images/logo.png)
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Turbokongen&repository=https%3A%2F%2Fgithub.com%2Fturbokongen%2Fhass-AMS)
 <a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 Custom component reading [AMS](https://no.wikipedia.org/wiki/Smart_str%C3%B8mm%C3%A5ler)
@@ -80,22 +80,37 @@ Then setup via *Integrations* config.
 ### YAML options
 
 ```yaml
+#Serial port example
 ams:
+  protocol: serial # Required. The Protocol type for communications.
   serial_port: '/dev/ttyUSB0' # Required. The serial port used to communicate through
   baudrate: 2400 # Optional, defaults to '2400'
   parity: 'N'  # Optional, defaults to 'N'
   meter_manufacturer: 'auto' # Optional, defaults to 'auto'
 ```
-
-Start Home-Assistant and
-set up the integration in the *Integrations* config if you haven't set up by YAML config.
-
-For `parity` values see <https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79>
+```yaml
+# TCP/IP config example
+ams:
+  protocol: tcp_ip #Required. The protocol type for communications.
+  tcp_host: 192.168.2.11 # Required. The transmitting host address.
+  tcp_port: 8900 #Required. The transmitting host port.
+  meter_manufacturer: 'kamstrup' # Optional, defaults to 'auto'
+```
+*All options:*
+```yaml
+protocol: Options are 'tcp_ip' or 'serial' This is option is required.
+serial_port: Input your serial port to communicate through. Required if 'serial' is selected for 'protocol'.
+baudrate: Input a custom baudrate. Default is 2400. This option in optional.
+parity: Input a custom parity option. Default is 'N'. See https://github.com/pyserial/pyserial/blob/master/serial/serialutil.py#L79
+tcp_host: Ip adress to host of meter data. Required if 'tcp_ip' is selected
+tcp_port: Port at host of meter data. Required if 'tcp_ip' is selected.
+meter_manufacturer: Set the meter manufacturer if 'auto' fails. This option is optional.
+```
 
 For `meter_manufacturer` values the options are:
 
 ```python
-'auto'
+'auto' # This is default if nothing is specified.
 'aidon'
 'aidon_se' # Swedish aidon meter RF2 modules
 'kamstrup'
