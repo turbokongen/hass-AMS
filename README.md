@@ -2,7 +2,7 @@
 
 ![logo](logo_images/logo.png)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Turbokongen&repository=https%3A%2F%2Fgithub.com%2Fturbokongen%2Fhass-AMS)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 <a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 Custom component reading [AMS](https://no.wikipedia.org/wiki/Smart_str%C3%B8mm%C3%A5ler)
