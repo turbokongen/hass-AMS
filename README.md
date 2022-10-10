@@ -1,5 +1,5 @@
 # hass-AMS - AMS Reader for Norwegian and swedish AMS meters
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Turbokongen&repository=https%3A%2F%2Fgithub.com%2Fturbokongen%2Fhass-AMS)
 <a href="https://www.buymeacoffee.com/turbokongen" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 Custom component reading AMS through MBus adapter into HomeAssistant
