@@ -52,19 +52,20 @@ AMS_SENSOR_CREATED_BUT_NOT_READ = set()
 
 CONF_BAUDRATE = "baudrate"
 CONF_METER_MANUFACTURER = HAN_METER_MANUFACTURER
+CONF_MANUAL_SERIAL_PORT = "manual_serial_port"
 CONF_PARITY = "parity"
 CONF_SERIAL_PORT = "serial_port"
 CONF_TCP_PORT = "tcp_port"
 CONF_TCP_HOST = "tcp_host"
 CONF_PROTOCOL = "protocol"
 CONF_PROTOCOL_CONFIG = "protocol_config"
-
+CONF_PROTOCOL_TYPE = "type"
 ATTR_DEVICE_CLASS = "device_class"
 ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"
 DEVICE_CLASS_ENERGY = "energy"
-SERIAL = "Serial port"
-NETWORK = "TCP/IP"
+SERIAL = "serial"
+NETWORK = "tcp_ip"
 STATE_CLASS_TOTAL_INCREASING = "total_increasing"
 
 DOMAIN = "ams"
@@ -120,6 +121,7 @@ METER_TYPE = {
     "MA304H4": "Domestic/Industrial 3 Phase 400V 4-Wire meter",
     "MA304T4": "Industrial 3 Phase 230V 3-Wire meter",
     "MA304T3": "Industrial 3 Phase 400V 4-Wire meter",
+    "MA304H4D": "Poly Phase 3 Phase 230V/400V 4-Wire meter",
     # Kamstrup
     6861111: "Omnipower 1 Phase Direct meter",
     6841121: "Omnipower 3 Phase 3-Wire Direct meter",

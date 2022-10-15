@@ -40,7 +40,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-locals, too-many-statements
-def parse_data(stored, data):
+def parse_data(stored, data, swedish):
     """Parse the incoming data to dict."""
     sensor_data = {}
     han_data = {}
@@ -70,8 +70,11 @@ def parse_data(stored, data):
     han_data["date_time"] = date_time_str
     list_type = pkt[32]
     han_data[HAN_METER_LIST_TYPE] = list_type
-    if list_type is LIST_TYPE_MINI:
-        han_data["active_power_p"] = byte_decode(fields=pkt[34:38])
+    if list_type is LIST_TYPE_MINI or swedish:
+        if swedish:
+            han_data["active_power_p"] = byte_decode(fields=pkt[71:75])
+        else:
+            han_data["active_power_p"] = byte_decode(fields=pkt[34:38])
         sensor_data["ams_active_power_import"] = {
             SENSOR_STATE: han_data["active_power_p"],
             SENSOR_ATTR: {
@@ -80,8 +83,9 @@ def parse_data(stored, data):
                 SENSOR_ICON: "mdi:gauge",
             },
         }
-        stored.update(sensor_data)
-        return stored, han_data
+        if not swedish:
+            stored.update(sensor_data)
+            return stored, han_data
 
     han_data[HAN_LIST_VER_ID] = field_type(fields=pkt[35:42], enc=chr)
     han_data[HAN_METER_SERIAL] = field_type(fields=pkt[44:60], enc=chr)

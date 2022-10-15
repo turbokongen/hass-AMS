@@ -22,8 +22,17 @@
                     "meter_manufacturer": "Målar produsent"
                 }
             },
-            "serial_connection": {
+            "select_serial_connection": {
                 "title": "AMS Noreg",
+                "description": "Vel portdata for serietilkobling",
+                "data": {
+                    "serial_port": "Serieport",
+                    "parity": "Paritet",
+                    "meter_manufacturer": "Målar produsent",
+                    "baudrate": "Baudrate"
+                }
+            },
+            "enter_serial_connection": {
                 "description": "Vel portdata for serietilkobling",
                 "data": {
                     "serial_port": "Serieport",
