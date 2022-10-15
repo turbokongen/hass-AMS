@@ -267,7 +267,6 @@ class AmsHub:
         elif self.meter_manufacturer == "aidon_se":
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
-            _LOGGER.debug(field_type(fields=detect_pkg[62:70], enc=chr) == "MA304H4D")
             if field_type(fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
                 swedish = True
                 parser = Kaifa

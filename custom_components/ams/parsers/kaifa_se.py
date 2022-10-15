@@ -265,7 +265,7 @@ def parse_data(stored, data):
 
 
 def test_valid_data(data):
-    """"Test the incoming data for validity."""
+    """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     if data is None:
         return False
