@@ -6,7 +6,7 @@ import logging
 
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams.parsers import byte_decode, field_type, signed_decode
+from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.const import (
     ACTIVE_ENERGY_SENSORS,
     ATTR_DEVICE_CLASS,
@@ -175,23 +175,15 @@ def parse_data(stored, data):
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
                               pkt[i + len(item)] == 18):
-                            signed = None
-                            if pkt[i + len(item)] == 16:
-                                signed = True
                             v_start = i + len(item) + 1
                             v_stop = v_start + 2
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            if signed:
-                                han_data[key] = (
-                                        signed_decode(fields=pkt[v_start:v_stop]) / 10
-                                )
-                            else:
-                                han_data[key] = (
-                                    (byte_decode(fields=pkt[v_start:v_stop],
-                                                 count=2) / 10)
-                                )
+                            han_data[key] = (
+                                (byte_decode(fields=pkt[v_start:v_stop],
+                                             count=2) / 10)
+                            )
                             sensor_data[key] = {
                                 SENSOR_STATE: han_data[key],
                                 SENSOR_ATTR: {
