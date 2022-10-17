@@ -170,6 +170,7 @@ def parse_data(stored, data):
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
                               pkt[i + len(item)] == 18):
+                            signed = None
                             if pkt[i + len(item)] == 16:
                                 signed = True
                             v_start = i + len(item) + 1
@@ -267,7 +268,7 @@ def parse_data(stored, data):
 
 
 def test_valid_data(data):
-    """"Test the incoming data for validity."""
+    """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     if data is None:
         return False

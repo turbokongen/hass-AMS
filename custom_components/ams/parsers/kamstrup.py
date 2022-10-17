@@ -43,7 +43,7 @@ from custom_components.ams.const import (
     UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
-from custom_components.ams.parsers import byte_decode, field_type
+from custom_components.ams.parsers import byte_decode, field_type, signed_decode
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -248,6 +248,7 @@ def parse_data(stored, data):
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
                               pkt[i + len(item)] == 18):
+                            signed = None
                             if pkt[i + len(item)] == 16:
                                 signed = True
                             v_start = i + len(item) + 1
