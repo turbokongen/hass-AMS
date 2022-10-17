@@ -7,7 +7,7 @@ Kaifa does not use OBIS in their data, so real parsing is not possible.
 import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams.parsers import byte_decode, field_type
+from custom_components.ams.parsers import byte_decode, field_type, signed_decode
 from custom_components.ams.const import (
     ATTR_DEVICE_CLASS,
     ATTR_STATE_CLASS,
@@ -131,7 +131,7 @@ def parse_data(stored, data, swedish):
             SENSOR_ICON: "mdi:gauge",
         },
     }
-    han_data["current_l1"] = byte_decode(fields=pkt[91:95]) / 1000
+    han_data["current_l1"] = signed_decode(fields=pkt[91:95]) / 1000
     sensor_data["ams_current_l1"] = {
         SENSOR_STATE: han_data["current_l1"],
         SENSOR_ATTR: {
@@ -147,7 +147,7 @@ def parse_data(stored, data, swedish):
 
     if (list_type is LIST_TYPE_SHORT_3PH or
             list_type is LIST_TYPE_LONG_3PH):
-        han_data["current_l2"] = byte_decode(fields=pkt[96:100]) / 1000
+        han_data["current_l2"] = signed_decode(fields=pkt[96:100]) / 1000
         sensor_data["ams_current_l2"] = {
             SENSOR_STATE: han_data["current_l2"],
             SENSOR_ATTR: {
@@ -160,7 +160,7 @@ def parse_data(stored, data, swedish):
                 SENSOR_ICON: "mdi:current-ac",
             },
         }
-        han_data["current_l3"] = byte_decode(fields=pkt[101:105]) / 1000
+        han_data["current_l3"] = signed_decode(fields=pkt[101:105]) / 1000
         sensor_data["ams_current_l3"] = {
             SENSOR_STATE: han_data["current_l3"],
             SENSOR_ATTR: {

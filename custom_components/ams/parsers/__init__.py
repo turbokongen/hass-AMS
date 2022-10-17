@@ -22,3 +22,14 @@ def byte_decode(fields=None, count=4):
     data = fields[0] << 24 | fields[1] << 16 | fields[2] << 8 | fields[3]
 
     return data
+
+def signed_decode(fields=None):
+    """Signed value decoder."""
+    s_data = fields
+    hex_val = ""
+    for num in s_data:
+        hex_val += hex(num)[2:]
+    t = int(hex_val, 16)
+    if t & (1 << (16 -1)):
+        t -= 1 << 16
+    return t

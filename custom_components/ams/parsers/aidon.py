@@ -281,18 +281,9 @@ def parse_data(stored, data):
                                 '.'.join([str(elem) for elem in item])
                             )
                             if signed:
-                                s_data = pkt[v_start:v_stop]
-                                hex_val = ""
-                                for num in s_data:
-                                    hex_val += hex(num)[2:]
-                                t = int(hex_val, 16)
-                                if t & (1 << (16 - 1)):
-                                    t -= 1 << 16
-                                _LOGGER.debug(t)
-                                _LOGGER.debug(pkt[v_start:v_stop])
-
-                                han_data[key] = t / 10
-
+                                han_data[key] = (
+                                        signed_decode(fields=pkt[v_start:v_stop]) / 10
+                                )
                             else:
                                 han_data[key] = (
                                     (byte_decode(fields=pkt[v_start:v_stop],
