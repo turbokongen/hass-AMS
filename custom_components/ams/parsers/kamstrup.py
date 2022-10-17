@@ -248,15 +248,32 @@ def parse_data(stored, data):
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
                               pkt[i + len(item)] == 18):
+                            signed = None
+                            if pkt[i + len(item)] == 16:
+                                signed = True
                             v_start = i + len(item) + 1
                             v_stop = v_start + 2
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            han_data[key] = (
-                                (byte_decode(fields=pkt[v_start:v_stop],
-                                             count=2))
-                            )
+                            if signed:
+                                s_data = pkt[v_start:v_stop]
+                                hex_val = ""
+                                for num in s_data:
+                                    hex_val += hex(num)[2:]
+                                t = int(hex_val, 16)
+                                if t & (1 << (16 - 1)):
+                                    t -= 1 << 16
+                                _LOGGER.debug(t)
+                                _LOGGER.debug(pkt[v_start:v_stop])
+
+                                han_data[key] = t / 10
+
+                            else:
+                                han_data[key] = (
+                                    (byte_decode(fields=pkt[v_start:v_stop],
+                                                 count=2) / 10)
+                                )
                             sensor_data[key] = {
                                 SENSOR_STATE: han_data[key],
                                 SENSOR_ATTR: {
