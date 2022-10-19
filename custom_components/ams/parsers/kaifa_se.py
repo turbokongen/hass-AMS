@@ -1,17 +1,17 @@
 """
-Decode for Swedish HAN Aidon.
-
+Decode for Swedish HAN Kaifa.
 This module will decode the incoming message from Mbus serial.
 """
 import logging
 
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams.parsers import byte_decode, signed_decode
+from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.const import (
     ACTIVE_ENERGY_SENSORS,
     ATTR_DEVICE_CLASS,
     ATTR_STATE_CLASS,
+    CURRENT_SENSORS,
     DATA_FLAG,
     DEVICE_CLASS_ENERGY,
     FRAME_FLAG,
@@ -24,6 +24,7 @@ from custom_components.ams.const import (
     HAN_OBIS_CODE,
     HAN_OBIS_DATETIME,
     HAN_PACKET_SIZE,
+    VOLTAGE_SENSORS,
     HOURLY_SENSORS,
     METER_TYPE,
     SENSOR_ATTR,
@@ -35,6 +36,7 @@ from custom_components.ams.const import (
     SENSOR_UNIT,
     SENSOR_UOM,
     STATE_CLASS_TOTAL_INCREASING,
+    UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
 
@@ -53,13 +55,12 @@ def parse_data(stored, data):
     list_type = pkt[19]
     han_data[HAN_METER_LIST_TYPE] = list_type
     _LOGGER.debug("list_type is %s", list_type)
-    # Swedish Aidon package does not contain meter_type or meter_serial
     han_data[HAN_METER_SERIAL] = "00"
-    han_data[HAN_METER_TYPE] = METER_TYPE.get(6484)
-    # Swedish Aidon package does not contain obis_list_version. It is
-    # defined in document: Aidon RJ45 HAN interface funktionsbeskrivning
-    # v1.4A 2020.10.06 as AIDON_H0001.
-    han_data[HAN_LIST_VER_ID] = "AIDON_H0001"
+    han_data[HAN_METER_TYPE] = (
+        METER_TYPE.get(field_type(fields=pkt[73:80], enc=chr), UNKNOWN_METER)
+    )
+    han_data[HAN_METER_SERIAL] = field_type(fields=pkt[47:63], enc=chr)
+    han_data[HAN_LIST_VER_ID] = field_type(fields=pkt[30:37], enc=chr)
 
     # Get the date and time
     for item in SENSOR_COMMON_OBIS_MAP[HAN_METER_DATETIME]:
@@ -127,6 +128,10 @@ def parse_data(stored, data):
                             measure = byte_decode(fields=pkt[v_start:v_stop])
                             if key in HOURLY_SENSORS:
                                 han_data[key] = measure / 1000
+                            elif key in CURRENT_SENSORS:
+                                han_data[key] = measure / 1000
+                            elif key in VOLTAGE_SENSORS:
+                                han_data[key] = measure / 10
                             else:
                                 han_data[key] = measure
                             sensor_data[key] = {
@@ -170,23 +175,15 @@ def parse_data(stored, data):
                         # Long-signed & Long-unsigned dict construct
                         elif (pkt[i + len(item)] == 16 or
                               pkt[i + len(item)] == 18):
-                            signed = None
-                            if pkt[i + len(item)] == 16:
-                                signed = True
                             v_start = i + len(item) + 1
                             v_stop = v_start + 2
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            if signed:
-                                han_data[key] = (
-                                    signed_decode(fields=pkt[v_start:v_stop]) / 10
-                                )
-                            else:
-                                han_data[key] = (
-                                    (byte_decode(fields=pkt[v_start:v_stop],
-                                                 count=2) / 10)
-                                )
+                            han_data[key] = (
+                                (byte_decode(fields=pkt[v_start:v_stop],
+                                             count=2) / 10)
+                            )
                             sensor_data[key] = {
                                 SENSOR_STATE: han_data[key],
                                 SENSOR_ATTR: {

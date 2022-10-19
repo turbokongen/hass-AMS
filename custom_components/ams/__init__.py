@@ -11,7 +11,9 @@ from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from custom_components.ams.parsers import aidon as Aidon
+from custom_components.ams.parsers import byte_decode, field_type
 from custom_components.ams.parsers import kaifa as Kaifa
+from custom_components.ams.parsers import kaifa_se as Kaifa_se
 from custom_components.ams.parsers import kamstrup as Kamstrup
 from custom_components.ams.parsers import aidon_se as Aidon_se
 from custom_components.ams.const import (
@@ -40,11 +42,13 @@ from custom_components.ams.const import (
     KAIFA_METER_SEQ,
     KAIFA_SE_METER_SEQ,
     KAMSTRUP_METER_SEQ,
+    METER_TYPE,
     NETWORK,
     SENSOR_ATTR,
     SERIAL,
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS,
+    UNKNOWN_METER,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -263,10 +267,13 @@ class AmsHub:
         elif self.meter_manufacturer == "aidon_se":
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
-            parser = Kaifa
+            if field_type(fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
+                swedish = True
+                parser = Kaifa
+            else:
+                parser = Kaifa
         elif self.meter_manufacturer == "kaifa_se":
-            parser = Kaifa
-            swedish = True
+            parser = Kaifa_se
         elif self.meter_manufacturer == "kamstrup":
             parser = Kamstrup
 
@@ -323,8 +330,12 @@ class AmsHub:
             _LOGGER.info("Detected Kaifa meter")
             return "kaifa"
         if _test_meter(pkg, KAIFA_SE_METER_SEQ):
-            _LOGGER.info("Detected Swedish Kaifa meter")
-            return "kaifa_se"
+            if field_type(fields=pkg[62:70], enc=chr) == "MA304H4D":
+                _LOGGER.info("Detected Swedish Kaifa meter MA304H4D")
+                return "kaifa"
+            else:
+                _LOGGER.info("Detected Swedish Kaifa meter")
+                return "kaifa_se"
         if _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
