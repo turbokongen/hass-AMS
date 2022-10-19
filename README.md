@@ -32,6 +32,7 @@ Norway:
 Sweden:
 
 - MA304H4 Thanks to @runlar for testing (Swedish version) :+1:
+- MA304H4D
 
 Not tested with, but should work:
 
