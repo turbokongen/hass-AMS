@@ -40,7 +40,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-locals, too-many-statements
-def parse_data(stored, data, swedish):
+def parse_data(stored, data, swedish = False):
     """Parse the incoming data to dict."""
     sensor_data = {}
     han_data = {}
