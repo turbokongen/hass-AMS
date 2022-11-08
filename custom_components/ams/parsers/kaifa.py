@@ -40,7 +40,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-locals, too-many-statements
-def parse_data(stored, data, swedish = False):
+def parse_data(stored, data, swedish=False):
     """Parse the incoming data to dict."""
     sensor_data = {}
     han_data = {}
@@ -97,7 +97,7 @@ def parse_data(stored, data, swedish = False):
     han_data[HAN_METER_TYPE] = (
         METER_TYPE.get(field_type(fields=pkt[62:70 - _offset], enc=chr), UNKNOWN_METER)
     )
-    han_data["active_power_p"] = byte_decode(fields=pkt[70:74])
+    han_data["active_power_p"] = byte_decode(fields=pkt[71 - _offset:75 - _offset])
     sensor_data["ams_active_power_import"] = {
         SENSOR_STATE: han_data["active_power_p"],
         SENSOR_ATTR: {
@@ -313,7 +313,7 @@ def parse_data(stored, data, swedish = False):
                 },
             }
             han_data["reactive_energy_n"] = (
-                byte_decode(fields=pkt[150 -  _offset:154 - _offset]) / 1000
+                byte_decode(fields=pkt[150 - _offset:154 - _offset]) / 1000
             )
             sensor_data["ams_reactive_energy_export"] = {
                 SENSOR_STATE: han_data["reactive_energy_n"],
