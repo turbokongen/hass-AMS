@@ -97,7 +97,7 @@ def parse_data(stored, data, swedish = False):
     han_data[HAN_METER_TYPE] = (
         METER_TYPE.get(field_type(fields=pkt[62:70 - _offset], enc=chr), UNKNOWN_METER)
     )
-    han_data["active_power_p"] = byte_decode(fields=pkt[70:74])
+    han_data["active_power_p"] = byte_decode(fields=pkt[71 - _offset:75 - _offset])
     sensor_data["ams_active_power_import"] = {
         SENSOR_STATE: han_data["active_power_p"],
         SENSOR_ATTR: {
