@@ -9,11 +9,8 @@ sys.path.append('../../../')
 
 from custom_components.ams.const import *
 import custom_components.ams
-from custom_components.ams.parsers import aidon
-from custom_components.ams.parsers import aidon_se
 from custom_components.ams.parsers import kaifa
 from custom_components.ams.parsers import kaifa_se
-from custom_components.ams.parsers import kamstrup
 from custom_components.ams import AmsHub
 from custom_components.ams.const import DOMAIN
 
