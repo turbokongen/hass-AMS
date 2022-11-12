@@ -18,18 +18,7 @@ from custom_components.ams.const import DOMAIN
 from common_test_data import TestData
 
 
-def test_aidon_se_short():
-
-    parser = aidon_se
-
-    pkg = TestData.AIDON_SE_SHORT
-    assert parser.test_valid_data(pkg), "Data validity test failed"
-
-    meter_data, _ = parser.parse_data({}, pkg)
-    assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
-
-def test_aidon_se_long():
+def test_aidon_se(): # Swedish AMS data pushes all sensor at each transmit. Only one type of package is pushed
 
     parser = aidon_se
 
@@ -40,7 +29,7 @@ def test_aidon_se_long():
 
     #pprint.pprint(meter_data)
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 810, "Parsed ams_active_power_import is not correct"
+    assert meter_data['ams_active_power_import']['state'] == 760, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
     # Test for missing keys and some attributes
