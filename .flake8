@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    m.github
+    __pycache__
+    bin
+    logo_images
+    .gitignore
+    README.md
+    tests
+    venv
