@@ -180,7 +180,8 @@ def parse_data(stored, data):
                             )
                             if signed:
                                 han_data[key] = (
-                                    signed_decode(fields=pkt[v_start:v_stop]) / 10
+                                    signed_decode(
+                                        fields=pkt[v_start:v_stop]) / 10
                                 )
                             else:
                                 han_data[key] = (

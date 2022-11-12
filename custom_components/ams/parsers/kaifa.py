@@ -95,9 +95,11 @@ def parse_data(stored, data, swedish=False):
         _LOGGER.debug("set kaifa _offset to 1")
         _offset = 1
     han_data[HAN_METER_TYPE] = (
-        METER_TYPE.get(field_type(fields=pkt[62:70 - _offset], enc=chr), UNKNOWN_METER)
+        METER_TYPE.get(field_type(
+            fields=pkt[62:70 - _offset], enc=chr), UNKNOWN_METER)
     )
-    han_data["active_power_p"] = byte_decode(fields=pkt[71 - _offset:75 - _offset])
+    han_data["active_power_p"] = byte_decode(
+        fields=pkt[71 - _offset:75 - _offset])
     sensor_data["ams_active_power_import"] = {
         SENSOR_STATE: han_data["active_power_p"],
         SENSOR_ATTR: {
@@ -110,7 +112,8 @@ def parse_data(stored, data, swedish=False):
             SENSOR_ICON: "mdi:gauge",
         },
     }
-    han_data["active_power_n"] = byte_decode(fields=pkt[76 - _offset:80 - _offset]) / 100
+    han_data["active_power_n"] = byte_decode(
+        fields=pkt[76 - _offset:80 - _offset]) / 100
     sensor_data["ams_active_power_export"] = {
         SENSOR_STATE: han_data["active_power_n"],
         SENSOR_ATTR: {
@@ -123,7 +126,8 @@ def parse_data(stored, data, swedish=False):
             SENSOR_ICON: "mdi:gauge",
         },
     }
-    han_data["reactive_power_p"] = byte_decode(fields=pkt[81 - _offset:85 - _offset])
+    han_data["reactive_power_p"] = byte_decode(
+        fields=pkt[81 - _offset:85 - _offset])
     sensor_data["ams_reactive_power_import"] = {
         SENSOR_STATE: han_data["reactive_power_p"],
         SENSOR_ATTR: {
@@ -136,7 +140,8 @@ def parse_data(stored, data, swedish=False):
             SENSOR_ICON: "mdi:gauge",
         },
     }
-    han_data["reactive_power_n"] = byte_decode(fields=pkt[86 - _offset:90 - _offset])
+    han_data["reactive_power_n"] = byte_decode(
+        fields=pkt[86 - _offset:90 - _offset])
     sensor_data["ams_reactive_power_export"] = {
         SENSOR_STATE: han_data["reactive_power_n"],
         SENSOR_ATTR: {
@@ -149,7 +154,8 @@ def parse_data(stored, data, swedish=False):
             SENSOR_ICON: "mdi:gauge",
         },
     }
-    han_data["current_l1"] = byte_decode(fields=pkt[91 - _offset:95 - _offset]) / 1000
+    han_data["current_l1"] = byte_decode(
+        fields=pkt[91 - _offset:95 - _offset]) / 1000
     sensor_data["ams_current_l1"] = {
         SENSOR_STATE: han_data["current_l1"],
         SENSOR_ATTR: {
@@ -165,7 +171,8 @@ def parse_data(stored, data, swedish=False):
 
     if (list_type is LIST_TYPE_SHORT_3PH or
             list_type is LIST_TYPE_LONG_3PH):
-        han_data["current_l2"] = byte_decode(fields=pkt[96 - _offset:100 - _offset]) / 1000
+        han_data["current_l2"] = byte_decode(
+            fields=pkt[96 - _offset:100 - _offset]) / 1000
         sensor_data["ams_current_l2"] = {
             SENSOR_STATE: han_data["current_l2"],
             SENSOR_ATTR: {
@@ -178,7 +185,8 @@ def parse_data(stored, data, swedish=False):
                 SENSOR_ICON: "mdi:current-ac",
             },
         }
-        han_data["current_l3"] = byte_decode(fields=pkt[101 - _offset:105 - _offset]) / 1000
+        han_data["current_l3"] = byte_decode(
+            fields=pkt[101 - _offset:105 - _offset]) / 1000
         sensor_data["ams_current_l3"] = {
             SENSOR_STATE: han_data["current_l3"],
             SENSOR_ATTR: {
@@ -191,7 +199,8 @@ def parse_data(stored, data, swedish=False):
                 SENSOR_ICON: "mdi:current-ac",
             },
         }
-        han_data["voltage_l1"] = byte_decode(fields=pkt[106 - _offset:110 - _offset]) / 10
+        han_data["voltage_l1"] = byte_decode(
+            fields=pkt[106 - _offset:110 - _offset]) / 10
         sensor_data["ams_voltage_l1"] = {
             SENSOR_STATE: han_data["voltage_l1"],
             SENSOR_ATTR: {
@@ -204,7 +213,8 @@ def parse_data(stored, data, swedish=False):
                 SENSOR_ICON: "mdi:flash",
             },
         }
-        han_data["voltage_l2"] = byte_decode(fields=pkt[111 - _offset:115 - _offset]) / 10
+        han_data["voltage_l2"] = byte_decode(
+            fields=pkt[111 - _offset:115 - _offset]) / 10
         sensor_data["ams_voltage_l2"] = {
             SENSOR_STATE: han_data["voltage_l2"],
             SENSOR_ATTR: {
@@ -217,7 +227,8 @@ def parse_data(stored, data, swedish=False):
                 SENSOR_ICON: "mdi:flash",
             },
         }
-        han_data["voltage_l3"] = byte_decode(fields=pkt[116 - _offset:120 - _offset]) / 10
+        han_data["voltage_l3"] = byte_decode(
+            fields=pkt[116 - _offset:120 - _offset]) / 10
         sensor_data["ams_voltage_l3"] = {
             SENSOR_STATE: han_data["voltage_l3"],
             SENSOR_ATTR: {
@@ -231,7 +242,8 @@ def parse_data(stored, data, swedish=False):
             },
         }
         if list_type == LIST_TYPE_LONG_3PH:
-            meter_date_time_year = byte_decode(fields=pkt[122 - _offset:124 - _offset], count=2)
+            meter_date_time_year = byte_decode(
+                fields=pkt[122 - _offset:124 - _offset], count=2)
             meter_date_time_month = pkt[124 - _offset]
             meter_date_time_date = pkt[125 - _offset]
             han_data[HAN_METER_DAYOFWEEK] = WEEKDAY_MAPPING.get(
@@ -336,7 +348,8 @@ def parse_data(stored, data, swedish=False):
     if (list_type is LIST_TYPE_SHORT_1PH or
             list_type is LIST_TYPE_LONG_1PH):
 
-        han_data["voltage_l1"] = byte_decode(fields=pkt[96 - _offset:100 - _offset]) / 10
+        han_data["voltage_l1"] = byte_decode(
+            fields=pkt[96 - _offset:100 - _offset]) / 10
         sensor_data["ams_voltage_l1"] = {
             SENSOR_STATE: han_data["voltage_l1"],
             SENSOR_ATTR: {
@@ -351,7 +364,8 @@ def parse_data(stored, data, swedish=False):
         }
 
         if list_type == LIST_TYPE_LONG_1PH:
-            meter_date_time_year = byte_decode(fields=pkt[102 - _offset:104 - _offset], count=2)
+            meter_date_time_year = byte_decode(
+                fields=pkt[102 - _offset:104 - _offset], count=2)
             meter_date_time_month = pkt[104 - _offset]
             meter_date_time_date = pkt[105 - _offset]
             han_data[HAN_METER_DAYOFWEEK] = WEEKDAY_MAPPING.get(

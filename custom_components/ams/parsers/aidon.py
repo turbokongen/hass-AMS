@@ -6,7 +6,9 @@ This module will decode the incoming message from Mbus serial.
 import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams.parsers import byte_decode, field_type, signed_decode
+from custom_components.ams.parsers import (byte_decode,
+                                           field_type,
+                                           signed_decode)
 from custom_components.ams.const import (
     ACTIVE_ENERGY_SENSORS,
     ATTR_DEVICE_CLASS,
@@ -283,7 +285,8 @@ def parse_data(stored, data):
                             )
                             if signed:
                                 han_data[key] = (
-                                        signed_decode(fields=pkt[v_start:v_stop]) / 10
+                                        signed_decode(
+                                            fields=pkt[v_start:v_stop]) / 10
                                 )
                             else:
                                 han_data[key] = (
