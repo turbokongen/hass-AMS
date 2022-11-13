@@ -23,7 +23,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
-          python3 -m pytest --ignore custom_components/ams/tests/parser_test.py
+          python3 -m pytest --cov=custom_components/ams --cov-config=.coveragerc
       - name: Run flake8
         run: |
           python3 -m flake8
