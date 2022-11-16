@@ -1,10 +1,2 @@
-# linters such as flake8 and pylint should be pinned, as new releases
-# make new things fail. Manually update these pins when pulling in a
-# new version
-
 pyserial==3.5
 crccheck==1.0
-pytest
-pytest-cov
-homeassistant
-flake8

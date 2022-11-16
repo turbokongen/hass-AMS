@@ -1,0 +1,8 @@
+# linters such as flake8 and pylint should be pinned, as new releases
+# make new things fail. Manually update these pins when pulling in a
+# new version
+
+pytest
+pytest-homeassistant-custom-component
+pytest-cov
+flake8

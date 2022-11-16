@@ -5,7 +5,7 @@ import pprint
 import sys
 
 
-sys.path.append('../../../')
+sys.path.append('../')
 
 from custom_components.ams.const import *
 import custom_components.ams
@@ -14,13 +14,14 @@ from custom_components.ams import AmsHub
 from custom_components.ams.const import DOMAIN
 
 
-from common_test_data import TestData
+from .common_test_data import TestData
 
 
 def test_kamstrup():
 
     parser = kamstrup
-
+    pkg = None
+    assert not parser.test_valid_data(pkg), "Package test for None failed"
     pkg = TestData.KAMSTRUP
     assert parser.test_valid_data(pkg), "Data validity test failed"
 

@@ -5,7 +5,7 @@ import pprint
 import sys
 
 
-sys.path.append('../../../')
+sys.path.append('../')
 
 from custom_components.ams.const import *
 import custom_components.ams
@@ -15,7 +15,7 @@ from custom_components.ams import AmsHub
 from custom_components.ams.const import DOMAIN
 
 
-from common_test_data import TestData
+from .common_test_data import TestData
 
 
 def test_aidon_se(): # Swedish AMS data pushes all sensor at each transmit. Only one type of package is pushed
