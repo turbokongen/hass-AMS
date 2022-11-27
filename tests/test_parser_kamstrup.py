@@ -57,3 +57,37 @@ def test_kamstrup_hourly():
         assert k in meter_data, "Key missing in parsed data"
         assert meter_data[k]['attributes']['meter_manufacturer'] == "Kamstrup_V0001", "Missing attribute"
         assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+
+def test_kamstrup_invalid_packet_size():
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_INVALID_PKG_SIZE
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect pkg range size"
+
+def test_kamstrup_invalid_read_packet_size():
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_WRONG_SIZE
+    assert not parser.test_valid_data(pkg), "Data validity test failed on mismatch between read and decoded pkg size"
+
+def test_kamstrup_invalid_frame_flag():
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_INVALID_FRAME_FLAG
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect frame flag"
+
+def test_kamstrup_invalid_data_flag():
+
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_INVALID_DATA_FLAG
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect data flag"
+
+def test_kamstrup_invalid_frame_crc():
+
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_INCORRECT_PKG_CRC
+    assert not parser.test_valid_data(pkg), "Data validity test failed on frame crc"
+
+def test_kamstrup_invalid_header_crc():
+
+    parser = kamstrup
+    pkg = TestData.KAMSTRUP_INCORRECT_HEADER_CRC
+    assert not parser.test_valid_data(pkg), "Data validity test failed on header crc"
+
