@@ -308,9 +308,7 @@ def test_valid_data(data):
             read_packet_size,
         )
         return False
-    test1 = data[0] != DEC_FRAME_FLAG
-    test2 = data[-1] != DEC_FRAME_FLAG
-    _LOGGER.debug("%s, %s, t1=%s, t2=%s" , data[0], data[-1], test1, test2)
+
     if not data[0] == DEC_FRAME_FLAG and data[-1] == DEC_FRAME_FLAG:
         _LOGGER.debug(
             "%s Received %s bytes of %s data",
