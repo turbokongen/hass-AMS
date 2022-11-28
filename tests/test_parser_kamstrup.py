@@ -49,11 +49,13 @@ def test_kamstrup_hourly():
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 2690, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    assert meter_data['ams_active_energy_import']['state'] == 155232.51, "Parsed ams_active_energy_import is not correct"
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3', 'ams_voltage_l1',
-              'ams_voltage_l2', 'ams_voltage_l3']:
+              'ams_voltage_l2', 'ams_voltage_l3',  'ams_active_energy_import', 'ams_reactive_energy_import',
+              'ams_active_energy_export', 'ams_reactive_energy_export']:
         assert k in meter_data, "Key missing in parsed data"
         assert meter_data[k]['attributes']['meter_manufacturer'] == "Kamstrup_V0001", "Missing attribute"
         assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"

@@ -134,4 +134,61 @@ def test_kaifa_MA304H3E_long():
         assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
         assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
 
+def test_kaifa_hourly():
 
+    parser = kaifa
+
+    pkg = TestData.KAIFA_HOURLY
+    assert parser.test_valid_data(pkg), "Data validity test failed"
+
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
+
+    # Test for some parsed values
+    assert meter_data['ams_active_power_import']['state'] == 119, "Parsed ams_active_power_import is not correct"
+    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    assert meter_data['ams_active_energy_import']['state'] == 10494.991, "Parsed ams_active_energy_import is not correct"
+
+    # Test for missing keys and some attributes
+    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import', 'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3', 'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3',  'ams_active_energy_import', 'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
+        assert k in meter_data, "Key missing in parsed data"
+        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
+        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+
+def test_kaifa_1phase():
+
+    parser = kaifa
+
+    pkg = TestData.KAIFA_1PH_SHORT
+    assert parser.test_valid_data(pkg), "Data validity test failed"
+
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
+
+    # Test for some parsed values
+    assert meter_data['ams_active_power_import']['state'] == 932, "Parsed ams_active_power_import is not correct"
+    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+
+    # Test for missing keys and some attributes
+    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import', 'ams_reactive_power_export', 'ams_current_l1', 'ams_voltage_l1']:
+        assert k in meter_data, "Key missing in parsed data"
+        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
+        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+
+def test_kaifa_1phase_hourly():
+
+    parser = kaifa
+
+    pkg = TestData.KAIFA_1PH_HOURLY
+    assert parser.test_valid_data(pkg), "Data validity test failed"
+
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
+
+    # Test for some parsed values
+    assert meter_data['ams_active_power_import']['state'] == 1655, "Parsed ams_active_power_import is not correct"
+    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    assert meter_data['ams_active_energy_import']['state'] == 25591.693, "Parsed ams_active_energy_import is not correct"
+
+    # Test for missing keys and some attributes
+    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import', 'ams_reactive_power_export', 'ams_current_l1', 'ams_voltage_l1', 'ams_active_energy_import', 'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
+        assert k in meter_data, "Key missing in parsed data"
+        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
+        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
