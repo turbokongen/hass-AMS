@@ -22,6 +22,7 @@ def test_kamstrup():
     parser = kamstrup
     pkg = None
     assert not parser.test_valid_data(pkg), "Package test for None failed"
+
     pkg = TestData.KAMSTRUP
     assert parser.test_valid_data(pkg), "Data validity test failed"
 

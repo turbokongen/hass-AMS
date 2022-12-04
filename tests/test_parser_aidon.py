@@ -13,14 +13,14 @@ from custom_components.ams.parsers import aidon
 from custom_components.ams.parsers import aidon_se
 from custom_components.ams import AmsHub
 from custom_components.ams.const import DOMAIN
-
-
-
 from .common_test_data import TestData
 
 def test_aidon_hourly():
 
     parser = aidon
+    pkg = None
+    assert not parser.test_valid_data(pkg), "Package test for None failed"
+
     pkg = TestData.AIDON_HOURLY
     assert parser.test_valid_data(pkg), "Data validity test failed"
 
@@ -83,23 +83,36 @@ def test_aidon_mini():
     assert meter_data['ams_active_power_import']['state'] == 734, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
-def test_aidon_se():  # Swedish AMS data pushes all sensor at each transmit. Only one type of package is pushed
+def test_aidon_invalid_packet_size():
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_INVALID_PKG_SIZE
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect pkg range size"
 
-    parser = aidon_se
+def test_aidon_invalid_read_packet_size():
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_WRONG_SIZE
+    assert not parser.test_valid_data(pkg), "Data validity test failed on mismatch between read and decoded pkg size"
 
-    pkg = TestData.AIDON_SE_LONG
-    assert parser.test_valid_data(pkg), "Data validity test failed"
+def test_aidon_invalid_frame_flag():
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_INVALID_FRAME_FLAG
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect frame flag"
 
-    meter_data, _ = parser.parse_data({}, pkg)
+def test_aidon_invalid_data_flag():
 
-    #pprint.pprint(meter_data)
-    # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 760, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_INVALID_DATA_FLAG
+    assert not parser.test_valid_data(pkg), "Data validity test failed on incorrect data flag"
 
-    # Test for missing keys and some attributes
-    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import', 'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3', 'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3']:
-        assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "AIDON_H0001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+def test_aidon_invalid_frame_crc():
+
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_INCORRECT_PKG_CRC
+    assert not parser.test_valid_data(pkg), "Data validity test failed on frame crc"
+
+def test_aidon_invalid_header_crc():
+
+    parser = aidon
+    pkg = TestData.AIDON_HOURLY_INCORRECT_HEADER_CRC
+    assert not parser.test_valid_data(pkg), "Data validity test failed on header crc"
 
