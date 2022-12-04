@@ -1,20 +1,9 @@
-
-import pytest
-import logging
-import pprint
 import sys
-
+from custom_components.ams import AmsHub
+from .common_test_data import TestData
 
 sys.path.append('../')
 
-from custom_components.ams.const import *
-import custom_components.ams
-from custom_components.ams.parsers import kamstrup
-from custom_components.ams import AmsHub
-from custom_components.ams.const import DOMAIN
-
-
-from .common_test_data import TestData
 
 def test_find_parser():
     pkg = TestData.KAMSTRUP
@@ -29,12 +18,10 @@ def test_find_parser():
     parser_detected = AmsHub._find_parser(pkg)
     assert parser_detected == "aidon"
 
-    pkg = TestData.AIDON_SE_LONG
+    pkg = TestData.AIDON_SE_3PH
     parser_detected = AmsHub._find_parser(pkg)
     assert parser_detected == "aidon_se"
 
     pkg = TestData.KAIFA_MA304H4D_LONG
     parser_detected = AmsHub._find_parser(pkg)
     assert parser_detected == "kaifa"
-
-

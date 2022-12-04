@@ -14,7 +14,7 @@ from custom_components.ams.const import (
     CURRENT_SENSORS,
     DATA_FLAG,
     DEVICE_CLASS_ENERGY,
-    FRAME_FLAG,
+    DEC_FRAME_FLAG,
     HAN_LIST_VER_ID,
     HAN_METER_DATETIME,
     HAN_METER_LIST_TYPE,
@@ -274,13 +274,29 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
 
-    if not data[0] and data[-1] == FRAME_FLAG:
+    packet_size = len(data)
+    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
+
+    if packet_size != read_packet_size:
+        _LOGGER.debug(
+            "Packet size does not match read packet size: %s : %s",
+            packet_size,
+            read_packet_size,
+        )
+        return False
+
+    if not data[0] == DEC_FRAME_FLAG and data[-1] == DEC_FRAME_FLAG:
         _LOGGER.debug(
             "%s Received %s bytes of %s data",
             datetime.now().isoformat(),
             len(data),
             False,
         )
+        return False
+
+    if data[9:13] != DATA_FLAG:
+        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,
+                      data[9:13])
         return False
 
     header_checksum = CrcX25.calc(bytes(data[1:7]))
@@ -295,22 +311,6 @@ def test_valid_data(data):
 
     if frame_checksum != read_frame_checksum:
         _LOGGER.debug("Invalid frame CRC check")
-        return False
-
-    if data[9:13] != DATA_FLAG:
-        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,
-                      data[9:13])
-        return False
-
-    packet_size = len(data)
-    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
-
-    if packet_size != read_packet_size:
-        _LOGGER.debug(
-            "Packet size does not match read packet size: %s : %s",
-            packet_size,
-            read_packet_size,
-        )
         return False
 
     return True
