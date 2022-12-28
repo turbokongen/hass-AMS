@@ -327,16 +327,16 @@ class AmsHub:
         if _test_meter(pkg, AIDON_SE_METER_SEQ_1PH):
             _LOGGER.info("Detected Swedish Aidon meter")
             return "aidon_se"
-        if _test_meter(pkg, KAIFA_METER_SEQ):
-            _LOGGER.info("Detected Kaifa meter")
-            return "kaifa"
         if _test_meter(pkg, KAIFA_SE_METER_SEQ):
             if field_type(fields=pkg[62:70], enc=chr) == "MA304H4D":
                 _LOGGER.info("Detected Swedish Kaifa meter MA304H4D")
                 return "kaifa"
-            else:
-                _LOGGER.info("Detected Swedish Kaifa meter")
+            elif _test_meter(pkg, [1, 0, 1, 7, 0, 255]):
+                _LOGGER.info("Detected Swedish kaifa meter")
                 return "kaifa_se"
+            else:
+                _LOGGER.info("Detected Kaifa meter")
+                return "kaifa"
         if _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
