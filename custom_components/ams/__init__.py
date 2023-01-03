@@ -38,7 +38,6 @@ from custom_components.ams.const import (
     HAN_METER_MANUFACTURER,
     HAN_METER_SERIAL,
     HAN_METER_TYPE,
-    KAIFA_METER_SEQ,
     KAIFA_SE_METER_SEQ,
     KAMSTRUP_METER_SEQ,
     NETWORK,
