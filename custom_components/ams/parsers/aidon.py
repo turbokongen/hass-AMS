@@ -6,14 +6,15 @@ This module will decode the incoming message from Mbus serial.
 import logging
 from datetime import datetime
 from crccheck.crc import CrcX25
-from custom_components.ams.parsers import byte_decode, field_type, signed_decode
+from custom_components.ams.parsers import (byte_decode,
+                                           field_type,
+                                           signed_decode)
 from custom_components.ams.const import (
     ACTIVE_ENERGY_SENSORS,
     ATTR_DEVICE_CLASS,
     ATTR_STATE_CLASS,
     DATA_FLAG,
-    DEVICE_CLASS_ENERGY,
-    FRAME_FLAG,
+    DEC_FRAME_FLAG,
     HAN_ACTIVE_POWER_IMPORT,
     HAN_LIST_VER_ID,
     HAN_METER_DATETIME,
@@ -33,9 +34,12 @@ from custom_components.ams.const import (
     SENSOR_STATE,
     SENSOR_UNIT,
     SENSOR_UOM,
-    STATE_CLASS_TOTAL_INCREASING,
     UNKNOWN_METER,
     WEEKDAY_MAPPING,
+)
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorStateClass
 )
 _LOGGER = logging.getLogger(__name__)
 
@@ -261,11 +265,11 @@ def parse_data(stored, data):
                                         HAN_METER_DATETIME]
                                 sensor_data[key][SENSOR_ATTR][
                                     ATTR_DEVICE_CLASS] = (
-                                        DEVICE_CLASS_ENERGY)
+                                        SensorDeviceClass.ENERGY)
                                 if key in ACTIVE_ENERGY_SENSORS:
                                     sensor_data[key][SENSOR_ATTR][
                                         ATTR_STATE_CLASS] = (
-                                            STATE_CLASS_TOTAL_INCREASING)
+                                            SensorStateClass.TOTAL_INCREASING)
                             _LOGGER.debug(
                                 "Value double OBIS type  6: %s, Index:%s",
                                 han_data[key], (v_start, v_stop)
@@ -283,7 +287,8 @@ def parse_data(stored, data):
                             )
                             if signed:
                                 han_data[key] = (
-                                        signed_decode(fields=pkt[v_start:v_stop]) / 10
+                                        signed_decode(
+                                            fields=pkt[v_start:v_stop]) / 10
                                 )
                             else:
                                 han_data[key] = (
@@ -369,13 +374,29 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
 
-    if not data[0] and data[-1] == FRAME_FLAG:
+    packet_size = len(data)
+    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
+
+    if packet_size != read_packet_size:
+        _LOGGER.debug(
+            "Packet size does not match read packet size: %s : %s",
+            packet_size,
+            read_packet_size,
+        )
+        return False
+
+    if not data[0] == DEC_FRAME_FLAG and data[-1] == DEC_FRAME_FLAG:
         _LOGGER.debug(
             "%s Received %s bytes of %s data",
             datetime.now().isoformat(),
             len(data),
             False,
         )
+        return False
+
+    if data[9:13] != DATA_FLAG:
+        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,
+                      data[9:13])
         return False
 
     header_checksum = CrcX25.calc(bytes(data[1:7]))
@@ -390,22 +411,6 @@ def test_valid_data(data):
 
     if frame_checksum != read_frame_checksum:
         _LOGGER.debug("Invalid frame CRC check")
-        return False
-
-    if data[9:13] != DATA_FLAG:
-        _LOGGER.debug("Data does not start with %s: %s", DATA_FLAG,
-                      data[9:13])
-        return False
-
-    packet_size = len(data)
-    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
-
-    if packet_size != read_packet_size:
-        _LOGGER.debug(
-            "Packet size does not match read packet size: %s : %s",
-            packet_size,
-            read_packet_size,
-        )
         return False
 
     return True

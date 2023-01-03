@@ -1,5 +1,9 @@
 """ Constants for hass-AMS package"""
 import serial
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorStateClass
+)
 
 HAN_OBIS_CODE = "obis_code"
 HAN_PACKET_SIZE = "packet_size"
@@ -63,10 +67,8 @@ CONF_PROTOCOL_TYPE = "type"
 ATTR_DEVICE_CLASS = "device_class"
 ATTR_LAST_RESET = "last_reset"
 ATTR_STATE_CLASS = "state_class"
-DEVICE_CLASS_ENERGY = "energy"
 SERIAL = "serial"
 NETWORK = "tcp_ip"
-STATE_CLASS_TOTAL_INCREASING = "total_increasing"
 
 DOMAIN = "ams"
 
@@ -78,6 +80,7 @@ DEFAULT_TIMEOUT = 0.1
 
 DATA_FLAG = [230, 231, 0, 15]
 FRAME_FLAG = b"\x7e"
+DEC_FRAME_FLAG = 126
 AIDON_METER_SEQ = [65, 73, 68, 79, 78, 95]
 AIDON_SE_METER_SEQ_3PH = [126, 162, 67]
 AIDON_SE_METER_SEQ_1PH = [126, 161, 79]
@@ -146,8 +149,8 @@ ACTIVE_ENERGY_SENSORS = [
 ]
 
 ACTIVE_ENERGY_DEFAULT_ATTRS = {
-    ATTR_STATE_CLASS: STATE_CLASS_TOTAL_INCREASING,
-    ATTR_DEVICE_CLASS: DEVICE_CLASS_ENERGY,
+    ATTR_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+    ATTR_DEVICE_CLASS: SensorDeviceClass.ENERGY,
 }
 
 CURRENT_SENSORS = [

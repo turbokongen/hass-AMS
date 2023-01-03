@@ -11,7 +11,7 @@ from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from custom_components.ams.parsers import aidon as Aidon
-from custom_components.ams.parsers import byte_decode, field_type
+from custom_components.ams.parsers import field_type
 from custom_components.ams.parsers import kaifa as Kaifa
 from custom_components.ams.parsers import kaifa_se as Kaifa_se
 from custom_components.ams.parsers import kamstrup as Kamstrup
@@ -25,7 +25,6 @@ from custom_components.ams.const import (
     CONF_METER_MANUFACTURER,
     CONF_PARITY,
     CONF_PROTOCOL,
-    CONF_PROTOCOL_TYPE,
     CONF_SERIAL_PORT,
     CONF_TCP_HOST,
     CONF_TCP_PORT,
@@ -39,16 +38,13 @@ from custom_components.ams.const import (
     HAN_METER_MANUFACTURER,
     HAN_METER_SERIAL,
     HAN_METER_TYPE,
-    KAIFA_METER_SEQ,
     KAIFA_SE_METER_SEQ,
     KAMSTRUP_METER_SEQ,
-    METER_TYPE,
     NETWORK,
     SENSOR_ATTR,
     SERIAL,
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS,
-    UNKNOWN_METER,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -63,7 +59,8 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_PROTOCOL, default=SERIAL): vol.In([NETWORK, SERIAL]),
+                vol.Required(CONF_PROTOCOL, default=SERIAL): vol.In(
+                    [NETWORK, SERIAL]),
                 vol.Optional(CONF_TCP_HOST): str,
                 vol.Optional(CONF_TCP_PORT): vol.All(
                     vol.Coerce(int), vol.Range(0, 65535)
@@ -152,7 +149,8 @@ class AmsHub:
             except serial.serialutil.SerialException as ex:
                 _LOGGER.warning("Serial error: %", ex)
         if entry.get(CONF_PROTOCOL) == NETWORK:
-            port = f"socket://{entry.get(CONF_TCP_HOST)}:{entry.get(CONF_TCP_PORT)}"
+            port = f"socket://{entry.get(CONF_TCP_HOST)}" \
+                   f":{entry.get(CONF_TCP_PORT)}"
             _LOGGER.debug("Connecting to HAN using TCP/IP %s", port)
             try:
                 self._ser = serial.serial_for_url(
@@ -198,7 +196,8 @@ class AmsHub:
                     if byte_counter == 3:
                         # Calculate size after FRAME_FLAG + 2 bytes are
                         # received
-                        packet_size = ((bytelist[1] & 0x0F) << 8 | bytelist[2]) + 2
+                        packet_size = ((bytelist[1] & 0x0F)
+                                       << 8 | bytelist[2]) + 2
                     if byte_counter == packet_size:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
@@ -267,7 +266,8 @@ class AmsHub:
         elif self.meter_manufacturer == "aidon_se":
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
-            if detect_pkg and field_type(fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
+            if detect_pkg and field_type(
+                    fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
                 swedish = True
                 parser = Kaifa
             else:
@@ -326,16 +326,16 @@ class AmsHub:
         if _test_meter(pkg, AIDON_SE_METER_SEQ_1PH):
             _LOGGER.info("Detected Swedish Aidon meter")
             return "aidon_se"
-        if _test_meter(pkg, KAIFA_METER_SEQ):
-            _LOGGER.info("Detected Kaifa meter")
-            return "kaifa"
         if _test_meter(pkg, KAIFA_SE_METER_SEQ):
             if field_type(fields=pkg[62:70], enc=chr) == "MA304H4D":
                 _LOGGER.info("Detected Swedish Kaifa meter MA304H4D")
                 return "kaifa"
-            else:
-                _LOGGER.info("Detected Swedish Kaifa meter")
+            elif _test_meter(pkg, [1, 0, 1, 7, 0, 255]):
+                _LOGGER.info("Detected Swedish kaifa meter")
                 return "kaifa_se"
+            else:
+                _LOGGER.info("Detected Kaifa meter")
+                return "kaifa"
         if _test_meter(pkg, KAMSTRUP_METER_SEQ):
             _LOGGER.info("Detected Kamstrup meter")
             return "kamstrup"
@@ -353,7 +353,8 @@ class AmsHub:
         if data is None:
             data = self.data
 
-        attrs_to_check = [HAN_METER_SERIAL, HAN_METER_MANUFACTURER, HAN_METER_TYPE]
+        attrs_to_check = [HAN_METER_SERIAL,
+                          HAN_METER_MANUFACTURER, HAN_METER_TYPE]
         imp_attrs = [i for i in attrs_to_check if i not in self._attrs]
         if imp_attrs:
             cp_sensors_data = deepcopy(data)
@@ -366,7 +367,8 @@ class AmsHub:
             del cp_sensors_data
             miss_attrs = [i for i in attrs_to_check if i not in self._attrs]
             _LOGGER.debug(
-                "miss_attrs=%s", ([i for i in attrs_to_check if i not in self._attrs])
+                "miss_attrs=%s", (
+                    [i for i in attrs_to_check if i not in self._attrs])
             )
             if miss_attrs:
                 _LOGGER.debug("We miss some attributes: %s", miss_attrs)
@@ -385,10 +387,12 @@ class AmsHub:
             # use to create the unique_id
             if self.missing_attrs(sensor_data) is True:
                 _LOGGER.debug(
-                    "Missing some attributes waiting for new read from the" " serial"
+                    "Missing some attributes waiting for new read from the"
+                    " serial"
                 )
             else:
-                _LOGGER.debug("Got %s new devices from the serial", len(new_devices))
+                _LOGGER.debug("Got %s new devices from the serial",
+                              len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
                 async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
         else:

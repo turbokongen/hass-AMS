@@ -29,7 +29,8 @@ DATA_SCHEMA_SELECT_PROTOCOL = vol.Schema(
 DATA_SCHEMA_NETWORK_DATA = vol.Schema(
     {
         vol.Required(CONF_TCP_HOST): str,
-        vol.Required(CONF_TCP_PORT): vol.All(vol.Coerce(int), vol.Range(0, 65535)),
+        vol.Required(CONF_TCP_PORT): vol.All(vol.Coerce(int),
+                                             vol.Range(0, 65535)),
         vol.Required(
             CONF_METER_MANUFACTURER,
             default=DEFAULT_METER_MANUFACTURER
@@ -68,7 +69,8 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_enter_serial_connection()
 
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA_SELECT_PROTOCOL, errors=self._errors
+            step_id="user", data_schema=DATA_SCHEMA_SELECT_PROTOCOL,
+            errors=self._errors
         )
 
     async def async_step_enter_serial_connection(self, user_input=None):
