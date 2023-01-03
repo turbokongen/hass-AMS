@@ -13,7 +13,6 @@ from custom_components.ams.const import (
     ATTR_STATE_CLASS,
     CURRENT_SENSORS,
     DATA_FLAG,
-    DEVICE_CLASS_ENERGY,
     DEC_FRAME_FLAG,
     HAN_LIST_VER_ID,
     HAN_METER_DATETIME,
@@ -35,11 +34,13 @@ from custom_components.ams.const import (
     SENSOR_STATE,
     SENSOR_UNIT,
     SENSOR_UOM,
-    STATE_CLASS_TOTAL_INCREASING,
     UNKNOWN_METER,
     WEEKDAY_MAPPING,
 )
-
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorStateClass
+)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -158,11 +159,11 @@ def parse_data(stored, data):
                                         HAN_METER_DATETIME]
                                 sensor_data[key][SENSOR_ATTR][
                                     ATTR_DEVICE_CLASS] = (
-                                        DEVICE_CLASS_ENERGY)
+                                        SensorDeviceClass.ENERGY)
                                 if key in ACTIVE_ENERGY_SENSORS:
                                     sensor_data[key][SENSOR_ATTR][
                                         ATTR_STATE_CLASS] = (
-                                            STATE_CLASS_TOTAL_INCREASING)
+                                            SensorStateClass.TOTAL_INCREASING)
                             _LOGGER.debug(
                                 "%s, OBIS:%s, Index:%s, Type:%s Double OBIS",
                                 key, item, (i, i + len(item)),
