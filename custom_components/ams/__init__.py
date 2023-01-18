@@ -189,6 +189,7 @@ class AmsHub:
                     frame_started = True
                     byte_counter = 0
                     bytelist = []
+                    _LOGGER.debug("Start of package")
                 if frame_started:
                     # Build packet
                     bytelist.extend(buf)
@@ -202,6 +203,7 @@ class AmsHub:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
                             # Valid packet as last byte is FRAME_FLAG
+                            _LOGGER.debug("Package complete")
                             return bytelist
                         else:
                             # Not valid packet. Flush what we have built so
