@@ -290,7 +290,7 @@ class AmsHub:
                     data = detect_pkg
                 else:
                     data = self.read_packet()
-                oss =True
+                oss = True
                 if parser.test_valid_data(data, oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:

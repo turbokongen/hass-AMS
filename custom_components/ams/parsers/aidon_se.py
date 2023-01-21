@@ -305,19 +305,19 @@ def test_valid_data(data, oss):
                       data[9:13])
         return False
 
+    header_checksum = CrcX25.calc(bytes(data[1:7]))
+    read_header_checksum = data[8] << 8 | data[7]
+
+    if header_checksum != read_header_checksum:
+        _LOGGER.debug("Invalid header CRC check")
+        return False
+
     if not oss:
-        header_checksum = CrcX25.calc(bytes(data[1:7]))
-        read_header_checksum = data[8] << 8 | data[7]
+        frame_checksum = CrcX25.calc(bytes(data[1:-3]))
+        read_frame_checksum = data[-2] << 8 | data[-3]
 
-        if header_checksum != read_header_checksum:
-            _LOGGER.debug("Invalid header CRC check")
+        if frame_checksum != read_frame_checksum:
+            _LOGGER.debug("Invalid frame CRC check")
             return False
-
-#    frame_checksum = CrcX25.calc(bytes(data[1:-3]))
-#    read_frame_checksum = data[-2] << 8 | data[-3]
-
-#    if frame_checksum != read_frame_checksum:
-#        _LOGGER.debug("Invalid frame CRC check")
-#        return False
 
     return True
