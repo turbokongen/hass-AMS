@@ -184,6 +184,7 @@ class AmsHub:
             buf = self._ser.read()
 
             if buf:
+                oss = True
                 if buf == FRAME_FLAG and not frame_started:
                     # Purge data until FRAME_FLAG is received
                     frame_started = True
@@ -206,17 +207,21 @@ class AmsHub:
                             _LOGGER.debug("Package complete")
                             return bytelist
                         else:
-                            # Not valid packet. Flush what we have built so
-                            # far.
-                            _LOGGER.debug(
-                                "Not a valid packet. Start over "
-                                "again. byte_counter=%s, "
-                                "frame_started=%s, "
-                                "packet_size=%s, DUMP: %s",
-                                byte_counter,
-                                frame_started,
-                                packet_size,
-                                bytelist,
+                            # Special for OSS brikken.
+                            if oss:
+                                return bytelist
+                            else:
+                                # Not valid packet. Flush what we have built so
+                                # far.
+                                _LOGGER.debug(
+                                    "Not a valid packet. Start over "
+                                    "again. byte_counter=%s, "
+                                    "frame_started=%s, "
+                                    "packet_size=%s, DUMP: %s",
+                                    byte_counter,
+                                    frame_started,
+                                    packet_size,
+                                    bytelist,
                             )
                             bytelist = []
                             byte_counter = 0
@@ -285,7 +290,8 @@ class AmsHub:
                     data = detect_pkg
                 else:
                     data = self.read_packet()
-                if parser.test_valid_data(data):
+                oss =True
+                if parser.test_valid_data(data, oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
