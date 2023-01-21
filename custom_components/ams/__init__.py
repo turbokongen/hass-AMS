@@ -222,7 +222,7 @@ class AmsHub:
                                     frame_started,
                                     packet_size,
                                     bytelist,
-                            )
+                                )
                             bytelist = []
                             byte_counter = 0
                             frame_started = False
