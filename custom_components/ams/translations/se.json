@@ -27,7 +27,8 @@
                     "serial_port": "Serieport",
                     "parity": "Paritet",
                     "meter_manufacturer": "Mätartilverkare",
-                    "baudrate": "Baudrate"
+                    "baudrate": "Baudrate",
+                    "oss_brikken": "OSS brikken"
                 }
             },
             "enter_manual_serial_connection": {
@@ -36,7 +37,8 @@
                     "serial_port": "Serieport",
                     "parity": "Paritet",
                     "meter_manufacturer": "Mãtartilverkare",
-                    "baudrate": "Baud rate"
+                    "baudrate": "Baudrate",
+                    "oss_brikken": "OSS brikken"
                 }
             }
         },
