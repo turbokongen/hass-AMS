@@ -6,6 +6,7 @@ _LOGGER = logging.getLogger(__name__)
 
 def field_type(default="", fields=None, enc=str, dec=None):
     """Obis/data field decoder/encoder."""
+    #_LOGGER.debug("field_type=%s", fields)
     data = default.join(enc(i) for i in fields)
     if dec:
         return dec(data)
@@ -14,7 +15,7 @@ def field_type(default="", fields=None, enc=str, dec=None):
 
 def byte_decode(fields=None, count=4):
     """Data content decoder."""
-#    _LOGGER.debug("fields= %s", fields)
+    #_LOGGER.debug("byte_decode=%s", fields)
     if count == 2:
         data = fields[0] << 8 | fields[1]
         return data

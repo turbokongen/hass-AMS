@@ -23,6 +23,7 @@ from custom_components.ams.const import (
     AIDON_SE_METER_SEQ_3PH,
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
+    CONF_OSS_BRIKKEN,
     CONF_PARITY,
     CONF_PROTOCOL,
     CONF_SERIAL_PORT,
@@ -30,6 +31,7 @@ from custom_components.ams.const import (
     CONF_TCP_PORT,
     DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
+    DEFAULT_OSS_BRIKKEN,
     DEFAULT_PARITY,
     DEFAULT_SERIAL_PORT,
     DEFAULT_TIMEOUT,
@@ -73,6 +75,9 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(
                     CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
                 ): cv.string,
+                vol.Optional(
+                    CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
+                ): vol.All(vol.Any(int, bool), vol.Coerce(bool))
             }
         )
     },
@@ -134,8 +139,11 @@ class AmsHub:
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
+        self._oss = None
         if entry.get(CONF_PROTOCOL) == SERIAL:
             port = entry.get(CONF_SERIAL_PORT)
+            self._oss = entry.get(CONF_OSS_BRIKKEN)
+
             _LOGGER.debug("Connecting to HAN using serialport %s", port)
             try:
                 self._ser = serial.serial_for_url(
@@ -184,7 +192,6 @@ class AmsHub:
             buf = self._ser.read()
 
             if buf:
-                oss = True
                 if buf == FRAME_FLAG and not frame_started:
                     # Purge data until FRAME_FLAG is received
                     frame_started = True
@@ -208,7 +215,7 @@ class AmsHub:
                             return bytelist
                         else:
                             # Special for OSS brikken.
-                            if oss:
+                            if self._oss:
                                 return bytelist
                             else:
                                 # Not valid packet. Flush what we have built so
@@ -290,7 +297,7 @@ class AmsHub:
                     data = detect_pkg
                 else:
                     data = self.read_packet()
-                oss = True
+                oss = self._oss
                 if parser.test_valid_data(data, oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:

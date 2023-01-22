@@ -269,7 +269,7 @@ def parse_data(stored, data):
     return stored, han_data
 
 
-def test_valid_data(data, oss):
+def test_valid_data(data):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     if data is None:
@@ -312,12 +312,11 @@ def test_valid_data(data, oss):
         _LOGGER.debug("Invalid header CRC check")
         return False
 
-    if not oss:
-        frame_checksum = CrcX25.calc(bytes(data[1:-3]))
-        read_frame_checksum = data[-2] << 8 | data[-3]
+    frame_checksum = CrcX25.calc(bytes(data[1:-3]))
+    read_frame_checksum = data[-2] << 8 | data[-3]
 
-        if frame_checksum != read_frame_checksum:
-            _LOGGER.debug("Invalid frame CRC check")
-            return False
+    if frame_checksum != read_frame_checksum:
+        _LOGGER.debug("Invalid frame CRC check")
+        return False
 
     return True
