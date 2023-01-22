@@ -168,12 +168,13 @@ def parse_data(stored, data):
                                           meter_date_time_seconds,
                                           meter_date_time_str)
                         # Visible string construct
-                        elif pkt[i + len(item)] == 10 or pkt[i + len(item)] == 13:
+                        elif pkt[i + len(item)] == 10 or\
+                                pkt[i + len(item)] == 13:
                             if pkt[i + len(item)] == 13:
                                 _offset = 1
                             else:
                                 _offset = 0
-                            v_start = i + len(item) + 2 +_offset
+                            v_start = i + len(item) + 2 + _offset
                             v_length = pkt[v_start - 1]
                             v_stop = v_start + v_length
                             han_data["obis_" + key] = (
@@ -201,12 +202,14 @@ def parse_data(stored, data):
             if (pkt[i:i + len(SENSOR_COMMON_OBIS_MAP[key])] ==
                     SENSOR_COMMON_OBIS_MAP[key]):
                 # Visible string construct
-                if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 10 or pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 13:
+                if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 10 or \
+                        pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 13:
                     if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 13:
                         _offset = 1
                     else:
                         _offset = 0
-                    v_start = i + len(SENSOR_COMMON_OBIS_MAP[key]) + 2 + _offset
+                    v_start = i + len(
+                        SENSOR_COMMON_OBIS_MAP[key]) + 2 + _offset
                     v_length = pkt[v_start - 1]
                     v_stop = v_start + v_length
                     han_data["obis_" + key] = (
