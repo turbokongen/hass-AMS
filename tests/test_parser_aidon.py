@@ -6,6 +6,7 @@ sys.path.append('../')
 OSS_TRUE = True
 OSS_FALSE = False
 
+
 def test_aidon_hourly():
 
     parser = aidon
@@ -88,7 +89,8 @@ def test_aidon_invalid_packet_size():
 def test_aidon_invalid_read_packet_size():
     parser = aidon
     pkg = TestData.AIDON_HOURLY_WRONG_SIZE
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on mismatch between read and decoded pkg size"
+    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), \
+        "Data validity test failed on mismatch between read and decoded pkg size"
 
 
 def test_aidon_invalid_frame_flag():
@@ -117,8 +119,16 @@ def test_aidon_invalid_header_crc():
     pkg = TestData.AIDON_HOURLY_INCORRECT_HEADER_CRC
     assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on header crc"
 
+
 def test_aidon_with_oss_brikken():
 
     parser = aidon
     pkg = TestData.AIDON_OSS_DATA
+    assert parser.test_valid_data(pkg, oss=OSS_TRUE), "Data validity test failed on data from OSS brikken"
+
+
+def test_aidon_with_oss_brikken_hourly():
+
+    parser = aidon
+    pkg = TestData.AIDON_OSS_HOURLY
     assert parser.test_valid_data(pkg, oss=OSS_TRUE), "Data validity test failed on data from OSS brikken"

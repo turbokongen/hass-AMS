@@ -278,17 +278,22 @@ class AmsHub:
         if self.meter_manufacturer == "aidon":
             parser = Aidon
         elif self.meter_manufacturer == "aidon_se":
+            self._oss = False if self._oss else self._oss
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
             if detect_pkg and field_type(
                     fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
                 swedish = True
+                self._oss = False if self._oss else self._oss
                 parser = Kaifa
             else:
+                self._oss = False if self._oss else self._oss
                 parser = Kaifa
         elif self.meter_manufacturer == "kaifa_se":
+            self._oss = False if self._oss else self._oss
             parser = Kaifa_se
         elif self.meter_manufacturer == "kamstrup":
+            self._oss = False if self._oss else self._oss
             parser = Kamstrup
 
         while self._running:
