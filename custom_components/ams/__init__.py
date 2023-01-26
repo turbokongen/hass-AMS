@@ -278,22 +278,17 @@ class AmsHub:
         if self.meter_manufacturer == "aidon":
             parser = Aidon
         elif self.meter_manufacturer == "aidon_se":
-            self._oss = False if self._oss else self._oss
             parser = Aidon_se
         elif self.meter_manufacturer == "kaifa":
             if detect_pkg and field_type(
                     fields=detect_pkg[62:70], enc=chr) == "MA304H4D":
                 swedish = True
-                self._oss = False if self._oss else self._oss
                 parser = Kaifa
             else:
-                self._oss = False if self._oss else self._oss
                 parser = Kaifa
         elif self.meter_manufacturer == "kaifa_se":
-            self._oss = False if self._oss else self._oss
             parser = Kaifa_se
         elif self.meter_manufacturer == "kamstrup":
-            self._oss = False if self._oss else self._oss
             parser = Kamstrup
 
         while self._running:
@@ -303,11 +298,16 @@ class AmsHub:
                 else:
                     data = self.read_packet()
                 oss = self._oss
+
                 if parser.test_valid_data(data, oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
                             self.sensor_data, data, swedish
+                        )
+                    elif oss:
+                        self.sensor_data, _ = parser.parse_data(
+                            self.sensor_data, data, oss=oss
                         )
                     else:
                         self.sensor_data, _ = parser.parse_data(

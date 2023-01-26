@@ -78,9 +78,11 @@ sensor_data = {}
 print("Testing for parser.......................")
 parser = AmsHub._find_parser(PACKAGE)
 print("Running test_valid_data..................")
-if OSS:
-    meter_validData = METERTYPE.test_valid_data(PACKAGE, oss=True)
+if OSS is True:
+    print("Parsing with OSS")
+    meter_validData = METERTYPE.test_valid_data(PACKAGE, oss=OSS)
 else:
+    print("Parsing Normal")
     meter_validData = METERTYPE.test_valid_data(PACKAGE)
 if meter_validData:
     print("--------------Valid data test passed----------------")
@@ -88,8 +90,13 @@ else:
     print("-----------------not valid data-------------")
 print("Running parse_data.......................")
 if SWEDISH:
+    print("Parsing swedish")
     meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE, SWEDISH)
+if OSS is True:
+    print("Parsing swedish")
+    meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE, oss=OSS)
 else:
+    print("Parsing Normal")
     meter_data, _ = METERTYPE.parse_data(sensor_data, PACKAGE)
 print("Checking for missing attributes")
 print(type(meter_data))

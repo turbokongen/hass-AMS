@@ -16,7 +16,7 @@ def test_aidon_hourly():
     pkg = TestData.AIDON_HOURLY
     assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg)
+    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1769, "Parsed ams_active_power_import is not correct"
@@ -39,7 +39,7 @@ def test_aidon_short():
     pkg = TestData.AIDON_SHORT
     assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg)
+    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 6942, "Parsed ams_active_power_import is not correct"
@@ -59,7 +59,7 @@ def test_aidon_mini():
     parser = aidon
     pkg = TestData.AIDON_MINI
     assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
-    meter_data, _ = parser.parse_data({}, pkg)
+    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
     # Test for parsed values
     assert meter_data == {}
     fixture_aidon_stored = {
@@ -75,7 +75,7 @@ def test_aidon_mini():
             }
         }
     }
-    meter_data, _ = parser.parse_data(fixture_aidon_stored, pkg)
+    meter_data, _ = parser.parse_data(fixture_aidon_stored, pkg, oss=OSS_FALSE)
     assert meter_data['ams_active_power_import']['state'] == 734, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
