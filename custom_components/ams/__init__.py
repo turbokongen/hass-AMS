@@ -329,6 +329,8 @@ class AmsHub:
         def _test_meter(test_pkg, meter):
             """Meter tester."""
             match = []
+            if test_pkg is None:
+                return False
             _LOGGER.debug("Testing for %s", meter)
             for i, _ in enumerate(test_pkg):
                 if test_pkg[i] == meter[0] and (
