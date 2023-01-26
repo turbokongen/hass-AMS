@@ -105,7 +105,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.All(int),
                     vol.Optional(
                         CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
-                    ): vol.All(vol.Any(int, bool), vol.Coerce(bool)),
+                    ): bool,
                 }
             ),
             errors=self._errors,
@@ -152,7 +152,7 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.All(int),
                     vol.Optional(
                         CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
-                    ): vol.All(vol.Any(int, bool), vol.Coerce(bool)),
+                    ): bool,
                 }
             ),
             errors=self._errors,
