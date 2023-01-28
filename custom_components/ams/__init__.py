@@ -268,7 +268,7 @@ class AmsHub:
         # detecting the meter straight to the parser. If not, users will get
         # unknown state class None for energy sensors at startup.
         if self.meter_manufacturer == "auto":
-            while parser is None:
+            while parser is None and self._running is True:
                 _LOGGER.info("Autodetecting meter manufacturer")
                 detect_pkg = self.read_packet()
                 self.meter_manufacturer = self._find_parser(detect_pkg)
@@ -329,8 +329,6 @@ class AmsHub:
         def _test_meter(test_pkg, meter):
             """Meter tester."""
             match = []
-            if test_pkg is None:
-                return False
             _LOGGER.debug("Testing for %s", meter)
             for i, _ in enumerate(test_pkg):
                 if test_pkg[i] == meter[0] and (
