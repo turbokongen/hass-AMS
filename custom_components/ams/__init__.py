@@ -139,10 +139,10 @@ class AmsHub:
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
-        self._oss = None
+        self.oss = None
         if entry.get(CONF_PROTOCOL) == SERIAL:
             port = entry.get(CONF_SERIAL_PORT)
-            self._oss = entry.get(CONF_OSS_BRIKKEN)
+            self.oss = entry.get(CONF_OSS_BRIKKEN)
 
             _LOGGER.debug("Connecting to HAN using serialport %s", port)
             try:
@@ -215,7 +215,7 @@ class AmsHub:
                             return bytelist
                         else:
                             # Special for OSS brikken.
-                            if self._oss:
+                            if self.oss:
                                 return bytelist
                             else:
                                 # Not valid packet. Flush what we have built so
@@ -297,21 +297,16 @@ class AmsHub:
                     data = detect_pkg
                 else:
                     data = self.read_packet()
-                oss = self._oss
 
-                if parser.test_valid_data(data, oss):
+                if parser.test_valid_data(self, data, self.oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
-                            self.sensor_data, data, swedish
-                        )
-                    elif oss:
-                        self.sensor_data, _ = parser.parse_data(
-                            self.sensor_data, data, oss=oss
+                            self, self.sensor_data, data, swedish
                         )
                     else:
                         self.sensor_data, _ = parser.parse_data(
-                            self.sensor_data, data
+                            self, self.sensor_data, data, self.oss
                         )
 
                     self._check_for_new_sensors_and_update(self.sensor_data)

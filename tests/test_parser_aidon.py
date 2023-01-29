@@ -3,20 +3,18 @@ from custom_components.ams.parsers import aidon
 from .common_test_data import TestData
 
 sys.path.append('../')
-OSS_TRUE = True
-OSS_FALSE = False
 
 
 def test_aidon_hourly():
 
     parser = aidon
     pkg = None
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Package test for None failed"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Package test for None failed"
 
     pkg = TestData.AIDON_HOURLY
-    assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
+    assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1769, "Parsed ams_active_power_import is not correct"
@@ -37,9 +35,9 @@ def test_aidon_short():
 
     parser = aidon
     pkg = TestData.AIDON_SHORT
-    assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
+    assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 6942, "Parsed ams_active_power_import is not correct"
@@ -58,8 +56,8 @@ def test_aidon_mini():
 
     parser = aidon
     pkg = TestData.AIDON_MINI
-    assert parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed"
-    meter_data, _ = parser.parse_data({}, pkg, oss=OSS_FALSE)
+    assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
+    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
     # Test for parsed values
     assert meter_data == {}
     fixture_aidon_stored = {
@@ -75,7 +73,7 @@ def test_aidon_mini():
             }
         }
     }
-    meter_data, _ = parser.parse_data(fixture_aidon_stored, pkg, oss=OSS_FALSE)
+    meter_data, _ = parser.parse_data(fixture_aidon_stored, pkg, oss=TestData.OSS_FALSE)
     assert meter_data['ams_active_power_import']['state'] == 734, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
@@ -83,52 +81,53 @@ def test_aidon_mini():
 def test_aidon_invalid_packet_size():
     parser = aidon
     pkg = TestData.AIDON_HOURLY_INVALID_PKG_SIZE
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on incorrect pkg range size"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), \
+        "Data validity test failed on incorrect pkg range size"
 
 
 def test_aidon_invalid_read_packet_size():
     parser = aidon
     pkg = TestData.AIDON_HOURLY_WRONG_SIZE
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), \
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), \
         "Data validity test failed on mismatch between read and decoded pkg size"
 
 
 def test_aidon_invalid_frame_flag():
     parser = aidon
     pkg = TestData.AIDON_HOURLY_INVALID_FRAME_FLAG
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on incorrect frame flag"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed on incorrect frame flag"
 
 
 def test_aidon_invalid_data_flag():
 
     parser = aidon
     pkg = TestData.AIDON_HOURLY_INVALID_DATA_FLAG
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on incorrect data flag"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed on incorrect data flag"
 
 
 def test_aidon_invalid_frame_crc():
 
     parser = aidon
     pkg = TestData.AIDON_HOURLY_INCORRECT_PKG_CRC
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on frame crc"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed on frame crc"
 
 
 def test_aidon_invalid_header_crc():
 
     parser = aidon
     pkg = TestData.AIDON_HOURLY_INCORRECT_HEADER_CRC
-    assert not parser.test_valid_data(pkg, oss=OSS_FALSE), "Data validity test failed on header crc"
+    assert not parser.test_valid_data(pkg, oss=TestData.OSS_TRUE), "Data validity test failed on header crc"
 
 
 def test_aidon_with_oss_brikken():
 
     parser = aidon
     pkg = TestData.AIDON_OSS_DATA
-    assert parser.test_valid_data(pkg, oss=OSS_TRUE), "Data validity test failed on data from OSS brikken"
+    assert parser.test_valid_data(pkg, oss=TestData.OSS_TRUE), "Data validity test failed on data from OSS brikken"
 
 
 def test_aidon_with_oss_brikken_hourly():
 
     parser = aidon
     pkg = TestData.AIDON_OSS_HOURLY
-    assert parser.test_valid_data(pkg, oss=OSS_TRUE), "Data validity test failed on data from OSS brikken"
+    assert parser.test_valid_data(pkg, oss=TestData.OSS_TRUE), "Data validity test failed on data from OSS brikken"

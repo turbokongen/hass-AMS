@@ -42,7 +42,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-locals, too-many-statements
-def parse_data(stored, data, swedish=False):
+def parse_data(stored, data, oss, swedish=False):
     """Parse the incoming data to dict."""
     sensor_data = {}
     han_data = {}
@@ -472,7 +472,7 @@ def parse_data(stored, data, swedish=False):
     return stored, han_data
 
 
-def test_valid_data(data):
+def test_valid_data(data, oss):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     if data is None:

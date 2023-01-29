@@ -244,7 +244,7 @@ def parse_data(stored, data, oss):
                                 byte_decode(fields=pkt[v_start:v_stop])
                             )
                             if key in HOURLY_SENSORS:
-                                if oss:
+                                if _oss:
                                     han_data[key] = measure / 10
                                 else:
                                     han_data[key] = measure / 100
@@ -424,7 +424,7 @@ def test_valid_data(data, oss):
         _LOGGER.debug("Invalid header CRC check")
         return False
 
-    if not oss:
+    if not _oss:
         frame_checksum = CrcX25.calc(bytes(data[1:-3]))
         read_frame_checksum = data[-2] << 8 | data[-3]
 
