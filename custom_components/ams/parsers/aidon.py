@@ -382,18 +382,15 @@ def test_valid_data(data, oss):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     _oss = oss
-    _offset = 0
     if data is None:
         return False
 
     if len(data) > 581 or len(data) < 44:
         _LOGGER.debug("Invalid packet size %s", len(data))
         return False
-    _list_type = data[19]
-    if _list_type == 17 and _oss is True:
-        _offset = 3
+
     packet_size = len(data)
-    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2 + _offset
+    read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
 
     if packet_size != read_packet_size:
         _LOGGER.debug(

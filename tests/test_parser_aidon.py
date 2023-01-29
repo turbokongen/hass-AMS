@@ -122,7 +122,7 @@ def test_aidon_invalid_header_crc():
 def test_aidon_with_oss_brikken():
 
     parser = aidon
-    pkg = TestData.AIDON_OSS_DATA
+    pkg = TestData.AIDON_OSS_10SEC
     assert parser.test_valid_data(pkg, oss=TestData.OSS_TRUE), "Data validity test failed on data from OSS brikken"
 
 
@@ -131,3 +131,17 @@ def test_aidon_with_oss_brikken_hourly():
     parser = aidon
     pkg = TestData.AIDON_OSS_HOURLY
     assert parser.test_valid_data(pkg, oss=TestData.OSS_TRUE), "Data validity test failed on data from OSS brikken"
+
+    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_TRUE)
+
+    # Test for some parsed values
+    assert meter_data['ams_active_power_import']['state'] == 2526, "Parsed ams_active_power_import is not correct"
+    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+
+    # Test for missing keys and some attributes
+    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
+              'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l3',
+              'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3']:
+        assert k in meter_data, "Key missing in parsed data"
+        assert meter_data[k]['attributes']['meter_manufacturer'] == "AIDON_V0001", "Missing attribute"
+        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
