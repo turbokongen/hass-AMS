@@ -298,7 +298,7 @@ class AmsHub:
                 else:
                     data = self.read_packet()
 
-                if parser.test_valid_data(self, data, self.oss):
+                if parser.test_valid_data(data, self.oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
