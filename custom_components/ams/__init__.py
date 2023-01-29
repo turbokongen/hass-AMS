@@ -302,11 +302,11 @@ class AmsHub:
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
-                            self, self.sensor_data, data, swedish
+                            self.sensor_data, data, swedish
                         )
                     else:
                         self.sensor_data, _ = parser.parse_data(
-                            self, self.sensor_data, data, self.oss
+                            self.sensor_data, data, self.oss
                         )
 
                     self._check_for_new_sensors_and_update(self.sensor_data)
