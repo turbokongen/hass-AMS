@@ -14,7 +14,7 @@ def test_aidon_se():  # Swedish AMS data pushes all sensor at each transmit. Onl
     pkg = TestData.AIDON_SE_3PH
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 760, "Parsed ams_active_power_import is not correct"

@@ -56,7 +56,7 @@ LIST_TYPE_LONG_3PH = 35
 
 # pylint: disable=too-many-branches, too-many-locals, too-many-statements
 # pylint: disable=too-many-nested-blocks
-def parse_data(stored, data, oss):
+def parse_data(stored, data):
     """Parse the incoming data to dict"""
     sensor_data = {}
     han_data = {}

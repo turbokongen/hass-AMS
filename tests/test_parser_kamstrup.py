@@ -14,7 +14,7 @@ def test_kamstrup():
     pkg = TestData.KAMSTRUP
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1202, "Parsed ams_active_power_import is not correct"
@@ -34,7 +34,7 @@ def test_kamstrup_hourly():
     parser = kamstrup
     pkg = TestData.KAMSTRUP_HOURLY
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed on hourly"
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg)
 
     # pprint.pprint(meter_data)
     # Test for some parsed values

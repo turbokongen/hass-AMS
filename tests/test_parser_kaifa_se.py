@@ -13,7 +13,7 @@ def test_kaifa_MA304H4_se():
     pkg = TestData.KAIFA_MA304H4_SE
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE)
+    meter_data, _ = parser.parse_data({}, pkg)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 297, "Parsed ams_active_power_import is not correct"

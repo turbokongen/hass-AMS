@@ -46,12 +46,11 @@ _LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-branches,too-many-locals,too-many-nested-blocks
 # pylint: disable=too-many-statements
-def parse_data(stored, data, oss):
+def parse_data(stored, data):
     """Parse the incoming data to dict"""
     sensor_data = {}
     han_data = {}
     pkt = data
-    _oss = oss
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data["packet_size"] = read_packet_size
     list_type = pkt[19]
@@ -244,10 +243,7 @@ def parse_data(stored, data, oss):
                                 byte_decode(fields=pkt[v_start:v_stop])
                             )
                             if key in HOURLY_SENSORS:
-                                if _oss:
-                                    han_data[key] = measure / 10
-                                else:
-                                    han_data[key] = measure / 100
+                                han_data[key] = measure / 100
                             else:
                                 han_data[key] = measure
                             _LOGGER.debug(

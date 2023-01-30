@@ -11,7 +11,7 @@ def test_kaifa_MA304H4D_short():
     pkg = TestData.KAIFA_MA304H4D_SHORT
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
     assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
@@ -23,7 +23,7 @@ def test_kaifa_MA304H4D_long():
     pkg = TestData.KAIFA_MA304H4D_LONG
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
@@ -45,7 +45,7 @@ def test_kaifa_MA304H4_short():
     pkg = TestData.KAIFA_MA304H4_SHORT
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
     assert meter_data['ams_active_power_import']['state'] == 1415, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
 
@@ -57,7 +57,7 @@ def test_kaifa_MA304H4_long():
     pkg = TestData.KAIFA_MA304H4_LONG
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1418, "Parsed ams_active_power_import is not correct"
@@ -79,7 +79,7 @@ def test_kaifa_MA304H3E_short():
     pkg = TestData.KAIFA_MA304H3E_SHORT
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for parsed values
     assert meter_data['ams_active_power_import']['state'] == 549, "Parsed ams_active_power_import is not correct"
@@ -93,7 +93,7 @@ def test_kaifa_MA304H3E_long():
     pkg = TestData.KAIFA_MA304H3E_LONG
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 546, "Parsed ams_active_power_import is not correct"
@@ -115,7 +115,7 @@ def test_kaifa_hourly():
     pkg = TestData.KAIFA_HOURLY
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 119, "Parsed ams_active_power_import is not correct"
@@ -140,7 +140,7 @@ def test_kaifa_1phase():
     pkg = TestData.KAIFA_1PH_SHORT
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 932, "Parsed ams_active_power_import is not correct"
@@ -162,7 +162,7 @@ def test_kaifa_1phase_hourly():
     pkg = TestData.KAIFA_1PH_HOURLY
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=False)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1655, "Parsed ams_active_power_import is not correct"
@@ -187,7 +187,7 @@ def test_kaifa_H4PSE():
     pkg = TestData.KAIFA_MA304H4D_LONG
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
-    meter_data, _ = parser.parse_data({}, pkg, oss=TestData.OSS_FALSE, swedish=True)
+    meter_data, _ = parser.parse_data({}, pkg, swedish=True)
 
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"

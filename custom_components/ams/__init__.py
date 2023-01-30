@@ -306,7 +306,7 @@ class AmsHub:
                         )
                     else:
                         self.sensor_data, _ = parser.parse_data(
-                            self.sensor_data, data, self.oss
+                            self.sensor_data, data
                         )
 
                     self._check_for_new_sensors_and_update(self.sensor_data)
