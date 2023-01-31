@@ -10,6 +10,7 @@ from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_BAUDRATE,
     CONF_MANUAL_SERIAL_PORT,
     CONF_METER_MANUFACTURER,
+    CONF_OSS_BRIKKEN,
     CONF_PARITY,
     CONF_PROTOCOL,
     CONF_TCP_HOST,
@@ -17,6 +18,7 @@ from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_SERIAL_PORT,
     DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
+    DEFAULT_OSS_BRIKKEN,
     DEFAULT_PARITY,
     DOMAIN,
     NETWORK,
@@ -101,6 +103,9 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_BAUDRATE, default=DEFAULT_BAUDRATE
                     ): vol.All(int),
+                    vol.Optional(
+                        CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
+                    ): bool,
                 }
             ),
             errors=self._errors,
@@ -145,6 +150,9 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_BAUDRATE, default=DEFAULT_BAUDRATE
                     ): vol.All(int),
+                    vol.Optional(
+                        CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
+                    ): bool,
                 }
             ),
             errors=self._errors,

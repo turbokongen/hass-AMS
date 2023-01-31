@@ -26,7 +26,8 @@
                     "serial_port": "Serieport",
                     "parity": "Paritet",
                     "meter_manufacturer": "Måler produsent",
-                    "baudrate": "Baudrate"
+                    "baudrate": "Baudrate",
+                    "oss_brikken": "OSS brikken"
                 }
             },
             "enter_serial_connection": {
@@ -35,7 +36,8 @@
                     "serial_port": "Serial Port",
                     "parity": "Parity",
                     "meter_manufacturer": "Meter manufacturer",
-                    "baudrate": "Baud rate"
+                    "baudrate": "Baudrate",
+                    "oss_brikken": "OSS brikken"
                 }
             }
         },

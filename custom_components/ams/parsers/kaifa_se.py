@@ -265,7 +265,7 @@ def parse_data(stored, data):
     return stored, han_data
 
 
-def test_valid_data(data):
+def test_valid_data(data, oss):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
     if data is None:

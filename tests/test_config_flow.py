@@ -1,4 +1,5 @@
 """Tests for config_flow."""
+import asyncio
 import pytest
 import logging
 import sys
@@ -13,7 +14,6 @@ sys.path.append('../')
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
     yield
-
 
 MOCK_SERIAL_CONFIG = {
     'protocol': 'serial',
@@ -41,6 +41,12 @@ def bypass_setup_fixture():
     ):
         yield
 
+@pytest.fixture()
+def testing_event_loop(request):
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 def com_port():
     """Mock of a serial port."""
@@ -112,7 +118,8 @@ async def test_select_serial_config_flow(hass):
         'meter_manufacturer': 'auto',
         'parity': 'N',
         'baudrate': 2400,
-        'protocol': 'serial'
+        'protocol': 'serial',
+        'oss_brikken': False,
     }
 
 
@@ -153,9 +160,9 @@ async def test_enter_serial_config_flow(hass):
         'meter_manufacturer': 'auto',
         'parity': 'N',
         'baudrate': 2400,
-        'protocol': 'serial'
+        'protocol': 'serial',
+        'oss_brikken': False,
     }
-
 
 async def test_serial_network_config_flow(hass):
     """Test a successful serial network config flow."""

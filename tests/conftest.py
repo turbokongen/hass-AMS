@@ -16,7 +16,7 @@
 # pytest includes fixtures OOB which you can use as defined on this page)
 
 import pytest
-
+from homeassistant.util import dt as dt_util, location
 pytest_plugins = "pytest_homeassistant_custom_component"
 
 

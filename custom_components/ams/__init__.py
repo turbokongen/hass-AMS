@@ -23,6 +23,7 @@ from custom_components.ams.const import (
     AIDON_SE_METER_SEQ_3PH,
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
+    CONF_OSS_BRIKKEN,
     CONF_PARITY,
     CONF_PROTOCOL,
     CONF_SERIAL_PORT,
@@ -30,6 +31,7 @@ from custom_components.ams.const import (
     CONF_TCP_PORT,
     DEFAULT_BAUDRATE,
     DEFAULT_METER_MANUFACTURER,
+    DEFAULT_OSS_BRIKKEN,
     DEFAULT_PARITY,
     DEFAULT_SERIAL_PORT,
     DEFAULT_TIMEOUT,
@@ -73,6 +75,9 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(
                     CONF_METER_MANUFACTURER, default=DEFAULT_METER_MANUFACTURER
                 ): cv.string,
+                vol.Optional(
+                    CONF_OSS_BRIKKEN, default=DEFAULT_OSS_BRIKKEN
+                ): vol.All(vol.Any(int, bool), vol.Coerce(bool))
             }
         )
     },
@@ -134,8 +139,11 @@ class AmsHub:
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
+        self.oss = None
         if entry.get(CONF_PROTOCOL) == SERIAL:
             port = entry.get(CONF_SERIAL_PORT)
+            self.oss = entry.get(CONF_OSS_BRIKKEN)
+
             _LOGGER.debug("Connecting to HAN using serialport %s", port)
             try:
                 self._ser = serial.serial_for_url(
@@ -189,6 +197,7 @@ class AmsHub:
                     frame_started = True
                     byte_counter = 0
                     bytelist = []
+                    _LOGGER.debug("Start of package")
                 if frame_started:
                     # Build packet
                     bytelist.extend(buf)
@@ -202,20 +211,25 @@ class AmsHub:
                         # If we have built a packet equal to packet size
                         if buf == FRAME_FLAG:
                             # Valid packet as last byte is FRAME_FLAG
+                            _LOGGER.debug("Package complete")
                             return bytelist
                         else:
-                            # Not valid packet. Flush what we have built so
-                            # far.
-                            _LOGGER.debug(
-                                "Not a valid packet. Start over "
-                                "again. byte_counter=%s, "
-                                "frame_started=%s, "
-                                "packet_size=%s, DUMP: %s",
-                                byte_counter,
-                                frame_started,
-                                packet_size,
-                                bytelist,
-                            )
+                            # Special for OSS brikken.
+                            if self.oss:
+                                return bytelist
+                            else:
+                                # Not valid packet. Flush what we have built so
+                                # far.
+                                _LOGGER.debug(
+                                    "Not a valid packet. Start over "
+                                    "again. byte_counter=%s, "
+                                    "frame_started=%s, "
+                                    "packet_size=%s, DUMP: %s",
+                                    byte_counter,
+                                    frame_started,
+                                    packet_size,
+                                    bytelist,
+                                )
                             bytelist = []
                             byte_counter = 0
                             frame_started = False
@@ -254,7 +268,7 @@ class AmsHub:
         # detecting the meter straight to the parser. If not, users will get
         # unknown state class None for energy sensors at startup.
         if self.meter_manufacturer == "auto":
-            while parser is None:
+            while parser is None and self._running is True:
                 _LOGGER.info("Autodetecting meter manufacturer")
                 detect_pkg = self.read_packet()
                 self.meter_manufacturer = self._find_parser(detect_pkg)
@@ -283,7 +297,8 @@ class AmsHub:
                     data = detect_pkg
                 else:
                     data = self.read_packet()
-                if parser.test_valid_data(data):
+
+                if parser.test_valid_data(data, self.oss):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
@@ -310,6 +325,8 @@ class AmsHub:
             """Meter tester."""
             match = []
             _LOGGER.debug("Testing for %s", meter)
+            if test_pkg is None:
+                return None
             for i, _ in enumerate(test_pkg):
                 if test_pkg[i] == meter[0] and (
                     test_pkg[i:(i + len(meter))] == meter

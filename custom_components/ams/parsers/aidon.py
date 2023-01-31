@@ -168,8 +168,13 @@ def parse_data(stored, data):
                                           meter_date_time_seconds,
                                           meter_date_time_str)
                         # Visible string construct
-                        elif pkt[i + len(item)] == 10:
-                            v_start = i + len(item) + 2
+                        elif pkt[i + len(item)] == 10 or\
+                                pkt[i + len(item)] == 13:
+                            if pkt[i + len(item)] == 13:
+                                _offset = 1
+                            else:
+                                _offset = 0
+                            v_start = i + len(item) + 2 + _offset
                             v_length = pkt[v_start - 1]
                             v_stop = v_start + v_length
                             han_data["obis_" + key] = (
@@ -191,15 +196,20 @@ def parse_data(stored, data):
                                 key, item, (i, i + len(item)),
                                 (pkt[(i + len(item))]))
                             _LOGGER.debug(
-                                "Value double OBIS type 10: %s, Index:%s",
+                                "Value double OBIS type 10/13: %s, Index:%s",
                                 han_data[key], (v_start, v_stop))
         for i in range(len(pkt)):
             if (pkt[i:i + len(SENSOR_COMMON_OBIS_MAP[key])] ==
                     SENSOR_COMMON_OBIS_MAP[key]):
                 # Visible string construct
-                if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 10:
-                    print(SENSOR_COMMON_OBIS_MAP[key], key)
-                    v_start = i + len(SENSOR_COMMON_OBIS_MAP[key]) + 2
+                if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 10 or \
+                        pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 13:
+                    if pkt[i + len(SENSOR_COMMON_OBIS_MAP[key])] == 13:
+                        _offset = 1
+                    else:
+                        _offset = 0
+                    v_start = i + len(
+                        SENSOR_COMMON_OBIS_MAP[key]) + 2 + _offset
                     v_length = pkt[v_start - 1]
                     v_stop = v_start + v_length
                     han_data["obis_" + key] = (
@@ -215,7 +225,7 @@ def parse_data(stored, data):
                         (i, i + len(SENSOR_COMMON_OBIS_MAP[key])),
                         (pkt[(i + len(SENSOR_COMMON_OBIS_MAP[key]))]))
                     _LOGGER.debug(
-                        "Value Single OBIS type 10: %s, Index:%s",
+                        "Value Single OBIS type 10/13: %s, Index:%s",
                         han_data[key], (v_start, v_stop))
     for key in SENSOR_OBIS_MAP:
         if len(SENSOR_OBIS_MAP[key]) == 2:
@@ -364,9 +374,10 @@ def parse_data(stored, data):
     return stored, han_data
 
 
-def test_valid_data(data):
+def test_valid_data(data, oss):
     """Test the incoming data for validity."""
     # pylint: disable=too-many-return-statements
+    _oss = oss
     if data is None:
         return False
 
@@ -406,11 +417,12 @@ def test_valid_data(data):
         _LOGGER.debug("Invalid header CRC check")
         return False
 
-    frame_checksum = CrcX25.calc(bytes(data[1:-3]))
-    read_frame_checksum = data[-2] << 8 | data[-3]
+    if not _oss:
+        frame_checksum = CrcX25.calc(bytes(data[1:-3]))
+        read_frame_checksum = data[-2] << 8 | data[-3]
 
-    if frame_checksum != read_frame_checksum:
-        _LOGGER.debug("Invalid frame CRC check")
-        return False
+        if frame_checksum != read_frame_checksum:
+            _LOGGER.debug("Invalid frame CRC check")
+            return False
 
     return True
