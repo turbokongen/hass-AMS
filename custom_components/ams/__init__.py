@@ -110,9 +110,7 @@ async def async_setup(hass: HomeAssistant, config: Config):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    )
+    await hass.config_entries.async_forward_entry_setup(entry, "sensor")
     return True
 
 
@@ -411,7 +409,10 @@ class AmsHub:
                 _LOGGER.debug("Got %s new devices from the serial",
                               len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
-                async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
+                self._hass.async_create_task(self._signal_new_sensor())
         else:
             # _LOGGER.debug("sensors are the same, updating states")
             async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)
+
+    async def _signal_new_sensor(self) -> None:
+        async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
