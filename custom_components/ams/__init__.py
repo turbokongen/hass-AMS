@@ -1,4 +1,5 @@
 """AMS hub platform."""
+import asyncio
 import logging
 import threading
 from copy import deepcopy
@@ -409,10 +410,15 @@ class AmsHub:
                 _LOGGER.debug("Got %s new devices from the serial",
                               len(new_devices))
                 _LOGGER.debug("DUMP %s", sensor_data)
-                self._hass.async_create_task(self._signal_new_sensor())
+                asyncio.run_coroutine_threadsafe(self._signal_new_sensor(),
+                                                 self._hass.loop).result()
         else:
             # _LOGGER.debug("sensors are the same, updating states")
-            async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)
+            asyncio.run_coroutine_threadsafe(self._signal_update_sensors(),
+                                                 self._hass.loop).result()
 
     async def _signal_new_sensor(self) -> None:
         async_dispatcher_send(self._hass, SIGNAL_NEW_AMS_SENSOR)
+
+    async def _signal_update_sensors(self) -> None:
+        async_dispatcher_send(self._hass, SIGNAL_UPDATE_AMS)
