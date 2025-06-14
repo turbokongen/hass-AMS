@@ -9,6 +9,7 @@ import serial
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry, SOURCE_IMPORT
+from homeassistant.const import Platform
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from custom_components.ams.parsers import aidon as Aidon
@@ -49,6 +50,8 @@ from custom_components.ams.const import (
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS,
 )
+
+PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -111,13 +114,13 @@ async def async_setup(hass: HomeAssistant, config: Config):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
     _setup(hass, entry.data)
-    await hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    await hass.config_entries.async_forward_entry_unload(entry, "sensor")
+    await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     return True
 
 
