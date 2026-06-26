@@ -1,7 +1,10 @@
 import sys
 from custom_components.ams.parsers import aidon
 from .common_test_data import TestData
-
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorStateClass
+)
 sys.path.append('../')
 
 
@@ -42,6 +45,8 @@ def test_aidon_short():
     # Test for some parsed values
     assert meter_data['ams_active_power_import']['state'] == 6942, "Parsed ams_active_power_import is not correct"
     assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    assert meter_data['ams_active_power_import']['attributes']['state_class'] == SensorStateClass.MEASUREMENT, "Missing state class attribute"
+    assert meter_data['ams_active_power_import']['attributes']['device_class'] == SensorDeviceClass.POWER, "Missing device class attribute"
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
