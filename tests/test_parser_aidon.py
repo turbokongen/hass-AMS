@@ -136,8 +136,8 @@ def test_aidon_hourly():
         a = meter_data[k]['attributes']
         assert a['meter_type'] == "6534 3-phase Meter with CB and Neutral Current Measurement", "Missing attribute"
         assert a['meter_serial'] == "7359992895913195", "Missing attribute"
-        assert a['meter_serial'] == "7359992895913195", "Missing attribute"
         assert a['meter_date_time'] == "2020-7-21-21-00-00-00", "Missing attribute"
+
 
 def test_aidon_short():
 
@@ -255,6 +255,7 @@ def test_aidon_mini():
     assert a['unit_of_measurement'] == 'W'
     assert a['icon'] == 'mdi:gauge'
 #    assert a['device_class'] == SensorDeviceClass.POWER
+
 
 def test_aidon_invalid_packet_size():
     parser = aidon
