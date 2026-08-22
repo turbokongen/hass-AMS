@@ -12,12 +12,142 @@ def test_kaifa_MA304H4D_short():
 
     parser = kaifa
 
-    pkg = TestData.KAIFA_MA304H4D_SHORT
+    pkg = TestData.KAIFA_MA304H4D_SHORT #THIS IS EQUAL TO LONG???
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
-    assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+
+    # Test for some parsed values
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1590
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 464
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 0.724
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 4.313
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 2.491
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 228.3
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 230.6
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 229.9
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_active_energy_import']
+    a = d['attributes']
+    assert d['state'] == 145122.745
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_active_energy_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_reactive_energy_import']
+    a = d['attributes']
+    assert d['state'] == 47786.857
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    d = meter_data['ams_reactive_energy_export']
+    a = d['attributes']
+    assert d['state'] == 2231.914
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    # Test for missing keys and some attributes
+    for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
+              'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3',
+              'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3',
+              'ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        assert k in meter_data, "Key missing in parsed data"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-9-18 14:56:15'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Poly Phase 3 Phase 230V/400V 4-Wire meter'
+        assert a['meter_serial'] == '7340157011274532'
+
+    # Test for missing keys and some other attributes
+    for k in ['ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        a = meter_data[k]['attributes']
+        assert a['meter_date_time'] == "2022-9-18 14:56:15", "Missing attribute"
 
 
 def test_kaifa_MA304H4D_long():
@@ -30,17 +160,136 @@ def test_kaifa_MA304H4D_long():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1590
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 464
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 0.724
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 4.313
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 2.491
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 228.3
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 230.6
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 229.9
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_active_energy_import']
+    a = d['attributes']
+    assert d['state'] == 145122.745
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_active_energy_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_reactive_energy_import']
+    a = d['attributes']
+    assert d['state'] == 47786.857
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    d = meter_data['ams_reactive_energy_export']
+    a = d['attributes']
+    assert d['state'] == 2231.914
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3',
-              'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3']:
+              'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3',
+              'ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-9-18 14:56:15'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Poly Phase 3 Phase 230V/400V 4-Wire meter'
+        assert a['meter_serial'] == '7340157011274532'
 
+    # Test for missing keys and some other attributes
+    for k in ['ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        a = meter_data[k]['attributes']
+        assert a['meter_date_time'] == "2022-9-18 14:56:15", "Missing attribute"
 
 def test_kaifa_MA304H4_short():
 
@@ -50,10 +299,17 @@ def test_kaifa_MA304H4_short():
     assert parser.test_valid_data(pkg, oss=TestData.OSS_FALSE), "Data validity test failed"
 
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
-    assert meter_data['ams_active_power_import']['state'] == 1415, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
-    assert meter_data['ams_active_power_import']['attributes']['state_class'] == SensorStateClass.MEASUREMENT, "Missing state class attribute"
-    assert meter_data['ams_active_power_import']['attributes']['device_class'] == SensorDeviceClass.POWER, "Missing device class attribute"
+
+    # Test for parsed values    
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1415
+    assert a['timestamp'] == '2022-10-29 19:58:56'    
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
 
 def test_kaifa_MA304H4_long():
 
@@ -65,16 +321,96 @@ def test_kaifa_MA304H4_long():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 1418, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1418
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 375
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 1.683
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 1.751
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 3.104
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 240.8
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 240.4
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 235.9
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3',
               'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-10-29 19:59:00'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Domestic/Industrial 3 Phase 400V 4-Wire meter'
+        assert a['meter_serial'] == '6970631402055385'
 
 
 def test_kaifa_MA304H3E_short():
@@ -87,8 +423,14 @@ def test_kaifa_MA304H3E_short():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for parsed values
-    assert meter_data['ams_active_power_import']['state'] == 549, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 549
+    assert a['timestamp'] == '2022-11-7 09:44:38'   
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
 
 
 def test_kaifa_MA304H3E_long():
@@ -101,16 +443,96 @@ def test_kaifa_MA304H3E_long():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 546, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 546
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 81
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 0.781
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 1.829
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 2.062
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 232.0
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 234.8
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3',
               'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-11-7 09:44:40'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Domestic/Industrial 3 Phase 230V 3-Wire meter'
+        assert a['meter_serial'] == '6970631404129954'
 
 
 def test_kaifa_hourly():
@@ -123,10 +545,117 @@ def test_kaifa_hourly():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 119, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
-    assert meter_data['ams_active_energy_import']['state'] ==\
-           10494.991, "Parsed ams_active_energy_import is not correct"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 119
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 289
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 0.678
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 0.808
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 1.019
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 228.7
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 229.8
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_active_energy_import']
+    a = d['attributes']
+    assert d['state'] == 10494.991
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_active_energy_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_reactive_energy_import']
+    a = d['attributes']
+    assert d['state'] == 79.233
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    d = meter_data['ams_reactive_energy_export']
+    a = d['attributes']
+    assert d['state'] == 2059.951
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
@@ -134,8 +663,17 @@ def test_kaifa_hourly():
               'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3',  'ams_active_energy_import',
               'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2020-2-3 16:00:10'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Domestic/Industrial 3 Phase 230V 3-Wire meter'
+        assert a['meter_serial'] == '6970631405808469'
+
+    # Test for missing keys and some other attributes
+    for k in ['ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        a = meter_data[k]['attributes']
+        assert a['meter_date_time'] == "2020-2-3 16:00:10", "Missing attribute"
 
 
 def test_kaifa_1phase():
@@ -148,15 +686,63 @@ def test_kaifa_1phase():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 932, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 932
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 79
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 4.224
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 233.6
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_voltage_l1']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2020-3-31 22:16:40'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Domestic 1 Phase 230V/400V meter'
+        assert a['meter_serial'] == '6970631403460324'
 
 
 def test_kaifa_1phase_hourly():
@@ -170,18 +756,102 @@ def test_kaifa_1phase_hourly():
     meter_data, _ = parser.parse_data({}, pkg, swedish=False)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 1655, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
-    assert meter_data['ams_active_energy_import']['state'] ==\
-           25591.693, "Parsed ams_active_energy_import is not correct"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1655
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 12
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 6.952
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 242.4
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_active_energy_import']
+    a = d['attributes']
+    assert d['state'] == 25591.693
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_active_energy_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_reactive_energy_import']
+    a = d['attributes']
+    assert d['state'] == 4152.622
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    d = meter_data['ams_reactive_energy_export']
+    a = d['attributes']
+    assert d['state'] == 417.719
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
               'ams_reactive_power_export', 'ams_current_l1', 'ams_voltage_l1', 'ams_active_energy_import',
               'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-5-5 21:00:10'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Domestic 1 Phase 230V/400V meter'
+        assert a['meter_serial'] == '6970631408225928'
+
+    # Test for missing keys and some other attributes
+    for k in ['ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        a = meter_data[k]['attributes']
+        assert a['meter_date_time'] == "2022-5-5 21:00:10", "Missing attribute"
 
 
 def test_kaifa_H4PSE():
@@ -195,18 +865,135 @@ def test_kaifa_H4PSE():
     meter_data, _ = parser.parse_data({}, pkg, swedish=True)
 
     # Test for some parsed values
-    assert meter_data['ams_active_power_import']['state'] == 1590, "Parsed ams_active_power_import is not correct"
-    assert meter_data['ams_active_power_import']['attributes']['unit_of_measurement'] == "W", "Missing attribute"
-    assert meter_data['ams_active_energy_import']['state'] ==\
-           145122.745, "Parsed ams_active_energy_import is not correct"
+    d = meter_data['ams_active_power_import']
+    a = d['attributes']
+    assert d['state'] == 1590
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_active_power_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'W'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    assert a['device_class'] == SensorDeviceClass.POWER
+
+    d = meter_data['ams_reactive_power_import']
+    a = d['attributes']
+    assert d['state'] == 0
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_reactive_power_export']
+    a = d['attributes']
+    assert d['state'] == 464
+    assert a['unit_of_measurement'] == 'VAr'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_POWER
+
+    d = meter_data['ams_current_l1']
+    a = d['attributes']
+    assert d['state'] == 0.724
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l2']
+    a = d['attributes']
+    assert d['state'] == 4.313
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_current_l3']
+    a = d['attributes']
+    assert d['state'] == 2.491
+    assert a['unit_of_measurement'] == 'A'
+    assert a['icon'] == 'mdi:current-ac'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.CURRENT
+
+    d = meter_data['ams_voltage_l1']
+    a = d['attributes']
+    assert d['state'] == 228.3
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l2']
+    a = d['attributes']
+    assert d['state'] == 230.6
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_voltage_l3']
+    a = d['attributes']
+    assert d['state'] == 229.9
+    assert a['unit_of_measurement'] == 'V'
+    assert a['icon'] == 'mdi:flash'
+    # assert a['state_class'] == SensorStateClass.MEASUREMENT
+    # assert a['device_class'] == SensorDeviceClass.VOLTAGE
+
+    d = meter_data['ams_active_energy_import']
+    a = d['attributes']
+    assert d['state'] == 145122.745
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_active_energy_export']
+    a = d['attributes']
+    assert d['state'] == 0.0
+    assert a['unit_of_measurement'] == 'kWh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    assert a['device_class'] == SensorDeviceClass.ENERGY
+
+    d = meter_data['ams_reactive_energy_import']
+    a = d['attributes']
+    assert d['state'] == 47786.857
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
+
+    d = meter_data['ams_reactive_energy_export']
+    a = d['attributes']
+    assert d['state'] == 2231.914
+    assert a['unit_of_measurement'] == 'kVArh'
+    assert a['icon'] == 'mdi:gauge'
+    assert a['state_class'] == SensorStateClass.TOTAL_INCREASING
+    # assert a['device_class'] == SensorDeviceClass.REACTIVE_ENERGY
 
     # Test for missing keys and some attributes
     for k in ['ams_active_power_import', 'ams_active_power_export', 'ams_reactive_power_import',
-              'ams_reactive_power_export', 'ams_current_l1', 'ams_voltage_l1', 'ams_active_energy_import',
-              'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
+              'ams_reactive_power_export', 'ams_current_l1', 'ams_current_l2', 'ams_current_l3',
+              'ams_voltage_l1', 'ams_voltage_l2', 'ams_voltage_l3',
+              'ams_active_energy_import', 'ams_reactive_energy_import', 'ams_active_energy_export', 'ams_reactive_energy_export']:
         assert k in meter_data, "Key missing in parsed data"
-        assert meter_data[k]['attributes']['meter_manufacturer'] == "Kfm_001", "Missing attribute"
-        assert 'unit_of_measurement' in meter_data[k]['attributes'], "Missing attribute"
+        a = meter_data[k]['attributes']
+        assert a['timestamp'] == '2022-9-18 14:56:15'
+        assert a['meter_manufacturer'] == 'Kfm_001'
+        assert a['meter_type'] == 'Poly Phase 3 Phase 230V/400V 4-Wire meter'
+        assert a['meter_serial'] == '7340157011274532'
+
+    # Test for missing keys and some other attributes
+    for k in ['ams_active_energy_import', 'ams_active_energy_export',
+              'ams_reactive_energy_import', 'ams_reactive_energy_export']:
+        a = meter_data[k]['attributes']
+        assert a['meter_date_time'] == "2022-9-18 14:56:15", "Missing attribute"
 
 
 def test_kaifa_invalid_packet_size():
