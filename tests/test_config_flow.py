@@ -93,7 +93,7 @@ async def test_select_serial_config_flow(hass):
     # Check that the config flow step is complete and the next schema is loaded with
     # the correct input data
     _LOGGER.debug(result)
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "select_serial_connection"
 
     fixture_serial_input = {
@@ -142,7 +142,7 @@ async def test_enter_serial_config_flow(hass):
     # Check that the config flow step is complete and the next schema is loaded with
     # the correct input data
     _LOGGER.debug(result)
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "enter_serial_connection"
 
     fixture_serial_input = {
@@ -183,7 +183,7 @@ async def test_serial_network_config_flow(hass):
     # Check that the config flow step is complete and the next schema is loaded with
     # the correct input data
     _LOGGER.debug(result)
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "network_connection"
 
     fixture_network_config = {
