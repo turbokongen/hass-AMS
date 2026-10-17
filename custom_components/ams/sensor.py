@@ -2,6 +2,13 @@
 import logging
 from datetime import timedelta
 
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorDeviceClass,
+    SensorStateClass,
+)
+
+
 from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -16,6 +23,7 @@ from custom_components.ams.const import (
     AMS_SENSOR_CREATED_BUT_NOT_READ,
     DOMAIN,
     HOURLY_SENSORS,
+    REACTIVE_ENERGY_SENSORS,
     SIGNAL_NEW_AMS_SENSOR,
     SIGNAL_UPDATE_AMS
 )
@@ -93,7 +101,7 @@ async def async_remove_entry(hass, entry):
         pass
 
 
-class AmsSensor(RestoreEntity):
+class AmsSensor(SensorEntity, RestoreEntity):
     """Representation of a AMS sensor."""
 
     def __init__(self, hass, sensor_states):
@@ -133,6 +141,28 @@ class AmsSensor(RestoreEntity):
     def should_poll(self) -> bool:
         """No polling needed."""
         return False
+
+    @property
+    def device_class(self):
+        if self._name in REACTIVE_ENERGY_SENSORS:
+            return SensorDeviceClass.REACTIVE_ENERGY
+        return self._attributes.get("device_class") if self._attributes else None
+
+    @property
+    def state_class(self):
+        if self._name in REACTIVE_ENERGY_SENSORS:
+            return SensorStateClass.TOTAL_INCREASING
+        return self._attributes.get("state_class") if self._attributes else None
+
+    @property
+    def native_unit_of_measurement(self):
+        if self._name in REACTIVE_ENERGY_SENSORS:
+            return "kvarh"
+        return self._attributes.get("unit_of_measurement") if self._attributes else None
+
+    @property
+    def native_value(self):
+        return self._state
 
     @property
     def extra_state_attributes(self):
