@@ -146,19 +146,28 @@ class AmsSensor(SensorEntity, RestoreEntity):
     def device_class(self):
         if self._name in REACTIVE_ENERGY_SENSORS:
             return SensorDeviceClass.REACTIVE_ENERGY
-        return self._attributes.get("device_class") if self._attributes else None
+        return (
+            self._attributes.get("device_class")
+            if self._attributes else None
+        )
 
     @property
     def state_class(self):
         if self._name in REACTIVE_ENERGY_SENSORS:
             return SensorStateClass.TOTAL_INCREASING
-        return self._attributes.get("state_class") if self._attributes else None
+        return (
+            self._attributes.get("state_class")
+            if self._attributes else None
+        )
 
     @property
     def native_unit_of_measurement(self):
         if self._name in REACTIVE_ENERGY_SENSORS:
             return "kvarh"
-        return self._attributes.get("unit_of_measurement") if self._attributes else None
+        return (
+            self._attributes.get("unit_of_measurement")
+            if self._attributes else None
+        )
 
     @property
     def native_value(self):
