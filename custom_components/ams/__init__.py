@@ -39,7 +39,6 @@ from custom_components.ams.const import (
     DEFAULT_SERIAL_PORT,
     DEFAULT_TIMEOUT,
     DOMAIN,
-    FRAME_FLAG,
     HAN_METER_MANUFACTURER,
     HAN_METER_SERIAL,
     HAN_METER_TYPE,
@@ -142,10 +141,9 @@ class AmsHub:
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
-        self.oss = None
+        self.oss = entry.get(CONF_OSS_BRIKKEN, False)
         if entry.get(CONF_PROTOCOL) == SERIAL:
             port = entry.get(CONF_SERIAL_PORT)
-            self.oss = entry.get(CONF_OSS_BRIKKEN)
 
             _LOGGER.debug("Connecting to HAN using serialport %s", port)
             try:
@@ -185,73 +183,69 @@ class AmsHub:
         self.connection.join()
         self._ser.close()
 
+    @staticmethod
+    def _normalize_oss_frame(frame, expected_size):
+        """Recover OSS-inserted CR bytes only if Aidon CRC stays valid."""
+        if len(frame) <= expected_size or frame[-1] != 0x7E:
+            return None
+        # Only apply this workaround to the documented Aidon DLMS strings.
+        if frame.count(b"\x0d\x0a") != len(frame) - expected_size:
+            return None
+        normalized = frame.replace(b"\x0d\x0a", b"\x0a")
+        if len(normalized) != expected_size:
+            return None
+        if not Aidon.test_valid_data(list(normalized), False):
+            return None
+        return list(normalized)
+
     def read_packet(self):
-        """Read raw data for one packet from serial port."""
-        byte_counter = 0
-        bytelist = []
-        frame_started = False
-        packet_size = -1
+        """Read one HDLC frame, including OSS-inserted CR bytes."""
+        frame = bytearray()
+        expected_size = None
+        # The documented OSS corruption adds 3 bytes. Limit recovery to 8.
+        max_extra = 8
         while self._running:
             buf = self._ser.read()
-
-            if buf:
-                if buf == FRAME_FLAG and not frame_started:
-                    # Purge data until FRAME_FLAG is received
-                    frame_started = True
-                    byte_counter = 0
-                    bytelist = []
-                    _LOGGER.debug("Start of package")
-                if frame_started:
-                    # Build packet
-                    bytelist.extend(buf)
-                    byte_counter = byte_counter + 1
-                    if byte_counter == 3:
-                        # Calculate size after FRAME_FLAG + 2 bytes are
-                        # received
-                        packet_size = ((bytelist[1] & 0x0F)
-                                       << 8 | bytelist[2]) + 2
-                    if byte_counter == packet_size:
-                        # If we have built a packet equal to packet size
-                        if buf == FRAME_FLAG:
-                            # Valid packet as last byte is FRAME_FLAG
-                            _LOGGER.debug("Package complete")
-                            return bytelist
-                        else:
-                            # Special for OSS brikken.
-                            if self.oss:
-                                return bytelist
-                            else:
-                                # Not valid packet. Flush what we have built so
-                                # far.
-                                _LOGGER.debug(
-                                    "Not a valid packet. Start over "
-                                    "again. byte_counter=%s, "
-                                    "frame_started=%s, "
-                                    "packet_size=%s, DUMP: %s",
-                                    byte_counter,
-                                    frame_started,
-                                    packet_size,
-                                    bytelist,
-                                )
-                            bytelist = []
-                            byte_counter = 0
-                            frame_started = False
-                            packet_size = -1
-            else:
-                if frame_started:
-                    _LOGGER.debug(
-                        "Timeout waiting for end of packet. Flush "
-                        " current packet. byte_counter=%s, "
-                        "frame_started=%s, package_size=%s, "
-                        "DUMP: %s",
-                        byte_counter,
-                        frame_started,
-                        packet_size,
-                        bytelist,
-                    )
-                    frame_started = False
-                    byte_counter = 0
-                    bytelist = []
+            if not buf:
+                if frame:
+                    _LOGGER.debug("Timeout waiting for HDLC frame")
+                frame.clear()
+                expected_size = None
+                continue
+            for value in buf:
+                if not frame:
+                    if value == 0x7E:
+                        frame.append(value)
+                    continue
+                frame.append(value)
+                if len(frame) == 3:
+                    expected_size = (((frame[1] & 0x0F) << 8)
+                                     | frame[2]) + 2
+                    if expected_size < 4 or expected_size > 583:
+                        frame.clear()
+                        expected_size = None
+                        continue
+                if expected_size is None:
+                    continue
+                if len(frame) == expected_size and value == 0x7E:
+                    return list(frame)
+                if len(frame) > expected_size and value == 0x7E:
+                    if getattr(self, "meter_manufacturer", "aidon") in (
+                        "aidon", "auto"
+                    ):
+                        recovered = self._normalize_oss_frame(
+                            bytes(frame), expected_size
+                        )
+                        if recovered is not None:
+                            return recovered
+                    _LOGGER.debug("Rejecting invalid extended HDLC frame")
+                    frame.clear()
+                    expected_size = None
+                    continue
+                if len(frame) >= expected_size + max_extra:
+                    _LOGGER.debug("HDLC frame exceeded recovery limit")
+                    frame.clear()
+                    expected_size = None
 
     @property
     def meter_serial(self):
@@ -301,7 +295,9 @@ class AmsHub:
                 else:
                     data = self.read_packet()
 
-                if parser.test_valid_data(data, self.oss):
+                if parser.test_valid_data(
+                    data, False if parser is Aidon else self.oss
+                ):
                     _LOGGER.debug("data read from port=%s", data)
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
