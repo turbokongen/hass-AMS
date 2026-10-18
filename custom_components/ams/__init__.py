@@ -336,6 +336,11 @@ class AmsHub:
                     _LOGGER.debug("failed package: %s", data)
                 if detect_pkg:
                     detect_pkg = None
+            except IndexError:
+                # A malformed DLMS field must not terminate the reader thread.
+                # Keep the traceback for diagnosis, then read the next frame.
+                _LOGGER.exception("Malformed meter packet; continuing")
+                detect_pkg = None
             except serial.serialutil.SerialException:
                 pass
 

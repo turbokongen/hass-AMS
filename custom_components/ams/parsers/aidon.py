@@ -70,6 +70,8 @@ def parse_data(stored, data):
                     if pkt[i + len(item)] == 6:
                         v_start = i + len(item) + 1
                         v_stop = v_start + 4
+                        if v_stop > len(pkt) - 3:
+                            continue
                         han_data["obis_" + key] = (
                             '.'.join([str(elem) for elem in item])
                         )
@@ -243,6 +245,8 @@ def parse_data(stored, data):
                         if pkt[i + len(item)] == 6:
                             v_start = i + len(item) + 1
                             v_stop = v_start + 4
+                            if v_stop > len(pkt) - 3:
+                                continue
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
@@ -306,6 +310,8 @@ def parse_data(stored, data):
                                 signed = True
                             v_start = i + len(item) + 1
                             v_stop = v_start + 2
+                            if v_stop > len(pkt) - 3:
+                                continue
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
@@ -352,6 +358,8 @@ def parse_data(stored, data):
                 if pkt[i + len(SENSOR_OBIS_MAP[key])] == 6:
                     v_start = i + len(SENSOR_OBIS_MAP[key]) + 1
                     v_stop = v_start + 4
+                    if v_stop > len(pkt) - 3:
+                        continue
                     han_data["obis_" + key] = (
                         '.'.join([str(elem) for elem in
                                   SENSOR_OBIS_MAP[key]])
