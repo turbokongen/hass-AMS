@@ -1,48 +1,57 @@
 {
-    "config": {
-        "abort": {
-           "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
-        },
-        "step": {
-            "user": {
-                "description": "Velg kommunikasjonsprotokoll for inndata",
-                "data":{
-                    "type": "Protokolltype"
-                }
-            },
-            "network_connection": {
-                "description": "Velg data for TCP/IP tilkobling",
-                "data": {
-                    "tcp_host": "IP adresse",
-                    "tcp_port": "Port",
-                    "parity": "Paritet",
-                    "baudrate": "Baudrate",
-                    "meter_manufacturer": "Måler produsent"
-                }
-            },
-            "select_serial_connection": {
-                "description": "Velg portdata for serietilkobling",
-                "data": {
-                    "serial_port": "Serieport",
-                    "parity": "Paritet",
-                    "meter_manufacturer": "Måler produsent",
-                    "baudrate": "Baudrate",
-                    "oss_brikken": "OSS brikken"
-                }
-            },
-            "enter_serial_connection": {
-                "description": "Setup options for serial communication",
-                "data": {
-                    "serial_port": "Serial Port",
-                    "parity": "Parity",
-                    "meter_manufacturer": "Meter manufacturer",
-                    "baudrate": "Baudrate",
-                    "oss_brikken": "OSS brikken"
-                }
-            }
-        },
-        "error": {
-            "name_exists": "Navn eksisterer"
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Kun en oppføring av hass-AMS er tillatt"
+    },
+    "step": {
+      "user": {
+        "description": "Velg kommunikasjonsprotokoll for inndata",
+        "data": {
+          "type": "Protokolltype"
         }
+      },
+      "network_connection": {
+        "description": "Velg data for TCP/IP tilkobling",
+        "data": {
+          "tcp_host": "IP adresse",
+          "tcp_port": "Port",
+          "parity": "Paritet",
+          "baudrate": "Baudrate",
+          "meter_manufacturer": "Måler produsent"
+        }
+      },
+      "select_serial_connection": {
+        "description": "Velg portdata for serietilkobling",
+        "data": {
+          "serial_port": "Serieport",
+          "parity": "Paritet",
+          "meter_manufacturer": "Måler produsent",
+          "baudrate": "Baudrate",
+          "oss_brikken": "OSS brikken"
+        }
+      },
+      "enter_serial_connection": {
+        "description": "Setup options for serial communication",
+        "data": {
+          "serial_port": "Serial Port",
+          "parity": "Parity",
+          "meter_manufacturer": "Meter manufacturer",
+          "baudrate": "Baudrate",
+          "oss_brikken": "OSS brikken"
+        }
+      }
+    },
+    "error": {
+      "name_exists": "Navn eksisterer"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "kamstrup_6841138_scale": "Kamstrup 6841138: divide energy counters by 1000 (issue #108)"
+        }
+      }
+    }
+  }
 }

@@ -58,6 +58,7 @@ CONF_BAUDRATE = "baudrate"
 CONF_METER_MANUFACTURER = HAN_METER_MANUFACTURER
 CONF_MANUAL_SERIAL_PORT = "manual_serial_port"
 CONF_OSS_BRIKKEN = "oss_brikken"
+CONF_KAMSTRUP_6841138_SCALE = "kamstrup_6841138_scale"
 CONF_PARITY = "parity"
 CONF_SERIAL_PORT = "serial_port"
 CONF_TCP_PORT = "tcp_port"

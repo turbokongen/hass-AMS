@@ -57,10 +57,11 @@ LIST_TYPE_LONG_3PH = 35
 
 # pylint: disable=too-many-branches, too-many-locals, too-many-statements
 # pylint: disable=too-many-nested-blocks
-def parse_data(stored, data):
+def parse_data(stored, data, kamstrup_6841138_scale=False):
     """Parse the incoming data to dict"""
     sensor_data = {}
     han_data = {}
+    meter_model_id = None
     pkt = data
     read_packet_size = ((data[1] & 0x0F) << 8 | data[2]) + 2
     han_data[HAN_PACKET_SIZE] = read_packet_size
@@ -139,11 +140,13 @@ def parse_data(stored, data):
                                 '.'.join([str(elem) for elem in item])
                             )
                             if key == HAN_METER_TYPE:
-                                han_data[key] = (
-                                    METER_TYPE.get(field_type(fields=pkt[
-                                        v_start:v_start + 7], enc=chr,
-                                                              dec=int),
-                                                   UNKNOWN_METER)
+                                meter_model_id = field_type(
+                                    fields=pkt[v_start:v_start + 7],
+                                    enc=chr,
+                                    dec=int,
+                                )
+                                han_data[key] = METER_TYPE.get(
+                                    meter_model_id, UNKNOWN_METER
                                 )
 
                             else:
@@ -194,21 +197,30 @@ def parse_data(stored, data):
                             han_data["obis_" + key] = (
                                 '.'.join([str(elem) for elem in item])
                             )
-                            if (key in (HAN_CURRENT_L1,
-                                        HAN_CURRENT_L2,
-                                        HAN_CURRENT_L3,
-                                        HAN_ACTIVE_ENERGY_IMPORT,
-                                        HAN_ACTIVE_ENERGY_EXPORT,
-                                        HAN_REACTIVE_ENERGY_IMPORT,
-                                        HAN_REACTIVE_ENERGY_EXPORT)):
-                                han_data[key] = (
-                                    byte_decode(
-                                        fields=pkt[v_start:v_stop]) / 100
-                                    )
-                            else:
-                                han_data[key] = (
-                                    byte_decode(fields=pkt[v_start:v_stop])
+                            if key in (
+                                HAN_CURRENT_L1,
+                                HAN_CURRENT_L2,
+                                HAN_CURRENT_L3,
+                            ):
+                                divisor = 100
+                            elif key in (
+                                HAN_ACTIVE_ENERGY_IMPORT,
+                                HAN_ACTIVE_ENERGY_EXPORT,
+                                HAN_REACTIVE_ENERGY_IMPORT,
+                                HAN_REACTIVE_ENERGY_EXPORT,
+                            ):
+                                divisor = (
+                                    1000 if (kamstrup_6841138_scale
+                                             and meter_model_id == 6841138)
+                                    else 100
                                 )
+                            else:
+                                divisor = 1
+
+                            han_data[key] = (
+                                byte_decode(fields=pkt[v_start:v_stop])
+                                / divisor
+                            )
                             sensor_data[key] = {
                                 SENSOR_STATE: han_data[key],
                                 SENSOR_ATTR: {

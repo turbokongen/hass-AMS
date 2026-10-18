@@ -41,13 +41,13 @@ ISSUE_108_FRAME = [
 
 ENERGY_CASES = [
     ("ams_active_energy_import", (1, 1, 1, 8, 0, 255),
-     25_036_933, 250_369.33),
+     25_036_933, 25_036.933),
     ("ams_active_energy_export", (1, 1, 2, 8, 0, 255),
-     249, 2.49),
+     249, 0.249),
     ("ams_reactive_energy_import", (1, 1, 3, 8, 0, 255),
-     2_336_450, 23_364.50),
+     2_336_450, 2_336.450),
     ("ams_reactive_energy_export", (1, 1, 4, 8, 0, 255),
-     9_914_450, 99_144.50),
+     9_914_450, 9_914.450),
 ]
 
 
@@ -73,7 +73,9 @@ def test_issue_108_hdlc_length_and_crc():
 @pytest.mark.parametrize("key,obis,raw,scaled", ENERGY_CASES)
 def test_issue_108_energy_registers(key, obis, raw, scaled):
     assert _raw_obis_value(ISSUE_108_FRAME, obis) == raw
-    parsed, _ = kamstrup.parse_data({}, ISSUE_108_FRAME)
+    parsed, _ = kamstrup.parse_data(
+        {}, ISSUE_108_FRAME, kamstrup_6841138_scale=True
+    )
     assert parsed[key]["state"] == pytest.approx(scaled)
 
 
@@ -95,3 +97,11 @@ def test_existing_kamstrup_fixture_unchanged():
     assert kamstrup.test_valid_data(TestData.KAMSTRUP_HOURLY, oss=False)
     parsed, _ = kamstrup.parse_data({}, TestData.KAMSTRUP_HOURLY)
     assert parsed["ams_active_energy_import"]["state"] == 155_232.51
+
+
+@pytest.mark.parametrize("key,obis,raw,scaled", ENERGY_CASES)
+def test_issue_108_opt_out_uses_original_scaling(key, obis, raw, scaled):
+    """Without the option, the original /100 behavior is preserved."""
+    parsed, _ = kamstrup.parse_data({}, ISSUE_108_FRAME)
+    assert parsed[key]["state"] == pytest.approx(raw / 100)
+    assert parsed[key]["state"] == pytest.approx(scaled * 10)

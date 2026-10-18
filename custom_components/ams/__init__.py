@@ -27,6 +27,7 @@ from custom_components.ams.const import (
     CONF_BAUDRATE,
     CONF_METER_MANUFACTURER,
     CONF_OSS_BRIKKEN,
+    CONF_KAMSTRUP_6841138_SCALE,
     CONF_PARITY,
     CONF_PROTOCOL,
     CONF_SERIAL_PORT,
@@ -111,9 +112,21 @@ async def async_setup(hass: HomeAssistant, config: Config):
     return True
 
 
+async def _async_options_updated(hass: HomeAssistant, entry: ConfigEntry):
+    """Apply the compatibility setting without restarting the serial reader."""
+    hub = hass.data.get(DOMAIN)
+    if hub is not None:
+        hub.kamstrup_6841138_scale = entry.options.get(
+            CONF_KAMSTRUP_6841138_SCALE, False
+        )
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up AMS as config entry."""
-    await hass.async_add_executor_job(_setup, hass, entry.data)
+    config = dict(entry.data)
+    config.update(entry.options)
+    await hass.async_add_executor_job(_setup, hass, config)
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
@@ -138,6 +151,9 @@ class AmsHub:
         _LOGGER.debug("config entry = %s", entry)
         self._hass = hass
         self.meter_manufacturer = entry.get(CONF_METER_MANUFACTURER)
+        self.kamstrup_6841138_scale = entry.get(
+            CONF_KAMSTRUP_6841138_SCALE, False
+        )
         self.sensor_data = {}
         self._attrs = {}
         self._running = True
@@ -302,6 +318,13 @@ class AmsHub:
                     if swedish:
                         self.sensor_data, _ = parser.parse_data(
                             self.sensor_data, data, swedish
+                        )
+                    elif parser is Kamstrup:
+                        self.sensor_data, _ = parser.parse_data(
+                            self.sensor_data, data,
+                            kamstrup_6841138_scale=(
+                                self.kamstrup_6841138_scale
+                            ),
                         )
                     else:
                         self.sensor_data, _ = parser.parse_data(

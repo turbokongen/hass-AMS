@@ -5,12 +5,14 @@ import os
 import serial.tools.list_ports as devices
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.core import callback
 
 from custom_components.ams.const import (  # pylint: disable=unused-import
     CONF_BAUDRATE,
     CONF_MANUAL_SERIAL_PORT,
     CONF_METER_MANUFACTURER,
     CONF_OSS_BRIKKEN,
+    CONF_KAMSTRUP_6841138_SCALE,
     CONF_PARITY,
     CONF_PROTOCOL,
     CONF_TCP_HOST,
@@ -53,6 +55,12 @@ class AmsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Expose optional Kamstrup compatibility scaling."""
+        return AmsOptionsFlow()
 
     def __init__(self):
         """Initialize."""
@@ -195,3 +203,24 @@ def get_serial_by_id(dev_path):
         if os.path.realpath(path) == dev_path:
             return path
     return dev_path
+
+
+class AmsOptionsFlow(config_entries.OptionsFlow):
+    """Manage optional energy counter compatibility."""
+
+    async def async_step_init(self, user_input=None):
+        """Update integration options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current = self.config_entry.options.get(
+            CONF_KAMSTRUP_6841138_SCALE, False
+        )
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema({
+                vol.Optional(
+                    CONF_KAMSTRUP_6841138_SCALE, default=current
+                ): bool,
+            }),
+        )

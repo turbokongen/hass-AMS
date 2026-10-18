@@ -1,18 +1,27 @@
 {
-    "config": {
-        "title": "AMS Reader",
-        "step": {
-            "user": {
-                "description": "Setup AMS Reader sensors",
-                "data": {
-                    "serial_port": "Serial Port",
-                    "parity": "Parity",
-                    "meter_manufacturer": "Meter manufacturer"
-                }
-            }
-        },
-        "error": {
-            "name_exists": "Name already exists"
+  "config": {
+    "title": "AMS Reader",
+    "step": {
+      "user": {
+        "description": "Setup AMS Reader sensors",
+        "data": {
+          "serial_port": "Serial Port",
+          "parity": "Parity",
+          "meter_manufacturer": "Meter manufacturer"
         }
+      }
+    },
+    "error": {
+      "name_exists": "Name already exists"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "kamstrup_6841138_scale": "Kamstrup 6841138: divide energy counters by 1000 (issue #108)"
+        }
+      }
+    }
+  }
 }
